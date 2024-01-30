@@ -1,0 +1,13 @@
+﻿[]
+Coordinates=308,56,100,33
+Visible=True
+ExplicitSubNodes=Owner.ComponentIndex
+
+[Module Settings]
+ModelLayerNames=NewLayer0
+ActiveLayerNames=
+EditingLayerName=
+
+[Nazad]
+Coordinates=99,231,44,51
+

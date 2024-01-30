@@ -1,0 +1,22 @@
+﻿[Mesto]
+Coordinates=10,10,84,123
+
+[Opstina]
+Coordinates=121,10,84,123
+Visible=True
+LayerNames=NewLayer0
+
+[Adresa]
+Coordinates=282,10,49,51
+
+[Broj]
+Coordinates=232,10,40,51
+
+[]
+Coordinates=113,152,82,33
+
+[Module Settings]
+ModelLayerNames=NewLayer0
+ActiveLayerNames=NewLayer0
+EditingLayerName=
+

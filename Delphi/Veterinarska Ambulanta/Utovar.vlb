@@ -1,0 +1,16 @@
+﻿[Proizvod_Label]
+Coordinates=64,166,103,58
+
+[]
+Coordinates=184,10,80,58
+
+[Kolicina_Label]
+Coordinates=121,10,53,58
+Visible=True
+
+[Proizvodi]
+Coordinates=10,10,101,146
+
+[Kolicina]
+Coordinates=10,166,44,58
+
