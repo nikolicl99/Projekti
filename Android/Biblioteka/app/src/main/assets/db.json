@@ -1,0 +1,162 @@
+[
+  {
+    "id": 1,
+    "naslov": "Lovac na zmajeve",
+    "autor": "Khaled Hosseini",
+    "godinaIzdavanja": 2003,
+    "zanr": "Drama",
+    "naruceno": 0
+  },
+  {
+    "id": 2,
+    "naslov": "1984",
+    "autor": "George Orwell",
+    "godinaIzdavanja": 1949,
+    "zanr": "Distopija",
+    "naruceno": 0
+  },
+  {
+    "id": 3,
+    "naslov": "Gospodar prstenova: Prstenova družina",
+    "autor": "J.R.R. Tolkien",
+    "godinaIzdavanja": 1954,
+    "zanr": "Fantazija",
+    "naruceno": 0
+  },
+  {
+    "id": 4,
+    "naslov": "Harry Potter i kamen mudraca",
+    "autor": "J.K. Rowling",
+    "godinaIzdavanja": 1997,
+    "zanr": "Fantazija",
+    "naruceno": 0
+  },
+  {
+    "id": 5,
+    "naslov": "Ubistvo u Orijent ekspresu",
+    "autor": "Agatha Christie",
+    "godinaIzdavanja": 1934,
+    "zanr": "Misterija",
+    "naruceno": 0
+  },
+  {
+    "id": 6,
+    "naslov": "Rat i mir",
+    "autor": "Lev Tolstoj",
+    "godinaIzdavanja": 1869,
+    "zanr": "Roman",
+    "naruceno": 0
+  },
+  {
+    "id": 7,
+    "naslov": "To Kill a Mockingbird",
+    "autor": "Harper Lee",
+    "godinaIzdavanja": 1960,
+    "zanr": "Društveni roman",
+    "naruceno": 0
+  },
+  {
+    "id": 8,
+    "naslov": "Mali princ",
+    "autor": "Antoine de Saint-Exupéry",
+    "godinaIzdavanja": 1943,
+    "zanr": "Dečja knjiga",
+    "naruceno": 0
+  },
+  {
+    "id": 9,
+    "naslov": "Catcher in the Rye",
+    "autor": "J.D. Salinger",
+    "godinaIzdavanja": 1951,
+    "zanr": "Društveni roman",
+    "naruceno": 0
+  },
+  {
+    "id": 10,
+    "naslov": "To the Lighthouse",
+    "autor": "Virginia Woolf",
+    "godinaIzdavanja": 1927,
+    "zanr": "Modernistički roman",
+    "naruceno": 0
+  },
+  {
+    "id": 11,
+    "naslov": "One Hundred Years of Solitude",
+    "autor": "Gabriel Garcia Marquez",
+    "godinaIzdavanja": 1967,
+    "zanr": "Magični realizam",
+    "naruceno": 0
+  },
+  {
+    "id": 12,
+    "naslov": "Crime and Punishment",
+    "autor": "Fyodor Dostoevsky",
+    "godinaIzdavanja": 1866,
+    "zanr": "Psihološki triler",
+    "naruceno": 0
+  },
+  {
+    "id": 13,
+    "naslov": "The Great Gatsby",
+    "autor": "F. Scott Fitzgerald",
+    "godinaIzdavanja": 1925,
+    "zanr": "Društveni roman",
+    "naruceno": 0
+  },
+  {
+    "id": 14,
+    "naslov": "The Hobbit",
+    "autor": "J.R.R. Tolkien",
+    "godinaIzdavanja": 1937,
+    "zanr": "Fantazija",
+    "naruceno": 0
+  },
+  {
+    "id": 15,
+    "naslov": "Pride and Prejudice",
+    "autor": "Jane Austen",
+    "godinaIzdavanja": 1813,
+    "zanr": "Romantični roman",
+    "naruceno": 0
+  },
+  {
+    "id": 16,
+    "naslov": "The Catch-22",
+    "autor": "Joseph Heller",
+    "godinaIzdavanja": 1961,
+    "zanr": "Satirični roman",
+    "naruceno": 0
+  },
+  {
+    "id": 17,
+    "naslov": "The Brothers Karamazov",
+    "autor": "Fyodor Dostoevsky",
+    "godinaIzdavanja": 1880,
+    "zanr": "Filozofski roman",
+    "naruceno": 0
+  },
+  {
+    "id": 18,
+    "naslov": "Brave New World",
+    "autor": "Aldous Huxley",
+    "godinaIzdavanja": 1932,
+    "zanr": "Distopija",
+    "naruceno": 0
+  },
+  {
+    "id": 19,
+    "naslov": "The Odyssey",
+    "autor": "Homer",
+    "godinaIzdavanja": -800,
+    "zanr": "Ep",
+    "naruceno": 0
+  },
+  {
+    "id": 20,
+    "naslov": "The Lord of the Rings: The Fellowship of the Ring",
+    "autor": "J.R.R. Tolkien",
+    "godinaIzdavanja": 1954,
+    "zanr": "Fantazija",
+    "naruceno": 0
+  }
+]
