@@ -1,0 +1,37 @@
+{
+    "Kategorija": [
+      { "IDKategorije": 1, "Naziv_Kategorije": "Monitori" },
+      { "IDKategorije": 2, "Naziv_Kategorije": "Tastature" },
+      { "IDKategorije": 3, "Naziv_Kategorije": "Miševi" },
+      { "IDKategorije": 4, "Naziv_Kategorije": "Džojstici" },
+      { "IDKategorije": 5, "Naziv_Kategorije": "Slušalice" }
+    ],
+    "Proizvodi": [
+      { "IDProizvoda": 1, "Naziv": "LG 34 VA 34WP65CP-B", "Kategorija": "Monitori", "Opis": "UltraWide monitor visoke rezolucije", "Cena": 54999, "Akcija": 0, "Korpa": 0 },
+      { "IDProizvoda": 2, "Naziv": "DAHUA 43 IPS LM43-F200", "Kategorija": "Monitori", "Opis": "43-inčni IPS monitor", "Cena": 48999, "Akcija": 0, "Korpa": 0 },
+      { "IDProizvoda": 3, "Naziv": "DELL 27 IPS P2722HE", "Kategorija": "Monitori", "Opis": "Dell IPS monitor sa visokom efikasnošću", "Cena": 37999, "Akcija": 0, "Korpa": 0 },
+      { "IDProizvoda": 4, "Naziv": "SAMSUNG ViewFinity S65VC 34 VA S34C652VAU LS34C652VAUXEN", "Kategorija": "Monitori", "Opis": "Samsung ViewFinity UltraWide monitor", "Cena": 58999, "Akcija": 1, "Korpa": 0 },
+      { "IDProizvoda": 5, "Naziv": "GIGABYTE 31.5 VA M32UC", "Kategorija": "Monitori", "Opis": "GIGABYTE 31.5-inčni VA monitor", "Cena": 86999, "Akcija": 0, "Korpa": 1 },
+      { "IDProizvoda": 6, "Naziv": "LOGITECH LIGHTSPEED Wireless G915 920 009664 US", "Kategorija": "Tastature", "Opis": "Logitech bežična tastatura sa LIGHTSPEED tehnologijom", "Cena": 29999, "Akcija": 1, "Korpa": 0 },
+      { "IDProizvoda": 7, "Naziv": "RAZER Pro Type Ultra RZ03-04110100-R3M1 US", "Kategorija": "Tastature", "Opis": "Razer Pro Type Ultra tastatura", "Cena": 24999, "Akcija": 1, "Korpa": 0 },
+      { "IDProizvoda": 8, "Naziv": "APPLE Bežična tastatura MAGIC US (Bela) MK293Z/A", "Kategorija": "Tastature", "Opis": "Apple Magic bežična tastatura", "Cena": 21399, "Akcija": 0, "Korpa": 0 },
+      { "IDProizvoda": 9, "Naziv": "LOGITECH LIGHTSPEED RGB G915 920-009103 US", "Kategorija": "Tastature", "Opis": "Logitech bežična tastatura sa RGB osvetljenjem", "Cena": 32999, "Akcija": 1, "Korpa": 1 },
+      { "IDProizvoda": 10, "Naziv": "RAZER DeathStalker V2 US Black", "Kategorija": "Tastature", "Opis": "Razer DeathStalker V2 tastatura", "Cena": 25999, "Akcija": 0, "Korpa": 0 },
+      { "IDProizvoda": 11, "Naziv": "LOGITECH G502 X Plus", "Kategorija": "Miševi", "Opis": "Logitech G502 X Plus miš", "Cena": 19999, "Akcija": 1, "Korpa": 0 },
+      { "IDProizvoda": 12, "Naziv": "RAZER Basilisk V3 Pro Wireless White", "Kategorija": "Miševi", "Opis": "Razer Basilisk V3 Pro bežični miš", "Cena": 23499, "Akcija": 0, "Korpa": 0 },
+      { "IDProizvoda": 13, "Naziv": "ASUS ROG Gladius III Wireless 90MP0200-BMUA00", "Kategorija": "Miševi", "Opis": "ASUS ROG Gladius III bežični miš", "Cena": 11999, "Akcija": 0, "Korpa": 0 },
+      { "IDProizvoda": 14, "Naziv": "LOGITECH MX Anywhere 3S GRAPHITE 910-006930", "Kategorija": "Miševi", "Opis": "Logitech MX Anywhere 3S miš", "Cena": 11999, "Akcija": 1, "Korpa": 0 },
+      { "IDProizvoda": 15, "Naziv": "LOGITECH G402 HYPERION FURY- 910-004067", "Kategorija": "Miševi", "Opis": "Logitech G402 Hyperion Fury miš", "Cena": 5999, "Akcija": 0, "Korpa": 0 },
+      { "IDProizvoda": 16, "Naziv": "LOGITECH gamepad F310", "Kategorija": "Džojstici", "Opis": "Logitech gamepad F310", "Cena": 4499, "Akcija": 1, "Korpa": 1 },
+      { "IDProizvoda": 17, "Naziv": "NACON Gamepad WIRED", "Kategorija": "Džojstici", "Opis": "NACON Wired Gamepad", "Cena": 5999, "Akcija": 0, "Korpa": 0 },
+      { "IDProizvoda": 18, "Naziv": "CANYON Gamepad GP-W5 Wireless PS4", "Kategorija": "Džojstici", "Opis": "CANYON Wireless Gamepad za PS4", "Cena": 4999, "Akcija": 0, "Korpa": 0 },
+      { "IDProizvoda": 19, "Naziv": "PDP Gamepad Nintendo Switch Faceoff Deluxe Controller + Audio Mario", "Kategorija": "Džojstici", "Opis": "PDP Gamepad za Nintendo Switch", "Cena": 4999, "Akcija": 1, "Korpa": 0 },
+      { "IDProizvoda": 20, "Naziv": "NATEC GENESIS gamepad P65", "Kategorija": "Džojstici", "Opis": "NATEC GENESIS Gamepad P65", "Cena": 2999, "Akcija": 0, "Korpa": 0 },
+      { "IDProizvoda": 21, "Naziv": "JLAB Bežične bubice GO AIR TWS IEUEBGOAIRRNVYBLK82", "Kategorija": "Slušalice", "Opis": "JLAB Bežične bubice GO AIR TWS", "Cena": 5999, "Akcija": 0, "Korpa": 0 },
+      { "IDProizvoda": 22, "Naziv": "TRUST Gejmerske slušalice GXT 414 Zamak Premium Multiplatform", "Kategorija": "Slušalice", "Opis": "TRUST Gejmerske slušalice GXT 414", "Cena": 6799, "Akcija": 1, "Korpa": 0 },
+      { "IDProizvoda": 23, "Naziv": "REDRAGON Gejmerske slušalice HELIOS H710", "Kategorija": "Slušalice", "Opis": "REDRAGON Gejmerske slušalice HELIOS H710", "Cena": 8999, "Akcija": 0, "Korpa": 0 },
+      { "IDProizvoda": 24, "Naziv": "PHILIPS Bežične slušalice TAH4205WT/00", "Kategorija": "Slušalice", "Opis": "PHILIPS Bežične slušalice TAH4205WT", "Cena": 5999, "Akcija": 1, "Korpa": 0 },
+      { "IDProizvoda": 25, "Naziv": "SONY MDR-RF811RK", "Kategorija": "Slušalice", "Opis": "SONY MDR-RF811RK bežične slušalice", "Cena": 11499, "Akcija": 0, "Korpa": 0 }
+    ]
+  }
+  

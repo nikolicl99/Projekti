@@ -1,0 +1,35 @@
+ const pretragaForma = document.getElementById('pretragaForma');
+        pretragaForma.addEventListener('submit', function (event) {
+            event.preventDefault(); // Da sprečite podnošenje obrasca i ponovno učitavanje stranice
+
+            const unosPretrage = document.getElementById('unosPretrage').value.toLowerCase();
+
+            // Filtrirajte proizvode na osnovu unosa korisnika
+            const filtriraniProizvodi = data.Proizvodi.filter(proizvod =>
+                proizvod.Naziv.toLowerCase().includes(unosPretrage)
+            );
+
+            // Prikazivanje filtriranih proizvoda na stranici
+            container.innerHTML = '';
+            filtriraniProizvodi.forEach(proizvod => {
+                const card = createCard(proizvod);
+                container.appendChild(card);
+            });
+        });
+
+
+
+
+
+unutar create menu item (linija 60)
+
+ menuItem.addEventListener('click', () => {
+                const filtriraniProizvodi = data.Proizvodi.filter(proizvod => proizvod.Kategorija === kategorija.Naziv_Kategorije);
+
+                container.innerHTML = '';
+
+                filtriraniProizvodi.forEach(proizvod => {
+                    const card = createCard(proizvod);
+                    container.appendChild(card);
+                });
+            });

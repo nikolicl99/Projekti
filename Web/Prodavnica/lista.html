@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prodavnica racunarske opreme</title>
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="card" id="glavnaKartica">
+                <div class="card-header" id="nav">
+                    <a href="index.html" class="kontakt">
+                        <h1 style="text-align: center;" id="naslov">PRODAVNICA ELEKTRONIKE</h1>
+                    </a>
+                    <nav class="navbar nav-pills">
+                        <div class="container-fluid nav">
+                                    <li class="btn dropdown">
+                                        <a class="nav-link dropdown-toggle btn btn-light nav" data-bs-toggle="dropdown" role="button" id="kategorije"><strong>Kategorija</strong></a>
+                                        <div class="dropdown-menu" id="meni"></div>
+                                    </li>
+                                    <li class="btn btn-light" id="dugme"><a href="#kontakt" id="link">
+                                            <p><strong>Kontakt</strong></p>
+                                        </a></li>
+                                <form id="pretragaForma" class="d-flex">
+                                    <input id="unosPretrage" class="form-control nav" type="search" placeholder="Unesite ime proizvoda">
+                                </form>
+                                <li class="btn btn-light" id="dugmeKorpa" style="margin: 5px;"><a href="korpa.html" id="link">
+                                    <p><img src="img/korpa.png" width="20px" style="margin: auto;"> <strong>Korpa</strong></p>
+                                </a></li>
+                        </div>
+                    </nav>
+                    
+                    
+
+                </div>
+                <div class="card-body">
+                    <div class="row" id="kartice"></div>
+                </div>
+                <div class="card-footer" id="kontakt">
+                    <p style="color: white;"><img src="img/fon.png" width="25px"> Pozovite nas: 555-333</p>
+                    <p style="color: white;"><img src="img/mejl.png" width="25px"> prodavnicaelektronike@gmail.com
+                    </p>
+                    <a href="https://www.facebook.com" class="kontakt">
+                        <img src="img/fb.png" width="25px">
+                    </a>
+                    <a href="https://instagram.com" class="kontakt">
+                        <img src="img/insta.png" width="25px">
+                    </a>
+                    <a href="https://www.x.com" class="kontakt">
+                        <img src="img/x.png" width="25px">
+                    </a>
+                    <br><br>
+                    <a href="lokacije.html">
+                        <button class="btn btn-light" id="link" style="color: white;">Spisak Lokacija</button>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script type="module" src="script.js"></script>
+
+</body>
+
+</html>

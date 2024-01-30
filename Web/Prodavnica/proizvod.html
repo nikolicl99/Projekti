@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proizvod</title>
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="card" id="glavnaKartica">
+                <div class="card-header" id="nav">
+                    <a href="lista.html" class="kontakt">
+                        <h1 style="text-align: center;" id="naslov">PRODAVNICA ELEKTRONIKE</h1>
+                    </a>
+                </div>
+                <hr>
+                <div class="card-body">
+                    <div class="row" id="inf">
+                        <h2 id="nazivProizvoda"></h2>
+                        <p id="opisProizvoda"></p>
+                        <p id="cenaProizvoda"></p>
+                        <img class="img-fluid" id="slikaProizvoda">
+                    </div>
+                </div>
+                <div class="card-footer">
+                        <button id="korpa" class="btn btn-dark">Dodaj u Korpu</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script type="module" src="proizvod.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,214 @@
+@import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Text&display=swap');
+
+.navbar {
+    height: 70px;
+    background-color: #14345641;
+    border-top: 1pt solid rgba(0, 0, 0, 0.416);
+}
+
+@media (max-width: 993px) {
+    .navbar {
+        height: fit-content;
+        justify-content: flex-end;
+    }
+}
+
+body {
+    background-image: linear-gradient(rgba(0, 31, 63, 0.521), rgb(0, 31, 63)), url(img/img5.jpg);
+    background-blend-mode: multiply;
+}
+
+.container {
+    margin-top: 10px;
+}
+
+.karte {
+    margin: 5px !important;
+    text-decoration: none;
+    color: #0066cc;
+}
+
+.row {
+    justify-content: center;
+}
+
+.inf {
+    margin: auto;
+}
+
+#inf {
+    border: solid 5px gray;
+    border-radius: 10px;
+}
+
+.img {
+    margin: auto;
+}
+
+#link {
+    text-decoration: none;
+    color: grey;
+    background-color: gray;
+    color: #001F3F;
+    text-align: center;
+}
+
+#dugme,
+#kategorije,
+#dugmeKorpa {
+    height: 37px;
+    text-align: center;
+    font-family: 'Big Shoulders Stencil Text', sans-serif;
+    border: 1px solid rgb(97, 94, 94);
+    font-weight: bold;
+    color: #001F3F;
+    background-color: white;
+    margin: 2px;
+    
+}
+
+#glavnaKartica {
+    margin: 5px;
+    padding: 0px;
+    border: 2px solid black;
+    border-radius: 9px;
+    width: 80%;
+}
+
+#nav {
+    background-color: #001F3F;
+    margin: 0px;
+    padding: 0px;
+    border: 0px;
+}
+
+.kontakt {
+    text-decoration: none;
+}
+
+#naslov {
+    padding-top: 10px;
+    color: white;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    font-size: 50px;
+    font-family: 'Big Shoulders Stencil Text', sans-serif;
+}
+
+h1 #naslov {
+    text-transform: uppercase;
+    letter-spacing: -3px;
+    transition: 7s;
+    font-variation-settings: "wght" 200;
+    margin-bottom: 0.8rem;
+    outline: none;
+}
+
+h1:hover {
+    box-shadow: 0px 0px 50px 8px #001F3F;
+    -webkit-text-stroke-color: rgba(128, 128, 128, 0.732);
+    -webkit-text-stroke-width: 1px;
+}
+
+a .btn {
+    border: 1px solid #001F3F;
+    background-color: silver;
+    color: #001F3F;
+}
+
+a:hover .btn {
+    background-color: lightgray;
+    color: #001F3F;
+    border: 2px solid #001F3F;
+}
+
+#kategorije:hover {
+    color: #001F3F;
+}
+
+#unosPretrage {
+    padding-left: 10px;
+    margin-left: 15px;
+}
+
+#unosPretrage::placeholder {
+    padding-left: 5px;
+}
+
+.pretraga {
+    border: 2px solid gray;
+    background-color: white;
+    color: #001F3F;
+    font-weight: 500;
+}
+
+.card-footer {
+    background-color: #001f3fa8;
+    text-align: center;
+    align-items: center;
+    justify-content: space-around;
+    padding: 10px;
+}
+
+::-webkit-scrollbar {
+    width: 18px;
+    background-color: white;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #001f3fa8;
+    border-radius: 15px;
+    background-image: -webkit-linear-gradient(45deg, rgba(0, 9, 18, 0.527) 25%, transparent 25%, transparent 50%, rgba(0, 28, 55, 0.377) 50%, rgba(0, 6, 11, 0.397) 75%, transparent 75%, transparent);
+}
+
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 3px #001f3fa8;
+    background-color: white;
+    border: 1px solid black;
+}
+
+#naslovLokacije {
+    color: white;
+    margin-left: auto;
+    margin-right: auto;
+    padding-bottom: 10px;
+    font-family: 'Big Shoulders Stencil Text', sans-serif;
+}
+
+#slikaProizvoda {
+    max-width: fit-content;
+}
+
+@media (min-width: 994px) {
+    .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+    }
+
+    #kategorije {
+        border: 0px;
+        order: 1;
+        flex: 1;
+    }
+
+    #dugme {
+        order: 2;
+        flex: 1;
+        
+    }
+
+    #pretragaForma {
+        order: 3;
+        flex: 3;
+    }
+
+    #dugmeKorpa {
+        order: 4;
+        flex: 1;
+    }
+
+
+
+}
