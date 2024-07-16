@@ -43,7 +43,7 @@
                 LoggerHelper.proveraCrveno(vinarijaService.findAll());
                 LoggerHelper.proveraBelo(vinarijaService.findAll());
                 LoggerHelper.proveraRoze(vinarijaService.findAll());
-                return "Knjiga (" + id + ") je obrisana";
-            } else return "Knjiga (" + id + ") nije pronadjena";
+                return "Vino (" + id + ") je obrisano";
+            } else return "Vino (" + id + ") nije pronadjeno";
         }
     }
