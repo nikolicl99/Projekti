@@ -1,0 +1,95 @@
+JFDML JFormDesigner: "8.2.4.0.393" Java: "21.0.4" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+			"$horizontalGroup": "par l {seq {space :::p, comp panel1::::959:x, space :p:33:p}}"
+			"$verticalGroup": "par l {comp panel1::t::469:x}"
+		} ) {
+			name: "this"
+			"defaultCloseOperation": 3
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
+				"$layoutConstraints": "hidemode 3"
+				"$columnConstraints": "[100,fill][100,fill][100,fill][100,fill][100,fill][100,fill][100,fill][100,fill][100,fill][100,fill]"
+				"$rowConstraints": "[75][75][75][75][75][75][75][75][75][75][75]"
+			} ) {
+				name: "panel1"
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "Back"
+					"text": "Nazad"
+					addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "BackMouseClicked", true ) )
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 0 0"
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "image"
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 5 1 2 3"
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "nameSurname_Label"
+					"text": "Ime i Prezime:"
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 1 2"
+				} )
+				add( new FormComponent( "javax.swing.JTextField" ) {
+					name: "nameSurname"
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 2 2 2 1"
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "Email_Label"
+					"text": "Email:"
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 1 3"
+				} )
+				add( new FormComponent( "javax.swing.JTextField" ) {
+					name: "email"
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 2 3 2 1"
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "telefon_Label"
+					"text": "Telefon:"
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 1 4"
+				} )
+				add( new FormComponent( "javax.swing.JTextField" ) {
+					name: "phone"
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 2 4 2 1"
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "adress_Label"
+					"text": "Adresa:"
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 1 5"
+				} )
+				add( new FormComponent( "javax.swing.JTextField" ) {
+					name: "adress"
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 2 5 2 1"
+				} )
+				add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+					name: "scrollPane1"
+					add( new FormComponent( "javax.swing.JTable" ) {
+						name: "shipments"
+					} )
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 6 6 2 2"
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "allShipments"
+					"text": "Prikazi sve dobavke"
+					addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "allShipmentsMouseClicked", true ) )
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 6 9 2 1"
+				} )
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 1000, 500 )
+		} )
+	}
+}

@@ -1,0 +1,73 @@
+JFDML JFormDesigner: "8.2.4.0.393" Java: "21.0.4" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+			"$horizontalGroup": "par l {comp panel1::l:::x}"
+			"$verticalGroup": "par l {comp panel1::l:::x}"
+		} ) {
+			name: "this"
+			"defaultCloseOperation": 3
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+				"$horizontalGroup": "par l {seq t {par t {seq {space ::82:x, comp EditEmployee_Label:::p:202:p, space :42:42:p, comp EditEmployee:::p:70:p}, seq {space :p:82:p, comp AddEmployee_Label:::p:202:p, space ::42:x, comp AddEmployee:::p:70:p}, seq t {space :0:82:x, par l {seq {comp RoleManag_Label:::p:202:p, space :42:42:p, comp RoleManag:::p:70:p}, par t {seq {comp ReportGenerate_Label:::p:202:p, space :42:42:p, comp ReportGenerate:::p:70:p}, seq {comp ReportView_Label:::p:202:p, space :42:42:p, comp ReportView:::p:70:p}, seq {comp InventoryManag_Label:::p:202:p, space :42:42:p, comp InventoryManag:::p:70:p}}}}}, space :p:102:p}, seq {par l {seq {space :p:154:p, comp SelectedRole:::p:181:p}, seq l {space :p:57:p, comp Nazad:::p:94:p}}, space ::163:x}}"
+				"$verticalGroup": "par l {seq l {space :p:43:p, comp SelectedRole:::p::p, space :p:26:p, par b {comp AddEmployee::b:p::p, comp AddEmployee_Label::b:p:25:p}, space :::p, par l {seq l {space :4:4:p, comp EditEmployee_Label:::p:25:p}, comp EditEmployee:::p::p}, space :::p, par l {seq l {space :4:4:p, comp InventoryManag_Label:::p:25:p}, comp InventoryManag:::p::p}, space :::p, par l {seq l {space :4:4:p, comp ReportView_Label:::p:25:p}, comp ReportView:::p::p}, space :::p, par l {seq l {space :4:4:p, comp ReportGenerate_Label:::p:25:p}, comp ReportGenerate:::p::p}, space :::p, par l {seq l {space :4:4:p, comp RoleManag_Label:::p:25:p}, comp RoleManag:::p::p}, space ::53:x, comp Nazad:::p:42:p, space :p:37:p}}"
+			} ) {
+				name: "panel1"
+				add( new FormComponent( "javax.swing.JTextField" ) {
+					name: "SelectedRole"
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "AddEmployee_Label"
+					"text": "Dodavanje Zaposlenog:"
+				} )
+				add( new FormComponent( "javax.swing.JTextField" ) {
+					name: "AddEmployee"
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "EditEmployee_Label"
+					"text": "Editovanje Zaposlenog:"
+				} )
+				add( new FormComponent( "javax.swing.JTextField" ) {
+					name: "EditEmployee"
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "InventoryManag_Label"
+					"text": "Upravljanje Inventarom:"
+				} )
+				add( new FormComponent( "javax.swing.JTextField" ) {
+					name: "InventoryManag"
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "ReportView_Label"
+					"text": "Pregled Izvestaja:"
+				} )
+				add( new FormComponent( "javax.swing.JTextField" ) {
+					name: "ReportView"
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "ReportGenerate_Label"
+					"text": "Generisanje Izvestaja:"
+				} )
+				add( new FormComponent( "javax.swing.JTextField" ) {
+					name: "ReportGenerate"
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "RoleManag_Label"
+					"text": "Menadzment Uloga:"
+				} )
+				add( new FormComponent( "javax.swing.JTextField" ) {
+					name: "RoleManag"
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "Nazad"
+					"text": "Nazad"
+					addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "NazadMouseClicked", true ) )
+				} )
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 500, 500 )
+		} )
+	}
+}

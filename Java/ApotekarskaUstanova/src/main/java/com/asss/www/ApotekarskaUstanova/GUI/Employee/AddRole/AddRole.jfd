@@ -1,0 +1,63 @@
+JFDML JFormDesigner: "8.2.4.0.393" Java: "21.0.4" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+			"$horizontalGroup": "par l {comp panel1::l:::x}"
+			"$verticalGroup": "par l {comp panel1::l:::x}"
+		} ) {
+			name: "this"
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+				"$horizontalGroup": "par l {seq {par l {seq {space :153:153:p, par l {par t:l {comp Uloga::t:p:188:p, comp manageRoles:::p:180:p, comp generateReport:::p:180:p, comp viewReport:::p:180:p, comp manageInv:::p:180:p, comp editEmployee:::p:180:p, comp addEmployee:::p:180:p}, comp roleName::l:p:109:p}}, seq l {space :p:85:p, comp Add:::p:95:p}, seq l {space :::p, comp Back:::p:91:p}}, space ::157:x}}"
+				"$verticalGroup": "par l {seq l {space :p:11:p, comp Back:::p:40:p, space u:::p, comp roleName:::p::p, space :::p, comp Uloga:::p::p, space s:::p, comp addEmployee:::p::p, space s:::p, comp editEmployee:::p::p, space s:::p, comp manageInv:::p::p, space s:::p, comp viewReport:::p::p, space s:::p, comp generateReport:::p::p, space s:::p, comp manageRoles:::p::p, space :p:36:p, comp Add:::p:45:p, space ::10:x}}"
+			} ) {
+				name: "panel1"
+				add( new FormComponent( "javax.swing.JCheckBox" ) {
+					name: "addEmployee"
+					"text": "Dodavanje Zaposlenih"
+				} )
+				add( new FormComponent( "javax.swing.JCheckBox" ) {
+					name: "editEmployee"
+					"text": "Editovanje Zaposlenih"
+				} )
+				add( new FormComponent( "javax.swing.JCheckBox" ) {
+					name: "manageInv"
+					"text": "Upravljanje Inventarom"
+				} )
+				add( new FormComponent( "javax.swing.JCheckBox" ) {
+					name: "manageRoles"
+					"text": "Upravljanje Ulogama"
+				} )
+				add( new FormComponent( "javax.swing.JCheckBox" ) {
+					name: "viewReport"
+					"text": "Pregled Izvestaja"
+				} )
+				add( new FormComponent( "javax.swing.JCheckBox" ) {
+					name: "generateReport"
+					"text": "Generisanje Izvestaja"
+				} )
+				add( new FormComponent( "javax.swing.JTextField" ) {
+					name: "Uloga"
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "roleName"
+					"text": "Naziv Uloge:"
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "Add"
+					"text": "Dodaj"
+					addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "AddMouseClicked", true ) )
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "Back"
+					"text": "Nazad"
+					addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "BackMouseClicked", true ) )
+				} )
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 500, 500 )
+		} )
+	}
+}

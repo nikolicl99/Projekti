@@ -1,0 +1,51 @@
+JFDML JFormDesigner: "8.2.4.0.393" Java: "21.0.4" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+			"$horizontalGroup": "par l {comp panel1::l:::x}"
+			"$verticalGroup": "par l {comp panel1::l:::x}"
+		} ) {
+			name: "this"
+			"preferredSize": new java.awt.Dimension( 500, 500 )
+			"defaultCloseOperation": 3
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+				"$horizontalGroup": "par l {seq {par l {seq l {space :p:145:p, par l {seq l {space :25:25:p, comp label1:::p::p}, seq l {comp emailLabel:::p:40:p, space :10:10:p, comp email:::p:150:p}, seq l {comp sifraLabel:::p:40:p, space :10:10:p, comp sifra:::p:150:p}}}, seq l {space :p:187:p, comp login:::p:105:p}}, space ::153:x}}"
+				"$verticalGroup": "par l {seq l {space :p:87:p, comp label1:::p::p, space :38:38:p, par l {seq l {space :5:5:p, comp emailLabel:::p::p}, comp email:::p:25:p}, space :25:25:p, par l {seq l {space :5:5:p, comp sifraLabel:::p::p}, comp sifra:::p:25:p}, space ::126:x, comp login:::p:40:p, space :p:86:p}}"
+			} ) {
+				name: "panel1"
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "label1"
+					"text": "Apoteka \"Bolji Zivot\""
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "login"
+					"icon": sfield com.jformdesigner.model.FormObject NULL_VALUE
+					"foreground": sfield java.awt.Color darkGray
+					"selectedIcon": sfield com.jformdesigner.model.FormObject NULL_VALUE
+					"text": "Login"
+					"border": new javax.swing.border.LineBorder( sfield java.awt.Color black, 1, true )
+					addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "loginMouseClicked", true ) )
+				} )
+				add( new FormComponent( "javax.swing.JTextField" ) {
+					name: "email"
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "emailLabel"
+					"text": "Email:"
+				} )
+				add( new FormComponent( "javax.swing.JPasswordField" ) {
+					name: "sifra"
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "sifraLabel"
+					"text": "Sifra:"
+				} )
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 500, 500 )
+		} )
+	}
+}
