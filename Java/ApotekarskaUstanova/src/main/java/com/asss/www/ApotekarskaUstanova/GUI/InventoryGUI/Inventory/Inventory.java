@@ -6,7 +6,7 @@ package com.asss.www.ApotekarskaUstanova.GUI.InventoryGUI.Inventory;
 
 import java.awt.*;
 import java.awt.event.*;
-import com.asss.www.ApotekarskaUstanova.Dto.JwtResponse;
+import com.asss.www.ApotekarskaUstanova.Security.JwtResponse;
 import com.asss.www.ApotekarskaUstanova.Entity.Product;
 import com.asss.www.ApotekarskaUstanova.GUI.InventoryGUI.InventoryBatch.InventoryBatch;
 import com.asss.www.ApotekarskaUstanova.GUI.InventoryGUI.InventoryMenu.InventoryMenu;

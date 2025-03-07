@@ -6,7 +6,7 @@ public class SalesDto {
 
     private int id;
     private double totalPrice;
-    private double receipt;
+    private double receipt_change;
     private LocalDateTime transaction_date;
 //    private String receipt_type;
     private long cashier_id;
@@ -27,12 +27,12 @@ public class SalesDto {
         this.totalPrice = totalPrice;
     }
 
-    public double getReceipt() {
-        return receipt;
+    public double getReceipt_change() {
+        return receipt_change;
     }
 
-    public void setReceipt(double receipt) {
-        this.receipt = receipt;
+    public void setReceipt_change(double receipt_change) {
+        this.receipt_change = receipt_change;
     }
 
     public LocalDateTime getTransaction_date() {

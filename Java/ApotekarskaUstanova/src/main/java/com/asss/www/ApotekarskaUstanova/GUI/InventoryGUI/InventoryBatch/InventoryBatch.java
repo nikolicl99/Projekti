@@ -20,7 +20,7 @@ import com.asss.www.ApotekarskaUstanova.GUI.Suppliers.SupplierInfo.SupplierInfo;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.asss.www.ApotekarskaUstanova.Dto.JwtResponse;
+import com.asss.www.ApotekarskaUstanova.Security.JwtResponse;
 import com.asss.www.ApotekarskaUstanova.Dto.ProductBatchDto;
 import com.asss.www.ApotekarskaUstanova.GUI.InventoryGUI.Inventory.Inventory;
 import net.miginfocom.swing.*;

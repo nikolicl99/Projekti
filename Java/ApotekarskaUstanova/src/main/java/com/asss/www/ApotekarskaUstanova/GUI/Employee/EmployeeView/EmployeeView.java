@@ -6,7 +6,7 @@ package com.asss.www.ApotekarskaUstanova.GUI.Employee.EmployeeView;
 
 import java.awt.event.*;
 
-import com.asss.www.ApotekarskaUstanova.Dto.JwtResponse;
+import com.asss.www.ApotekarskaUstanova.Security.JwtResponse;
 import com.asss.www.ApotekarskaUstanova.Entity.Employees;
 import com.asss.www.ApotekarskaUstanova.GUI.Employee.EmployeeList.EmployeeList;
 import com.fasterxml.jackson.databind.ObjectMapper;

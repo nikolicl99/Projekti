@@ -9,7 +9,7 @@ import javax.swing.*;
 import javax.swing.GroupLayout;
 import javax.swing.table.DefaultTableModel;
 
-import com.asss.www.ApotekarskaUstanova.Dto.JwtResponse;
+import com.asss.www.ApotekarskaUstanova.Security.JwtResponse;
 import com.asss.www.ApotekarskaUstanova.Dto.Shipment_ItemsDto;
 import com.asss.www.ApotekarskaUstanova.Entity.Shipment;
 import com.asss.www.ApotekarskaUstanova.GUI.InventoryGUI.InventoryBatch.InventoryBatch;

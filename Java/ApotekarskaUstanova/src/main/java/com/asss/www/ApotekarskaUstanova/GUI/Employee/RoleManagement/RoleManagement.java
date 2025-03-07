@@ -5,7 +5,7 @@
 package com.asss.www.ApotekarskaUstanova.GUI.Employee.RoleManagement;
 
 import java.awt.event.*;
-import com.asss.www.ApotekarskaUstanova.Dto.JwtResponse;
+import com.asss.www.ApotekarskaUstanova.Security.JwtResponse;
 import com.asss.www.ApotekarskaUstanova.Entity.Employee_Type;
 import com.asss.www.ApotekarskaUstanova.GUI.Employee.AddRole.AddRole;
 import com.asss.www.ApotekarskaUstanova.GUI.Start.MainMenu.MainMenu;

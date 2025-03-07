@@ -9,7 +9,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Scanner;
 
-import com.asss.www.ApotekarskaUstanova.Dto.JwtResponse;
+import com.asss.www.ApotekarskaUstanova.Security.JwtResponse;
 import com.asss.www.ApotekarskaUstanova.Entity.Employee_Type;
 import com.asss.www.ApotekarskaUstanova.GUI.Employee.RoleManagement.RoleManagement;
 import com.fasterxml.jackson.databind.ObjectMapper;

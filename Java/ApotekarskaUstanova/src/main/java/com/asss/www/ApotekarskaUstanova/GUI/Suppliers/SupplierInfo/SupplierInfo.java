@@ -8,14 +8,10 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
-import com.asss.www.ApotekarskaUstanova.Dto.JwtResponse;
-import com.asss.www.ApotekarskaUstanova.Entity.Employees;
+import com.asss.www.ApotekarskaUstanova.Security.JwtResponse;
 import com.asss.www.ApotekarskaUstanova.Entity.Shipment;
 import com.asss.www.ApotekarskaUstanova.Entity.Shipment_Items;
 import com.asss.www.ApotekarskaUstanova.Entity.Supplier;
-import com.asss.www.ApotekarskaUstanova.GUI.Employee.EmployeeList.EmployeeList;
-import com.asss.www.ApotekarskaUstanova.GUI.Employee.EmployeeView.EmployeeView;
-import com.asss.www.ApotekarskaUstanova.GUI.InventoryGUI.Inventory.Inventory;
 import com.asss.www.ApotekarskaUstanova.GUI.InventoryGUI.InventoryBatch.InventoryBatch;
 import com.asss.www.ApotekarskaUstanova.GUI.Suppliers.SupplierList.SupplierList;
 import com.asss.www.ApotekarskaUstanova.GUI.Suppliers.SupplierShipments.SupplierShipments;
@@ -24,7 +20,6 @@ import net.miginfocom.swing.*;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Base64;
 import java.util.Scanner;
 
 /**

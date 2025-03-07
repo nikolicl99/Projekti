@@ -6,7 +6,6 @@ package com.asss.www.ApotekarskaUstanova.GUI.CashRegister.CashRegister;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.beans.*;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -26,15 +25,14 @@ import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
+import net.miginfocom.swing.MigLayout;
 
-import com.asss.www.ApotekarskaUstanova.Dto.JwtResponse;
+import com.asss.www.ApotekarskaUstanova.Security.JwtResponse;
 import com.asss.www.ApotekarskaUstanova.Dto.ProductBatchDto;
 import com.asss.www.ApotekarskaUstanova.Dto.ProductDto;
 import com.asss.www.ApotekarskaUstanova.Entity.*;
-import com.asss.www.ApotekarskaUstanova.Security.CustomUserDetails;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.miginfocom.swing.*;
 import org.json.JSONObject;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -916,7 +914,7 @@ public class CashRegister extends JFrame {
         }
     }
 
-    private void finishCashMouseClicked(MouseEvent e) {
+    private void finishCashMouseClicked(MouseEvent e) throws InterruptedException {
         double changeAmount = 0;
         double finalPrice = 0;
         try {
@@ -1033,22 +1031,70 @@ public class CashRegister extends JFrame {
         }
     }
 
-    private void paymentProcess(double finalPrice, double finalChange) {
+    private void paymentProcess(double finalPrice, double finalChange) throws InterruptedException {
         int salesId = addSalesData(finalPrice, finalChange);
+        System.out.println("Sales ID: " + salesId);
+        Thread.sleep(500);
+        if (salesId != -1) {
+            addSalesItems(salesId);
+        }
+    }
+
+    private void addSalesItems(int salesId) {
+        for (Map<String, Object> stavka : receiptList) {
+            try {
+                // Dobijanje podataka iz stavke
+                String ean13 = (String) stavka.get("Ean13");
+                Long productId = getProductIdByEan13(ean13);
+                String receiptType = (String) stavka.get("Recept");
+                int quantity = ((Number) stavka.get("Količina")).intValue();
+                double totalPrice = ((Number) stavka.get("Ukupna cena")).doubleValue();
 
 
+                if (productId != null) {
+                    // Kreiranje JSON objekta
+                    String jsonInputString = String.format(
+                            "{\"salesId\": %d, \"productId\": %d, \"receiptType\": \"%s\", \"quantity\": %d, \"totalPrice\": %.2f}",
+                            salesId, productId, receiptType, quantity, totalPrice
+                    );
 
+                    // Slanje HTTP POST zahteva
+                    URL url = new URL("http://localhost:8080/api/sales_items/add");
+                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                    connection.setRequestMethod("POST");
+                    connection.setRequestProperty("Content-Type", "application/json");
+                    connection.setRequestProperty("Authorization", "Bearer " + JwtResponse.getToken());
+                    connection.setDoOutput(true);
+
+                    try (OutputStream os = connection.getOutputStream()) {
+                        byte[] input = jsonInputString.getBytes(StandardCharsets.UTF_8);
+                        os.write(input, 0, input.length);
+                    }
+
+                    int responseCode = connection.getResponseCode();
+                    if (responseCode == HttpURLConnection.HTTP_CREATED) {
+                        System.out.println("Stavka uspešno dodata: " + jsonInputString);
+                    } else {
+                        System.out.println("Greška pri dodavanju stavke: " + jsonInputString);
+                    }
+                } else {
+                    System.out.println("Nije pronađen proizvod sa EAN13: " + ean13);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Greška pri komunikaciji sa serverom.", "Greška", JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
 
     private int addSalesData(double totalPrice, double receipt) {
-        Long employeeId = 0L;
+        int employeeId = JwtResponse.getUserId();
         LocalDateTime currentDate = LocalDateTime.now();
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if (authentication != null && authentication.getPrincipal() instanceof CustomUserDetails) {
-            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-            employeeId = userDetails.getId();
-        }
+//        if (authentication != null && authentication.getPrincipal() instanceof CustomUserDetails) {
+//            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+//            employeeId = userDetails.getId();
+//        }
 
 //        String url = "http://localhost:8080/api/sales/add";
 //        JSONObject json = new JSONObject();
@@ -1056,6 +1102,7 @@ public class CashRegister extends JFrame {
 //        json.put("receipt", getChangeFinal());
 //        json.put("transaction_date", currentDate);
 //        json.put("cashier_id", employeeId);
+        System.out.println("Change ammount: " + receipt);
 
         try {
             URL url = new URL("http://localhost:8080/api/sales/add");
@@ -1067,9 +1114,10 @@ public class CashRegister extends JFrame {
 
             // JSON telo zahteva
             String jsonInputString = String.format(
-                    "{\"totalPrice\": {\"receipt\": %d}, \"transaction_date\": \"%s\", \"cashier_id\": \"%s\"}",
+                    "{\"totalPrice\": %.2f, \"receipt_change\": %.2f, \"transaction_date\": \"%s\", \"cashier_id\": %d}",
                     totalPrice, receipt, currentDate, employeeId
             );
+
 
             try (OutputStream os = connection.getOutputStream()) {
                 byte[] input = jsonInputString.getBytes(StandardCharsets.UTF_8);
@@ -1620,7 +1668,10 @@ public class CashRegister extends JFrame {
             finishCash.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    finishCashMouseClicked(e);
+                    try {
+finishCashMouseClicked(e);} catch (InterruptedException ex) {
+    throw new RuntimeException(ex);
+}
                 }
             });
             cashPaymentContentPane.add(finishCash, "cell 2 5");

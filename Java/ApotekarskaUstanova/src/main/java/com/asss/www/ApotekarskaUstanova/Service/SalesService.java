@@ -17,18 +17,21 @@ public class SalesService {
     @Autowired
     private EmployeeRepository employeeRepository;
 
-    public Sales addSale (SalesDto salesDto) {
+    public Sales addSale(SalesDto salesDto) {
         Sales sales = new Sales();
         sales.setTotalPrice(salesDto.getTotalPrice());
-//        sales.setReceiptType(salesDto.getReceipt_type());
         sales.setTransactionDate(salesDto.getTransaction_date());
-//        sales.setReceiptType(salesDto.getReceipt_type());
+        sales.setChange(salesDto.getReceipt_change());
+
         Employees cashier = employeeRepository.findById(salesDto.getCashier_id())
                 .orElseThrow(() -> new RuntimeException("Cashier not found"));
 
         sales.setCashier(cashier);
 
-        return salesRepository.save(sales);
+        Sales savedSale = salesRepository.save(sales);
+        salesRepository.flush(); // Forsira upis u bazu odmah
 
+        return savedSale;
     }
+
 }

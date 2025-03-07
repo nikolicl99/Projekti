@@ -13,20 +13,29 @@ public class SalesItem {
     @JoinColumn(name = "sales_id", nullable = false)
     private Sales sales;
 
-    @Column(name = "product_id", nullable = false)
-    private Long productId; // Veza sa product_batches
+    @ManyToOne
+    @JoinColumn(name = "product_id", nullable = false)
+    private Product product;
 
     @Column(name = "receipt_type")
     private String receiptType;
-
-    @Column(name = "prescriptionItem", nullable = false)
-    private int prescriptionItem;
 
     @Column(name = "quantity", nullable = false)
     private int quantity;
 
     @Column(name = "total_price", nullable = false)
     private double totalPrice;
+
+    public SalesItem() {
+    }
+
+    public SalesItem(Sales sales, Product product, String receiptType, int quantity, double totalPrice) {
+        this.sales = sales;
+        this.product = product;
+        this.receiptType = receiptType;
+        this.quantity = quantity;
+        this.totalPrice = totalPrice;
+    }
 
     public int getId() {
         return id;
@@ -44,12 +53,12 @@ public class SalesItem {
         this.sales = sales;
     }
 
-    public Long getProductId() {
-        return productId;
+    public Product getProduct() {
+        return product;
     }
 
-    public void setProductId(Long productId) {
-        this.productId = productId;
+    public void setProduct(Product product) {
+        this.product = product;
     }
 
     public String getReceiptType() {
@@ -58,14 +67,6 @@ public class SalesItem {
 
     public void setReceiptType(String receiptType) {
         this.receiptType = receiptType;
-    }
-
-    public int getPrescriptionItem() {
-        return prescriptionItem;
-    }
-
-    public void setPrescriptionItem(int prescriptionItem) {
-        this.prescriptionItem = prescriptionItem;
     }
 
     public int getQuantity() {

@@ -6,14 +6,13 @@ package com.asss.www.ApotekarskaUstanova.GUI.Employee.EmployeeList;
 
 import java.awt.event.*;
 
-import com.asss.www.ApotekarskaUstanova.Dto.JwtResponse;
+import com.asss.www.ApotekarskaUstanova.Security.JwtResponse;
 import com.asss.www.ApotekarskaUstanova.Entity.Employees;
 import com.asss.www.ApotekarskaUstanova.GUI.Employee.AddEmployee.AddEmployee;
 import com.asss.www.ApotekarskaUstanova.GUI.Start.MainMenu.MainMenu;
 import com.asss.www.ApotekarskaUstanova.GUI.Employee.EmployeeView.EmployeeView;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.awt.*;
 import java.util.List;
 import java.net.HttpURLConnection;
 import java.net.URL;

@@ -4,7 +4,7 @@
 
 package com.asss.www.ApotekarskaUstanova.GUI.Employee.AddRole;
 
-import com.asss.www.ApotekarskaUstanova.Dto.JwtResponse;
+import com.asss.www.ApotekarskaUstanova.Security.JwtResponse;
 import com.asss.www.ApotekarskaUstanova.GUI.Employee.RoleManagement.RoleManagement;
 import org.json.JSONObject;
 import org.springframework.http.*;

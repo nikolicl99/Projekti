@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Scanner;
 import javax.swing.*;
 
-import com.asss.www.ApotekarskaUstanova.Dto.JwtResponse;
+import com.asss.www.ApotekarskaUstanova.Security.JwtResponse;
 import com.asss.www.ApotekarskaUstanova.Entity.Municipality;
 import com.asss.www.ApotekarskaUstanova.Entity.Town;
 import com.asss.www.ApotekarskaUstanova.GUI.Suppliers.SupplierList.SupplierList;
