@@ -1,7 +1,11 @@
 package com.asss.www.ApotekarskaUstanova.Controllers;
 
+import com.asss.www.ApotekarskaUstanova.Repository.ProductBatchRepository;
+import com.asss.www.ApotekarskaUstanova.Repository.ProductRepository;
 import com.asss.www.ApotekarskaUstanova.Dto.ProductBatchDto;
 import com.asss.www.ApotekarskaUstanova.Dto.ProductDto;
+import com.asss.www.ApotekarskaUstanova.Dto.ShipmentDto;
+import com.asss.www.ApotekarskaUstanova.Dto.SupplierDto;
 import com.asss.www.ApotekarskaUstanova.Entity.Product;
 import com.asss.www.ApotekarskaUstanova.Entity.ProductBatch;
 import com.asss.www.ApotekarskaUstanova.Service.ProductBatchService;
@@ -21,6 +25,12 @@ public class ProductController {
     private final ProductBatchService productBatchService;
 
     @Autowired
+    private ProductRepository productRepository;
+
+    @Autowired
+    private ProductBatchRepository productBatchRepository;
+
+    @Autowired
     private ProductService productService;
 
     @Autowired
@@ -28,11 +38,6 @@ public class ProductController {
         this.productBatchService = productBatchService;
     }
 
-    /**
-     * Endpoint za dobijanje svih proizvoda.
-     *
-     * @return lista proizvoda.
-     */
     @GetMapping
     public ResponseEntity<List<ProductDto>> getAllProducts() {
         List<ProductDto> products = productService.getAllProducts();
@@ -40,9 +45,9 @@ public class ProductController {
     }
 
     @GetMapping("/name/{productName}")
-    public ResponseEntity<Long> getProductId(@PathVariable String productName) {
-        Long productId = productService.getProductIdByName(productName);
-        if (productId != null) {
+    public ResponseEntity<Integer> getProductId(@PathVariable String productName) {
+        int productId = productService.getProductIdByName(productName);
+        if (productId != -1) {
             return ResponseEntity.ok(productId);
         } else {
             return ResponseEntity.notFound().build();
@@ -93,7 +98,7 @@ public class ProductController {
     }
 
     @PutMapping("/batches/{id}")
-    public ResponseEntity<ProductBatchDto> updateBatch(@PathVariable Long id, @RequestBody ProductBatchDto productBatchDto) {
+    public ResponseEntity<ProductBatchDto> updateBatch(@PathVariable int id, @RequestBody ProductBatchDto productBatchDto) {
         return productBatchService.getBatchById(id).map(existingBatch -> {
             productBatchDto.setId(id);
             ProductBatch updatedBatch = productBatchService.saveBatch(productBatchDto);
@@ -103,7 +108,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/batches/{id}")
-    public ResponseEntity<Void> deleteBatch(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteBatch(@PathVariable int id) {
         if (productBatchService.getBatchById(id).isPresent()) {
             productBatchService.deleteBatch(id);
             return ResponseEntity.noContent().build();
@@ -123,18 +128,47 @@ public class ProductController {
 
         // Uzmi podatke iz Shipment entiteta
         if (productBatch.getShipment() != null) {
-            // Setovanje dobavljača iz Shipment entiteta
+            // Kreiranje ShipmentDto
+            ShipmentDto shipmentDto = new ShipmentDto();
+
+            // Postavljanje osnovnih podataka o isporuci
+            shipmentDto.setId(productBatch.getShipment().getId());
+            shipmentDto.setArrivalDate(productBatch.getShipment().getArrivalDate());
+            shipmentDto.setArrivalTime(productBatch.getShipment().getArrivalTime());
+
+            // Postavljanje podataka o dobavljaču u ShipmentDto
             if (productBatch.getShipment().getSupplier() != null) {
-                // Pretpostavljam da je Supplier entitet povezan sa supplierId
-                productBatchDto.setSupplierName(productBatch.getShipment().getSupplier().getName());
+                // Kreiranje SupplierDto
+                SupplierDto supplierDto = new SupplierDto();
+                supplierDto.setId(productBatch.getShipment().getSupplier().getId());
+                supplierDto.setName(productBatch.getShipment().getSupplier().getName());
+
+                // Postavljanje SupplierDto u ShipmentDto
+                shipmentDto.setSupplier(supplierDto);
+                shipmentDto.setSupplierName(productBatch.getShipment().getSupplier().getName());
             }
 
-            // Setovanje datuma prijema iz Shipment entiteta
-            productBatchDto.setReceivedDate(productBatch.getShipment().getArrivalTime());
+            // Postavljanje ShipmentDto u ProductBatchDto
+            productBatchDto.setShipmentDto(shipmentDto);
+
+
+            // Postavljanje datuma prijema iz Shipment entiteta
+//            productBatchDto.setReceivedDate(productBatch.getShipment().getArrivalDate());
         }
 
         return productBatchDto;
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<List<ProductDto>> searchProductBatches(@RequestParam String query) {
+        List<ProductDto> results = productService.findByName(query);
+        return ResponseEntity.ok(results);
+    }
+
+    @GetMapping("/low-stock")
+    public ResponseEntity<List<ProductDto>> getLowStockProducts() {
+        List<ProductDto> lowStockProducts = productService.getLowStockProducts();
+        return ResponseEntity.ok(lowStockProducts);
+    }
 
 }

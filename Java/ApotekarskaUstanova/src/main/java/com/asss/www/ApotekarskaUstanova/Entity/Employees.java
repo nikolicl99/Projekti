@@ -31,16 +31,12 @@ public class Employees {
     @Column(name = "Mobile")
     private String mobile;
 
-    @ManyToOne // Veza sa tabelom "address" - svaki supplier ima jednu adresu
-    @JoinColumn(name = "address", referencedColumnName = "Id") // Veza sa Address tabelom
+    @ManyToOne
+    @JoinColumn(name = "address", referencedColumnName = "Id")
     private Address address;
 
-    @Column(name = "profile_image", columnDefinition = "LONGTEXT")
-    private String profileImage;
-
-    @Column(name = "scaled_profile_image", columnDefinition = "LONGTEXT")
-    private String scaledProfileImage;
-
+    @Column(name = "employed")
+    private int employed;
 
     public int getId() {
         return id;
@@ -65,10 +61,6 @@ public class Employees {
     public String getMobile() {
         return mobile;
     }
-
-//    public int getEmployeeType() {
-//        return employeeType;
-//    }
 
     public Employee_Type getEmployeeType() {
         return employeeType;
@@ -98,10 +90,6 @@ public class Employees {
         this.employeeType = employeeType;
     }
 
-    //    public void setEmployeeType(int employeeType) {
-//        this.employeeType = employeeType;
-//    }
-
     public void setMobile(String mobile) {
         this.mobile = mobile;
     }
@@ -114,19 +102,11 @@ public class Employees {
         this.address = address;
     }
 
-    public String getProfileImage() {
-        return profileImage;
+    public int getEmployed() {
+        return employed;
     }
 
-    public void setProfileImage(String profileImage) {
-        this.profileImage = profileImage;
-    }
-
-    public String getScaledProfileImage() {
-        return scaledProfileImage;
-    }
-
-    public void setScaledProfileImage(String scaledProfileImage) {
-        this.scaledProfileImage = scaledProfileImage;
+    public void setEmployed(int employed) {
+        this.employed = employed;
     }
 }

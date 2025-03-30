@@ -1,6 +1,6 @@
 package com.asss.www.ApotekarskaUstanova.Service;
 
-import com.asss.www.ApotekarskaUstanova.Dao.TownRepository;
+import com.asss.www.ApotekarskaUstanova.Repository.TownRepository;
 import com.asss.www.ApotekarskaUstanova.Entity.Town;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

@@ -6,16 +6,19 @@ package com.asss.www.ApotekarskaUstanova.GUI.InventoryGUI.Inventory;
 
 import java.awt.*;
 import java.awt.event.*;
+
+import com.asss.www.ApotekarskaUstanova.Dto.ProductDto;
+import com.asss.www.ApotekarskaUstanova.GUI.Start.MainMenuAdmin.MainMenuAdmin;
 import com.asss.www.ApotekarskaUstanova.Security.JwtResponse;
-import com.asss.www.ApotekarskaUstanova.Entity.Product;
 import com.asss.www.ApotekarskaUstanova.GUI.InventoryGUI.InventoryBatch.InventoryBatch;
-import com.asss.www.ApotekarskaUstanova.GUI.InventoryGUI.InventoryMenu.InventoryMenu;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.swing.*;
 import javax.swing.GroupLayout;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableModel;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
@@ -50,7 +53,7 @@ public class Inventory extends JFrame {
         int selectedColumn = Lekovi.getSelectedColumn();
         if (selectedRow >= 0) { // Proverava da li je red validan
             // Pretpostavlja se da je ID u prvoj koloni (kolona 0)
-            long id = (long) Lekovi.getValueAt(selectedRow, 0);
+            int id = (int) Lekovi.getValueAt(selectedRow, 0);
             System.out.println("Izabrani ID predmeta: " + id);
 
             // Skladišti ID u promenljivu za kasniju upotrebu
@@ -58,150 +61,11 @@ public class Inventory extends JFrame {
 
             // Primer: otvaranje novog prozora za izmenu podataka
             if (e.getClickCount() == 2) { // Ako je dvoklik
-//                EditZaposleni editWindow = new EditZaposleni(selectedEmployeeId);
-//                editWindow.setVisible(true);
-                JOptionPane.showMessageDialog(this, "Izabran je predmet: " + getSelectedItemId());
+                dispose();
+                InventoryBatch.start();
             }
         }
 
-    }
-
-    private void DodajMouseClicked(MouseEvent e) {
-        // TODO add your code here
-    }
-
-    private void PregledMouseClicked(MouseEvent e) {
-        dispose();
-        InventoryBatch.start();
-    }
-
-    private void ObrisiMouseClicked(MouseEvent e) {
-        // TODO add your code here
-    }
-
-    private void NazadMouseClicked(MouseEvent e) {
-        dispose();
-        InventoryMenu.start();
-    }
-
-    private void initComponents() {
-        // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
-        // Generated using JFormDesigner Evaluation license - Luka Nikolić
-        panel1 = new JPanel();
-        Nazad = new JButton();
-        textField1 = new JTextField();
-        Search = new JButton();
-        scrollPane1 = new JScrollPane();
-        Lekovi = new JTable();
-        Pregled = new JButton();
-
-        //======== this ========
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        var contentPane = getContentPane();
-
-        //======== panel1 ========
-        {
-            panel1.setPreferredSize(new Dimension(1000, 505));
-            panel1.setBorder ( new javax . swing. border .CompoundBorder ( new javax . swing. border .TitledBorder ( new javax . swing
-            . border .EmptyBorder ( 0, 0 ,0 , 0) ,  "JFor\u006dDesi\u0067ner \u0045valu\u0061tion" , javax. swing .border . TitledBorder
-            . CENTER ,javax . swing. border .TitledBorder . BOTTOM, new java. awt .Font ( "Dia\u006cog", java .
-            awt . Font. BOLD ,12 ) ,java . awt. Color .red ) ,panel1. getBorder () ) )
-            ; panel1. addPropertyChangeListener( new java. beans .PropertyChangeListener ( ){ @Override public void propertyChange (java . beans. PropertyChangeEvent e
-            ) { if( "bord\u0065r" .equals ( e. getPropertyName () ) )throw new RuntimeException( ) ;} } )
-            ;
-            panel1.setLayout(new MigLayout(
-                "insets 0,hidemode 3,gap 5 5",
-                // columns
-                "[100,fill]" +
-                "[100,fill]" +
-                "[100,fill]" +
-                "[100,fill]" +
-                "[100,fill]" +
-                "[100,fill]" +
-                "[100,fill]" +
-                "[100,fill]" +
-                "[100,fill]" +
-                "[100,fill]",
-                // rows
-                "[fill]" +
-                "[fill]" +
-                "[fill]" +
-                "[fill]"));
-
-            //---- Nazad ----
-            Nazad.setText("Nazad");
-            Nazad.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    NazadMouseClicked(e);
-                    NazadMouseClicked(e);
-                }
-            });
-            panel1.add(Nazad, "cell 0 0");
-            panel1.add(textField1, "cell 1 1 2 1");
-
-            //---- Search ----
-            Search.setText("Pretraga");
-            panel1.add(Search, "cell 3 1");
-
-            //======== scrollPane1 ========
-            {
-
-                //---- Lekovi ----
-                Lekovi.addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mouseClicked(MouseEvent e) {
-                        LekoviMouseClicked(e);
-                    }
-                });
-                scrollPane1.setViewportView(Lekovi);
-            }
-            panel1.add(scrollPane1, "pad 0 5 0 5,cell 0 2 10 1");
-
-            //---- Pregled ----
-            Pregled.setText("Pregled");
-            Pregled.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    PregledMouseClicked(e);
-                }
-            });
-            panel1.add(Pregled, "cell 3 3");
-        }
-
-        GroupLayout contentPaneLayout = new GroupLayout(contentPane);
-        contentPane.setLayout(contentPaneLayout);
-        contentPaneLayout.setHorizontalGroup(
-            contentPaneLayout.createParallelGroup()
-                .addComponent(panel1, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 998, Short.MAX_VALUE)
-        );
-        contentPaneLayout.setVerticalGroup(
-            contentPaneLayout.createParallelGroup()
-                .addComponent(panel1, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 469, Short.MAX_VALUE)
-        );
-        pack();
-        setLocationRelativeTo(getOwner());
-        // JFormDesigner - End of component initialization  //GEN-END:initComponents  @formatter:on
-    }
-
-    // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables  @formatter:off
-    // Generated using JFormDesigner Evaluation license - Luka Nikolić
-    private JPanel panel1;
-    private JButton Nazad;
-    private JTextField textField1;
-    private JButton Search;
-    private JScrollPane scrollPane1;
-    private JTable Lekovi;
-    private JButton Pregled;
-    // JFormDesigner - End of variables declaration  //GEN-END:variables  @formatter:on
-    private static long SelectedItemId;
-
-    public static long getSelectedItemId() {
-        return SelectedItemId;
-    }
-
-    public void setSelectedItemId(long selectedItemId) {
-        SelectedItemId = selectedItemId;
     }
 
     private void PrikaziLekove() {
@@ -215,14 +79,11 @@ public class Inventory extends JFrame {
         // Definisanje kolona za osnovne informacije o lekovima
         model.addColumn("ID");
         model.addColumn("Naziv leka");
-        model.addColumn("SKU");
         model.addColumn("Opis");
+        model.addColumn("Kategorija");
         model.addColumn("Kupovna Cena");
         model.addColumn("Prodajna Cena");
         model.addColumn("Stanje na lageru");
-        model.addColumn("Lokacija");
-
-
         try {
             // URL za API lekova
             URL url = new URL("http://localhost:8080/api/products");
@@ -240,15 +101,21 @@ public class Inventory extends JFrame {
 
                     // Parsiranje JSON odgovora
                     ObjectMapper objectMapper = new ObjectMapper();
-                    List<Product> productList = objectMapper.readValue(response, new TypeReference<List<Product>>() {
+                    List<ProductDto> productList = objectMapper.readValue(response, new TypeReference<List<ProductDto>>() {
                     });
 
                     // Popunjavanje modela podacima o lekovima
-                    for (Product product : productList) {
+                    for (ProductDto product : productList) {
+                        String subcategoryName = "N/A"; // Default value if subcategoryDto is null
+                        if (product.getSubcategoryDto() != null) {
+                            subcategoryName = product.getSubcategoryDto().getName();
+                        }
+
                         model.addRow(new Object[]{
                                 product.getId(),
                                 product.getName(),
                                 product.getDescription(),
+                                subcategoryName, // Use the subcategory name (or "N/A" if null)
                                 product.getPurchasePrice(),
                                 product.getSellingPrice(),
                                 product.getStockQuantity(),
@@ -265,5 +132,158 @@ public class Inventory extends JFrame {
 
         // Postavljanje modela na JTable
         Lekovi.setModel(model);
+        customizeTable(Lekovi, model);
     }
+
+    public void customizeTable(JTable table, TableModel model) {
+        // Set background color for the table header
+        JTableHeader header = table.getTableHeader();
+        Color headerBackgroundColor = new Color(0xb3, 0xd8, 0xa8); // Hex code #b3d8a8
+        header.setBackground(headerBackgroundColor);
+
+        // Optional: Set foreground (text) color for the header
+        Color headerForegroundColor = Color.DARK_GRAY; // Example: Dark gray text
+        header.setForeground(headerForegroundColor);
+
+        // Set font for the header
+        Font headerFont = new Font("Inter", Font.BOLD, 13);
+        header.setFont(headerFont);
+
+        // Set the model for the table
+        table.setModel(model);
+
+        // Set the background color for the viewport and scroll pane
+        Color backgroundColor = new Color(0xfb, 0xff, 0xe4); // Hex code #fbffe4
+        JViewport viewport = scrollPane1.getViewport();
+        viewport.setBackground(backgroundColor);
+        scrollPane1.setBackground(backgroundColor);
+    }
+
+
+    private void NazadMouseClicked(MouseEvent e) {
+        dispose();
+        MainMenuAdmin.start();
+    }
+
+    private void initComponents() {
+        // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
+        // Generated using JFormDesigner Educational license - Luka Nikolic (office)
+        panel1 = new JPanel();
+        Nazad = new JButton();
+        scrollPane1 = new JScrollPane();
+        Lekovi = new JTable();
+        textField1 = new JTextField();
+        Search = new JButton();
+
+        //======== this ========
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        var contentPane = getContentPane();
+
+        //======== panel1 ========
+        {
+            panel1.setPreferredSize(new Dimension(1000, 505));
+            panel1.setBackground(new Color(0x3d8d7a));
+            panel1.setLayout(new MigLayout(
+                "insets 0,hidemode 3,gap 5 5",
+                // columns
+                "[100,fill]" +
+                "[100,fill]" +
+                "[100,fill]" +
+                "[100,fill]" +
+                "[100,fill]" +
+                "[100,fill]" +
+                "[100,fill]" +
+                "[100,fill]" +
+                "[100,fill]" +
+                "[100,fill]",
+                // rows
+                "[50]" +
+                "[50]" +
+                "[50]" +
+                "[50]" +
+                "[50]" +
+                "[50]" +
+                "[50]" +
+                "[50]" +
+                "[50]" +
+                "[50]"));
+
+            //---- Nazad ----
+            Nazad.setText("Nazad");
+            Nazad.setBackground(new Color(0xb3d8a8));
+            Nazad.setForeground(Color.darkGray);
+            Nazad.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    NazadMouseClicked(e);
+                }
+            });
+            panel1.add(Nazad, "cell 1 0");
+
+            //======== scrollPane1 ========
+            {
+                scrollPane1.setBackground(Color.darkGray);
+                scrollPane1.setForeground(Color.darkGray);
+
+                //---- Lekovi ----
+                Lekovi.setBackground(new Color(0xfbffe4));
+                Lekovi.setForeground(Color.darkGray);
+                Lekovi.setGridColor(Color.darkGray);
+                Lekovi.setSelectionBackground(new Color(0xb3d8a8));
+                Lekovi.setSelectionForeground(Color.darkGray);
+                Lekovi.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        LekoviMouseClicked(e);
+                    }
+                });
+                scrollPane1.setViewportView(Lekovi);
+            }
+            panel1.add(scrollPane1, "pad 0 5 0 5,cell 0 1 10 9");
+
+            //---- textField1 ----
+            textField1.setVisible(false);
+            panel1.add(textField1, "cell 1 1 2 1");
+
+            //---- Search ----
+            Search.setText("Pretraga");
+            Search.setVisible(false);
+            panel1.add(Search, "cell 3 1");
+        }
+
+        GroupLayout contentPaneLayout = new GroupLayout(contentPane);
+        contentPane.setLayout(contentPaneLayout);
+        contentPaneLayout.setHorizontalGroup(
+            contentPaneLayout.createParallelGroup()
+                .addComponent(panel1, GroupLayout.DEFAULT_SIZE, 998, Short.MAX_VALUE)
+        );
+        contentPaneLayout.setVerticalGroup(
+            contentPaneLayout.createParallelGroup()
+                .addComponent(panel1, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 469, Short.MAX_VALUE)
+        );
+        pack();
+        setLocationRelativeTo(getOwner());
+        // JFormDesigner - End of component initialization  //GEN-END:initComponents  @formatter:on
+    }
+
+    // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables  @formatter:off
+    // Generated using JFormDesigner Educational license - Luka Nikolic (office)
+    private JPanel panel1;
+    private JButton Nazad;
+    private JScrollPane scrollPane1;
+    private JTable Lekovi;
+    private JTextField textField1;
+    private JButton Search;
+    // JFormDesigner - End of variables declaration  //GEN-END:variables  @formatter:on
+    private static long SelectedItemId;
+
+    public static long getSelectedItemId() {
+        return SelectedItemId;
+    }
+
+    public void setSelectedItemId(long selectedItemId) {
+        SelectedItemId = selectedItemId;
+    }
+
+
 }

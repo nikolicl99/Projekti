@@ -1,39 +1,55 @@
 package com.asss.www.ApotekarskaUstanova.Dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.asss.www.ApotekarskaUstanova.Entity.ProductBatch;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public class ProductBatchDto {
-    private long id;
+    private int id;
     private String batchNumber;
-    private Long ean13;
-
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private Date receivedDate;
-
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private Date expirationDate;
-
+    private long ean13;
+    private LocalDate expirationDate;  // Promenjeno na LocalDate
     private int quantityReceived;
     private int quantityRemaining;
-    private String supplierName;
+    private int product_id;
+    private ProductDto product;
+    private int shipment_id;
+    private ShipmentDto shipmentDto;
+    private int location_id;
+    private LocationDto locationDto;
 
-    // Novo polje za naziv proizvoda
-    private String productName;
+    public ProductBatchDto(int product_id, long ean13, String batchNumber, LocalDate expirationDate,
+                           int quantityReceived, int quantityRemaining, int shipment_id, int location_id) {
+        this.product_id = product_id;
+        this.ean13 = ean13;
+        this.batchNumber = batchNumber;
+        this.expirationDate = expirationDate;
+        this.quantityReceived = quantityReceived;
+        this.quantityRemaining = quantityRemaining;
+        this.shipment_id = shipment_id;
+        this.location_id = location_id;
+    }
+
+    public ProductBatchDto(ProductBatch productBatch) {
+        this.id = productBatch.getId();
+        this.batchNumber = productBatch.getBatchNumber();
+        this.ean13 = productBatch.getEan13();
+        this.expirationDate = productBatch.getExpirationDate();
+        this.quantityReceived = productBatch.getQuantityReceived();
+        this.quantityRemaining = productBatch.getQuantityRemaining();
+        this.product_id = productBatch.getProduct().getId();
+        this.product = new ProductDto(productBatch.getProduct());
+    }
 
     public ProductBatchDto() {
+
     }
 
-    public ProductBatchDto(Long id, String name, Date expirationDate, Integer quantityRemaining, Long ean13) {
-    }
-
-    // Getteri i setteri
-    public long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -45,27 +61,19 @@ public class ProductBatchDto {
         this.batchNumber = batchNumber;
     }
 
-    public Long getEan13() {
+    public long getEan13() {
         return ean13;
     }
 
-    public void setEan13(Long ean13) {
+    public void setEan13(long ean13) {
         this.ean13 = ean13;
     }
 
-    public Date getReceivedDate() {
-        return receivedDate;
-    }
-
-    public void setReceivedDate(Date receivedDate) {
-        this.receivedDate = receivedDate;
-    }
-
-    public Date getExpirationDate() {
+    public LocalDate getExpirationDate() {
         return expirationDate;
     }
 
-    public void setExpirationDate(Date expirationDate) {
+    public void setExpirationDate(LocalDate expirationDate) {
         this.expirationDate = expirationDate;
     }
 
@@ -85,20 +93,51 @@ public class ProductBatchDto {
         this.quantityRemaining = quantityRemaining;
     }
 
-    public String getSupplierName() {
-        return supplierName;
+    public int getProduct_id() {
+        return product_id;
     }
 
-    public void setSupplierName(String supplierName) {
-        this.supplierName = supplierName;
+    public void setProduct_id(int product_id) {
+        this.product_id = product_id;
     }
 
-    // Getter i setter za productName
-    public String getProductName() {
-        return productName;
+    public ProductDto getProduct() {
+        return product;
     }
 
-    public void setProductName(String productName) {
-        this.productName = productName;
+    public void setProduct(ProductDto product) {
+        this.product = product;
+    }
+
+    public int getShipment_id() {
+        return shipment_id;
+    }
+
+    public void setShipment_id(int shipment_id) {
+        this.shipment_id = shipment_id;
+    }
+
+    public ShipmentDto getShipmentDto() {
+        return shipmentDto;
+    }
+
+    public void setShipmentDto(ShipmentDto shipmentDto) {
+        this.shipmentDto = shipmentDto;
+    }
+
+    public int getLocation_id() {
+        return location_id;
+    }
+
+    public void setLocation_id(int location_id) {
+        this.location_id = location_id;
+    }
+
+    public LocationDto getLocationDto() {
+        return locationDto;
+    }
+
+    public void setLocationDto(LocationDto locationDto) {
+        this.locationDto = locationDto;
     }
 }

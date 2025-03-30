@@ -1,40 +1,54 @@
 package com.asss.www.ApotekarskaUstanova.Dto;
 
 public class Shipment_ItemsDto {
-    private long id;
-    private String name;
+    private int id;
+    private int shipment_id;
+    private ShipmentDto shipment;
+    private int product_id;
+    private ProductBatchDto productBatch;
     private int quantity;
-    private double purchasePrice;
 
-    public Shipment_ItemsDto() {
-    }
 
-    public Shipment_ItemsDto(long id, String name, int quantity, double purchasePrice) {
-        this.id = id;
-        this.name = name;
-        this.quantity = quantity;
-        this.purchasePrice = purchasePrice;
-    }
 
-    public Shipment_ItemsDto(String name, int quantity) {
-        this.name = name;
-        this.quantity = quantity;
-    }
-
-    public long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    // Getteri i setteri
+    public int getShipment_id() {
+        return shipment_id;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setShipment_id(int shipment_id) {
+        this.shipment_id = shipment_id;
+    }
+
+    public ShipmentDto getShipment() {
+        return shipment;
+    }
+
+    public void setShipment(ShipmentDto shipment) {
+        this.shipment = shipment;
+    }
+
+    public int getProduct_id() {
+        return product_id;
+    }
+
+    public void setProduct_id(int product_id) {
+        this.product_id = product_id;
+    }
+
+    public ProductBatchDto getProductBatch() {
+        return productBatch;
+    }
+
+    public void setProductBatch(ProductBatchDto productBatch) {
+        this.productBatch = productBatch;
     }
 
     public int getQuantity() {
@@ -43,13 +57,5 @@ public class Shipment_ItemsDto {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
-    }
-
-    public double getPurchasePrice() {
-        return purchasePrice;
-    }
-
-    public void setPurchasePrice(double purchasePrice) {
-        this.purchasePrice = purchasePrice;
     }
 }

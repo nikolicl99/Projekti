@@ -6,14 +6,16 @@ package com.asss.www.ApotekarskaUstanova.GUI.CashRegister.CashRegister;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,10 +23,17 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableModel;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
+
+import com.asss.www.ApotekarskaUstanova.Dto.EmployeeDto;
+import com.asss.www.ApotekarskaUstanova.GUI.CashRegister.SalesHistory.SalesHistory;
+import com.asss.www.ApotekarskaUstanova.GUI.Start.MainMenuAdmin.MainMenuAdmin;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import net.miginfocom.swing.MigLayout;
 
 import com.asss.www.ApotekarskaUstanova.Security.JwtResponse;
@@ -33,16 +42,31 @@ import com.asss.www.ApotekarskaUstanova.Dto.ProductDto;
 import com.asss.www.ApotekarskaUstanova.Entity.*;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.json.JSONObject;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.core.io.ClassPathResource;
 
 /**
  * @author lniko
  */
 public class CashRegister extends JFrame {
+    private final ObjectMapper objectMapper; // Dodajte ObjectMapper kao polje klase
+
+
     public CashRegister() {
         initComponents();
+        this.objectMapper = new ObjectMapper();
+        this.objectMapper.registerModule(new JavaTimeModule()); // Registrujte JavaTimeModule
+        LocalDate currentDate = LocalDate.now();
+        LocalTime currentTime = LocalTime.now();
+        System.out.println("Vreme: " + currentTime);
+        System.out.println("Datum: " + currentDate);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+        String formattedTime = currentTime.format(formatter);
+        System.out.println("Formatted Time: " + formattedTime); // e.g., 00:02:30
         setupListeners();
         ammount.setModel(new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1));
         ammountPaper.setModel(new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1));
@@ -56,6 +80,7 @@ public class CashRegister extends JFrame {
             }
         };
         items.setModel(model);
+        customizeTable(items, model);
 
         String[] columnNamesPrescriptions = {"ID", "Proizvod", "Ean13", "Doza", "Kolicina", "Popust"};
         DefaultTableModel modelPrescription = new DefaultTableModel(columnNamesPrescriptions, 0) {
@@ -65,6 +90,7 @@ public class CashRegister extends JFrame {
             }
         };
         usersPrescriptionstbl.setModel(modelPrescription);
+        customizeTable(usersPrescriptionstbl, modelPrescription);
 
         String[] columnNamesPaperPrescriptions = {"Naziv proizvoda", "Ean13", "Doza", "Cena po jedinici", "Popust", "Kolicina", "Ukupna cena"};
         DefaultTableModel modelPaperPrescription = new DefaultTableModel(columnNamesPaperPrescriptions, 0) {
@@ -74,6 +100,7 @@ public class CashRegister extends JFrame {
             }
         };
         paperPrescriptiontbl.setModel(modelPaperPrescription);
+        customizeTable(paperPrescriptiontbl, modelPaperPrescription);
 
 
     }
@@ -107,7 +134,7 @@ public class CashRegister extends JFrame {
                     System.out.println("Odgovor API-ja (productId): " + response);
 
                     // Parsiraj productId iz odgovora API-ja
-                    Long productId = Long.parseLong(response.trim());
+                    int productId = Integer.parseInt(response.trim());
 
                     // Dohvati informacije o proizvodu na osnovu productId
                     fetchProductAndAddToTable(productId, ean13, productAmount, 0, 0);
@@ -121,7 +148,8 @@ public class CashRegister extends JFrame {
         }
     }
 
-    private void fetchProductAndAddToTable(Long productId, String ean13, int productAmount, int prescriptionItem, int discount) {
+    private void fetchProductAndAddToTable(int productId, String ean13, int productAmount, int prescriptionItem, int discount) {
+        DefaultTableModel model = (DefaultTableModel) items.getModel();
         try {
             URL url = new URL("http://localhost:8080/api/products/" + productId);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -134,17 +162,15 @@ public class CashRegister extends JFrame {
                     String response = scanner.useDelimiter("\\A").next();
 
                     // Parsiranje JSON odgovora u ProductDto
-                    ObjectMapper objectMapper = new ObjectMapper();
                     ProductDto product = objectMapper.readValue(response, ProductDto.class);
 
                     if (product != null) {
                         String productName = product.getName();
                         double unitPrice = product.getSellingPrice(); // Puna cena proizvoda
-                        double discountAmount = unitPrice * (discount / 100.0); // Iznos popusta
-                        double finalPrice = unitPrice - discountAmount; // Cena nakon popusta
-                        double totalPrice = finalPrice * productAmount; // Ukupna cena
+                        double discountAmount = unitPrice * (discount / 100.0);
+                        double finalPrice = unitPrice - discountAmount;
+                        double totalPrice = finalPrice * productAmount;
 
-                        // Prikaz teksta umesto broja za recept
                         String prescriptionText;
                         switch (prescriptionItem) {
                             case 1:
@@ -158,11 +184,10 @@ public class CashRegister extends JFrame {
                                 break;
                         }
 
-                        DefaultTableModel model = (DefaultTableModel) items.getModel();
+
                         boolean found = false;
                         double updatedTotalAmount = 0;
 
-                        // Prolazimo kroz redove tabele da vidimo da li već postoji proizvod sa istim tipom plaćanja, popustom i EAN13 kodom
                         for (int i = 0; i < model.getRowCount(); i++) {
                             String existingProductName = model.getValueAt(i, 0).toString();
                             String existingEan13 = model.getValueAt(i, 1).toString();
@@ -171,7 +196,6 @@ public class CashRegister extends JFrame {
 
                             double existingDiscountValue = Double.parseDouble(existingDiscount);
 
-                            // Ako je prescriptionItem == 0, zanemarujemo popust
                             boolean sameDiscount = (prescriptionItem == 0) || (existingDiscountValue == discount);
 
                             if (existingProductName.equals(productName) &&
@@ -179,7 +203,6 @@ public class CashRegister extends JFrame {
                                     existingPrescription.equals(prescriptionText) &&
                                     sameDiscount) {
 
-                                // Ako su proizvodi isti po ovim kriterijumima, ažuriraj količinu i ukupnu cenu
                                 int existingAmount = (int) model.getValueAt(i, 5);
                                 int newAmount = existingAmount + productAmount;
                                 double newTotalPrice = newAmount * finalPrice;
@@ -194,7 +217,6 @@ public class CashRegister extends JFrame {
                         }
 
                         if (!found) {
-                            // Ako proizvod ne postoji ili postoji ali ima drugačiji popust ili EAN13, dodajemo ga kao novi red
                             model.addRow(new Object[]{productName, ean13, prescriptionText, unitPrice, discount + "%", productAmount, totalPrice});
                             updatedTotalAmount = totalPrice;
                         }
@@ -207,6 +229,8 @@ public class CashRegister extends JFrame {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            customizeTable(items, model);
         }
     }
 
@@ -215,7 +239,7 @@ public class CashRegister extends JFrame {
             double currentValue = Double.parseDouble(totalPrice.getText());
             totalPrice.setText(String.format("%.2f", currentValue + totalAmount));
         } catch (NumberFormatException e) {
-            totalPrice.setText(String.format("%.2f", totalAmount)); // Ako je prazan ili nevalidan unos
+            totalPrice.setText(String.format("%.2f", totalAmount));
         }
     }
 
@@ -255,9 +279,6 @@ public class CashRegister extends JFrame {
                 try (Scanner scanner = new Scanner(userConnection.getInputStream())) {
                     String response = scanner.useDelimiter("\\A").next();
                     System.out.println("Odgovor API-ja: " + response);
-
-                    // Parse the JSON response into a User object
-                    ObjectMapper objectMapper = new ObjectMapper();
                     User user = objectMapper.readValue(response, User.class);
 
                     if (user != null) {
@@ -302,7 +323,6 @@ public class CashRegister extends JFrame {
                     String response = scanner.useDelimiter("\\A").next();
                     System.out.println("odgovor od servera je dobar");
                     // Parsiranje JSON odgovora
-                    ObjectMapper objectMapper = new ObjectMapper();
                     List<Prescription> prescriptions = objectMapper.readValue(response, new TypeReference<List<Prescription>>() {
                     });
                     if (prescriptions.isEmpty()) {
@@ -335,6 +355,7 @@ public class CashRegister extends JFrame {
     }
 
     private void fillPrescriptionItemsTable(int prescriptionId) {
+        DefaultTableModel model = (DefaultTableModel) usersPrescriptionstbl.getModel();
         try {
             URL url = new URL("http://localhost:8080/api/prescriptions/" + prescriptionId + "/items");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -347,12 +368,11 @@ public class CashRegister extends JFrame {
                     String response = scanner.useDelimiter("\\A").next();
 
                     // Parsiranje JSON odgovora
-                    ObjectMapper objectMapper = new ObjectMapper();
                     List<Prescription_Items> items = objectMapper.readValue(response, new TypeReference<List<Prescription_Items>>() {
                     });
 
                     // Resetovanje tabele
-                    DefaultTableModel model = (DefaultTableModel) usersPrescriptionstbl.getModel();
+
                     model.setRowCount(0);
 
                     usersPrescriptions.setVisible(true);
@@ -366,21 +386,26 @@ public class CashRegister extends JFrame {
                         List<ProductBatchDto> filteredBatches = filterProductBatches(productBatches);
 
                         // Ako postoji bar jedan batch sa validnim EAN-13 brojem, dodaj EAN-13 u tabelu
+                        // Dodavanje stavki u tabelu sa EAN-13 brojem
                         String ean13 = "";
                         if (!filteredBatches.isEmpty()) {
-                            // Pretpostavljamo da je EAN-13 broj u atributu batch-a, treba ga dobiti sa batch-a sa najskorijim rokom
-                            ean13 = String.valueOf(filteredBatches.get(0).getEan13());
+                            // Check if EAN13 is null before converting to string
+                            Long ean13Value = filteredBatches.get(0).getEan13();
+                            ean13 = (ean13Value != null) ? String.valueOf(ean13Value) : "";
+
+                            // For debugging
+                            System.out.println("Product: " + item.getProduct().getName() +
+                                    ", EAN13: " + ean13 +
+                                    ", Batch ID: " + filteredBatches.get(0).getId());
                         }
 
-                        // Dodavanje stavki u tabelu sa EAN-13 brojem
                         model.addRow(new Object[]{
                                 item.getId(),
                                 item.getProduct().getName(),
-                                ean13,
+                                ean13,  // This should now display properly
                                 item.getProduct().getDosage(),
                                 item.getQuantity(),
-                                item.getDiscount(),
-                                // Dodavanje EAN-13 broja
+                                item.getDiscount()
                         });
                     }
                 }
@@ -392,6 +417,8 @@ public class CashRegister extends JFrame {
         } catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Greška pri popunjavanju tabele.", "Greška", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            customizeTable(usersPrescriptionstbl, model);
         }
     }
 
@@ -408,7 +435,6 @@ public class CashRegister extends JFrame {
                     String response = scanner.useDelimiter("\\A").next();
 
                     // Parsiranje JSON odgovora u listu batch-eva
-                    ObjectMapper objectMapper = new ObjectMapper();
                     List<ProductBatchDto> productBatches = objectMapper.readValue(response, new TypeReference<List<ProductBatchDto>>() {
                     });
 
@@ -446,8 +472,8 @@ public class CashRegister extends JFrame {
                 int discount = (int) model.getValueAt(i, 5); // Popust
 
                 // Pronalazak productId na osnovu naziva proizvoda
-                Long productId = getProductIdByName(productName);
-                if (productId != null) {
+                int productId = getProductIdByName(productName);
+                if (productId != -1) {
                     // Poziv metode sa svim parametrima, prescriptionItem = 1 jer je sa recepta
                     fetchProductAndAddToTable(productId, ean13, quantity, 1, discount);
                 } else {
@@ -483,7 +509,7 @@ public class CashRegister extends JFrame {
         }
     }
 
-    private Long getProductIdByName(String productName) {
+    private int getProductIdByName(String productName) {
         try {
             URL url = new URL("http://localhost:8080/api/products/name/" + URLEncoder.encode(productName, StandardCharsets.UTF_8));
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -493,13 +519,13 @@ public class CashRegister extends JFrame {
             int responseCode = connection.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 try (Scanner scanner = new Scanner(connection.getInputStream())) {
-                    return Long.parseLong(scanner.useDelimiter("\\A").next());
+                    return Integer.parseInt(scanner.useDelimiter("\\A").next());
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return null; // Ako ne pronađe proizvod
+        return -1; // Ako ne pronađe proizvod
     }
 
     private void addPaperMouseClicked(MouseEvent e) {
@@ -546,7 +572,7 @@ public class CashRegister extends JFrame {
         }
 
         updateTotalPricePaper(updatedTotalAmount);
-
+        customizeTable(paperPrescriptiontbl, model);
         resetFields();
     }
 
@@ -581,7 +607,6 @@ public class CashRegister extends JFrame {
                 try (BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
                     String response = reader.lines().collect(Collectors.joining());
 
-                    ObjectMapper objectMapper = new ObjectMapper();
                     List<ProductBatchDto> productBatches = objectMapper.readValue(response, new TypeReference<List<ProductBatchDto>>() {
                     });
 
@@ -604,10 +629,10 @@ public class CashRegister extends JFrame {
         popupMenu.removeAll();
 
         for (ProductBatchDto pb : productBatches) {
-            JMenuItem item = new JMenuItem(pb.getProductName() + " - " + pb.getEan13());
+            JMenuItem item = new JMenuItem(pb.getProduct().getName() + " - " + pb.getEan13());
             item.addActionListener(e -> {
-                articlePaper.setText(pb.getEan13().toString());
-                updateDosageDropdown(pb.getProductName()); // Pozovi metodu kada se odabere proizvod
+                articlePaper.setText(String.valueOf(pb.getEan13()));
+                updateDosageDropdown(pb.getProduct().getName()); // Pozovi metodu kada se odabere proizvod
             });
             popupMenu.add(item);
         }
@@ -636,14 +661,18 @@ public class CashRegister extends JFrame {
             // Preskoči proizvode koji nisu na stanju
             if (batch.getQuantityRemaining() <= 0) continue;
 
-            // Ako već postoji proizvod u mapi, zadrži onaj sa najskorijim rokom trajanja
-            if (!filteredMap.containsKey(batch.getProductName()) ||
-                    batch.getExpirationDate().before(filteredMap.get(batch.getProductName()).getExpirationDate())) {
-                filteredMap.put(batch.getProductName(), batch);
+            // Ako već postoji proizvod u mapi, zadrži onaj sa NAJDALJIM rokom trajanja
+            if (!filteredMap.containsKey(batch.getProduct().getName()) ||
+                    batch.getExpirationDate().isAfter(filteredMap.get(batch.getProduct().getName()).getExpirationDate())) {
+                filteredMap.put(batch.getProduct().getName(), batch);
             }
         }
 
-        return new ArrayList<>(filteredMap.values());
+        // Sortiramo po datumu isteka - prvo oni sa najdaljim rokom
+        List<ProductBatchDto> result = new ArrayList<>(filteredMap.values());
+        result.sort(Comparator.comparing(ProductBatchDto::getExpirationDate).reversed());
+
+        return result;
     }
 
     private void setupListeners() {
@@ -721,12 +750,11 @@ public class CashRegister extends JFrame {
                 try (BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
                     String response = reader.lines().collect(Collectors.joining());
 
-                    ObjectMapper objectMapper = new ObjectMapper();
                     List<Integer> dosages = objectMapper.readValue(response, new TypeReference<List<Integer>>() {
                     });
 
                     for (Integer dose : dosages) {
-                        dosage.addItem(dose.toString()); // Dodaj dozu u ComboBox
+                        dosage.addItem(dose.toString());
                     }
                 }
             }
@@ -758,7 +786,6 @@ public class CashRegister extends JFrame {
                     System.out.println("Odgovor API-ja: " + response);
 
                     // Pretpostavljamo da API vraća podatke u JSON formatu, uključujući ime proizvoda
-                    ObjectMapper objectMapper = new ObjectMapper();
                     Product product = objectMapper.readValue(response, Product.class);
 
                     setProductPrice(product.getSellingPrice()); // Postavi cenu proizvoda
@@ -790,9 +817,9 @@ public class CashRegister extends JFrame {
 
         for (int i = 0; i < rowCount; i++) {
             String ean13 = model.getValueAt(i, 1).toString(); // EAN13 je u drugoj koloni
-            Long productId = getProductIdByEan13(ean13); // Dobijamo productId na osnovu ean13
+            int productId = getProductIdByEan13(ean13); // Dobijamo productId na osnovu ean13
 
-            if (productId != null) {
+            if (productId != -1) {
                 int productAmount = Integer.parseInt(model.getValueAt(i, 5).toString());
                 int discount = Integer.parseInt(model.getValueAt(i, 4).toString().replace("%", ""));
                 int prescriptionItem = 2; // Možeš prilagoditi ako postoji logika za recept
@@ -806,7 +833,7 @@ public class CashRegister extends JFrame {
         paperPrescription.setVisible(false);
     }
 
-    private Long getProductIdByEan13(String ean13) {
+    private int getProductIdByEan13(String ean13) {
         try {
             URL url = new URL("http://localhost:8080/api/products/by-ean13/" + ean13);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -818,7 +845,6 @@ public class CashRegister extends JFrame {
                 try (Scanner scanner = new Scanner(connection.getInputStream())) {
                     String response = scanner.useDelimiter("\\A").next();
 
-                    ObjectMapper objectMapper = new ObjectMapper();
                     ProductDto product = objectMapper.readValue(response, ProductDto.class);
 
                     return product.getId(); // Pretpostavljam da ProductDto ima getId()
@@ -829,7 +855,7 @@ public class CashRegister extends JFrame {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return null; // Ako nije pronađen proizvod
+        return -1; // Ako nije pronađen proizvod
     }
 
     private void usersPrescriptionsComponentShown(ComponentEvent e) {
@@ -900,21 +926,21 @@ public class CashRegister extends JFrame {
 
     private void calculateChange() {
         try {
-            double finalPrice = Double.parseDouble(totalPriceFinal.getText()); // Ukupna cena
-            double amountPaid = Double.parseDouble(payed.getText()); // Iznos koji je kupac platio
+            double finalPrice = Double.parseDouble(totalPriceFinal.getText());
+            double amountPaid = Double.parseDouble(payed.getText());
 
             if (amountPaid >= finalPrice) {
                 double changeAmount = amountPaid - finalPrice;
-                change.setText(String.format("%.2f", changeAmount)); // Postavljamo kusur u JTextField
+                change.setText(String.format("%.2f", changeAmount));
             } else {
-                change.setText(""); // Ako nije dovoljno plaćeno, brišemo kusur
+                change.setText("");
             }
         } catch (NumberFormatException ex) {
             change.setText(""); // Ako se unesu nevalidni podaci (slova, prazno), brišemo kusur
         }
     }
 
-    private void finishCashMouseClicked(MouseEvent e) throws InterruptedException {
+    private void finishCashMouseClicked(MouseEvent e) {
         double changeAmount = 0;
         double finalPrice = 0;
         try {
@@ -934,36 +960,63 @@ public class CashRegister extends JFrame {
 
         change.setText("");
         cashPayment.setVisible(false);
-        paymentProcess(finalPrice, changeAmount);
+        paymentProcess(finalPrice, changeAmount, 0);
         DefaultTableModel model = (DefaultTableModel) items.getModel();
         model.setRowCount(0);
         totalPrice.setText("");
     }
 
     private void finishCardMouseClicked(MouseEvent e) {
-        // Dobijanje podataka
         double finalPrice = Double.parseDouble(totalPriceFinalCard.getText());
         String cardNum = cardNumber.getText();
         String pin = new String(cardPin.getPassword());
-
-        // Provera da li su polja popunjena
         if (cardNum.isEmpty() || pin.isEmpty() || !cardNum.matches("\\d{16}") || !pin.matches("\\d{4}")) {
-            JOptionPane.showMessageDialog(this, "Molimo unesite broj kartice i PIN.", "Greška", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Molimo unesite ispravan broj kartice i PIN.", "Greška", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        // Prikaz poruke o uspešnoj transakciji
-        String message = String.format(
-                "Ukupna cena: %.2f RSD\nPlaćeno karticom: %s\nPlaćanje uspešno!",
-                finalPrice, cardNum.substring(0, 4) + " **** **** " + cardNum.substring(cardNum.length() - 4)
-        );
+        // Provera kartice preko API-ja
+        if (!validateCardWithAPI(cardNum, pin)) {
+            JOptionPane.showMessageDialog(this, "Neispravna kartica ili PIN!", "Greška", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Ako je sve u redu, prikazuje se potvrda plaćanja
+        String message = String.format("Ukupna cena: %.2f RSD\nPlaćeno karticom: %s\nPlaćanje uspešno!",
+                finalPrice, cardNum.substring(0, 4) + " **** **** " + cardNum.substring(cardNum.length() - 4));
 
         JOptionPane.showMessageDialog(this, message, "Plaćanje karticom", JOptionPane.INFORMATION_MESSAGE);
 
+        // Reset tabele
         cardPayment.setVisible(false);
+        paymentProcess(finalPrice, 0, 1);
         DefaultTableModel model = (DefaultTableModel) items.getModel();
         model.setRowCount(0);
         totalPrice.setText("");
+    }
+
+    private boolean validateCardWithAPI(String cardNum, String pin) {
+        try {
+            URL url = new URL("http://localhost:8080/api/cards/validate");
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setRequestProperty("Authorization", "Bearer " + JwtResponse.getToken());
+            conn.setDoOutput(true);
+
+            String jsonInputString = String.format("{\"cardNumber\":\"%s\", \"pin\":\"%s\"}", cardNum, pin);
+            try (OutputStream os = conn.getOutputStream()) {
+                byte[] input = jsonInputString.getBytes("utf-8");
+                os.write(input, 0, input.length);
+            }
+
+            int responseCode = conn.getResponseCode();
+            return responseCode == 200;
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return false;
+        }
     }
 
     private void cardPaymentComponentShown(ComponentEvent e) {
@@ -1031,10 +1084,14 @@ public class CashRegister extends JFrame {
         }
     }
 
-    private void paymentProcess(double finalPrice, double finalChange) throws InterruptedException {
-        int salesId = addSalesData(finalPrice, finalChange);
-        System.out.println("Sales ID: " + salesId);
-        Thread.sleep(500);
+    private void paymentProcess(double finalPrice, double finalChange, int paymentType) {
+        int salesId = addSalesData(finalPrice, finalChange, paymentType);
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        article.setText("");
         if (salesId != -1) {
             addSalesItems(salesId);
         }
@@ -1045,16 +1102,15 @@ public class CashRegister extends JFrame {
             try {
                 // Dobijanje podataka iz stavke
                 String ean13 = (String) stavka.get("Ean13");
-                Long productId = getProductIdByEan13(ean13);
+                int productId = getProductIdByEan13(ean13);
                 String receiptType = (String) stavka.get("Recept");
                 int quantity = ((Number) stavka.get("Količina")).intValue();
                 double totalPrice = ((Number) stavka.get("Ukupna cena")).doubleValue();
 
-
-                if (productId != null) {
+                if (productId != -1) {
                     // Kreiranje JSON objekta
                     String jsonInputString = String.format(
-                            "{\"salesId\": %d, \"productId\": %d, \"receiptType\": \"%s\", \"quantity\": %d, \"totalPrice\": %.2f}",
+                            "{\"salesId\": %d, \"product_batch_id\": %d, \"receiptType\": \"%s\", \"quantity\": %d, \"totalPrice\": %.2f}",
                             salesId, productId, receiptType, quantity, totalPrice
                     );
 
@@ -1087,21 +1143,19 @@ public class CashRegister extends JFrame {
         }
     }
 
-    private int addSalesData(double totalPrice, double receipt) {
+    private int addSalesData(double totalPrice, double receipt, int paymentType) {
         int employeeId = JwtResponse.getUserId();
-        LocalDateTime currentDate = LocalDateTime.now();
+        LocalDate currentDate = LocalDate.now();
+        LocalTime currentTime = LocalTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+        String formattedTime = currentTime.format(formatter);
+        String payment_Type = "";
 
-//        if (authentication != null && authentication.getPrincipal() instanceof CustomUserDetails) {
-//            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-//            employeeId = userDetails.getId();
-//        }
-
-//        String url = "http://localhost:8080/api/sales/add";
-//        JSONObject json = new JSONObject();
-//        json.put("totalPrice", getFinalPrice());
-//        json.put("receipt", getChangeFinal());
-//        json.put("transaction_date", currentDate);
-//        json.put("cashier_id", employeeId);
+        if (paymentType == 0) {
+            payment_Type = "Cash";
+        } else if (paymentType == 1) {
+            payment_Type = "Card";
+        }
         System.out.println("Change ammount: " + receipt);
 
         try {
@@ -1114,10 +1168,9 @@ public class CashRegister extends JFrame {
 
             // JSON telo zahteva
             String jsonInputString = String.format(
-                    "{\"totalPrice\": %.2f, \"receipt_change\": %.2f, \"transaction_date\": \"%s\", \"cashier_id\": %d}",
-                    totalPrice, receipt, currentDate, employeeId
+                    "{\"totalPrice\": %.2f, \"change\": %.2f, \"transactionDate\": \"%s\", \"transactionTime\": \"%s\", \"employeeId\": %d, \"paymentType\": \"%s\"}",
+                    totalPrice, receipt, currentDate, formattedTime, employeeId, payment_Type
             );
-
 
             try (OutputStream os = connection.getOutputStream()) {
                 byte[] input = jsonInputString.getBytes(StandardCharsets.UTF_8);
@@ -1132,7 +1185,23 @@ public class CashRegister extends JFrame {
 
                     // Parsiranje JSON odgovora (očekujemo ID)
                     JSONObject jsonResponse = new JSONObject(response);
-                    return jsonResponse.getInt("id");
+                    int salesId = jsonResponse.getInt("id");
+
+                    String employeeName = fetchEmployeeName(employeeId);
+
+                    // Generate PDF receipt
+                    generateReceipt(
+                            salesId,
+                            currentDate,
+                            currentTime,
+                            payment_Type,
+                            totalPrice,
+                            receipt,
+                            receiptList, // List of items purchased
+                            employeeName // Employee name
+                    );
+
+                    return salesId;
                 }
             } else {
                 JOptionPane.showMessageDialog(null, "Greška pri dodavanju adrese!", "Greška", JOptionPane.ERROR_MESSAGE);
@@ -1144,6 +1213,157 @@ public class CashRegister extends JFrame {
         return -1; // Ako dođe do greške, vraća -1
     }
 
+    public static void generateReceipt(int salesId, LocalDate transactionDate, LocalTime transactionTime,
+                                       String paymentType, double totalPrice, double receiptChange,
+                                       List<Map<String, Object>> items, String employeeName) {
+        try (PDDocument document = new PDDocument()) {
+            PDPage page = new PDPage();
+            document.addPage(page);
+
+            try (PDPageContentStream contentStream = new PDPageContentStream(document, page)) {
+                // Učitavanje fonta
+                PDType0Font font = null;
+                try (InputStream fontStream = new ClassPathResource("static/arial.ttf").getInputStream()) {
+                    font = PDType0Font.load(document, fontStream);
+                }
+
+                contentStream.setFont(font, 12);
+                contentStream.beginText();
+                contentStream.newLineAtOffset(50, 750);
+
+                // Naslov računa
+                contentStream.showText("===== FISKALNI RAČUN =====");
+                contentStream.newLineAtOffset(0, -20);
+                contentStream.showText("ID: " + salesId);
+                contentStream.newLineAtOffset(0, -20);
+                contentStream.showText("Datum: " + transactionDate);
+                contentStream.newLineAtOffset(0, -20);
+                contentStream.showText("Vreme: " + transactionTime.format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+                contentStream.newLineAtOffset(0, -20);
+                contentStream.showText("Blagajnik: " + employeeName);
+                contentStream.newLineAtOffset(0, -20);
+                if (paymentType.equals("Cash")) {
+                    paymentType = "Gotovina";
+                }
+                if (paymentType.equals("Card")) {
+                    paymentType = "Kreditna Kartica";
+                }
+                contentStream.showText("Način plaćanja: " + paymentType);
+                contentStream.newLineAtOffset(0, -20);
+                contentStream.showText("==========================");
+                contentStream.newLineAtOffset(0, -30);
+
+                // Tabela proizvoda
+                contentStream.showText(String.format("%-20s %-10s %-10s %-10s %-10s", "Proizvod", "Količina", "Cena", "Popust", "Ukupno"));
+                contentStream.newLineAtOffset(0, -15);
+                contentStream.showText("------------------------------------------------");
+                contentStream.newLineAtOffset(0, -15);
+
+                for (Map<String, Object> item : items) {
+                    String name = (String) item.get("Naziv proizvoda");
+                    int quantity = (int) item.get("Količina");
+                    double price = (double) item.get("Cena po jedinici");
+                    double totalItemPrice = (double) item.get("Ukupna cena");
+
+                    // Popust kao string sa %
+                    String discount = item.get("Popust") + "%";
+
+                    // Formatiran prikaz podataka
+                    contentStream.showText(String.format("%-20s %-10d %-10.2f %-10s %-10.2f",
+                            name, quantity, price, discount, totalItemPrice));
+                    contentStream.newLineAtOffset(0, -15);
+                }
+
+                contentStream.newLineAtOffset(0, -20);
+                contentStream.showText("==========================");
+                contentStream.newLineAtOffset(0, -20);
+                contentStream.showText(String.format("Ukupno: %.2f RSD", totalPrice));
+                contentStream.newLineAtOffset(0, -20);
+                contentStream.showText(String.format("Povraćaj: %.2f RSD", receiptChange));
+                contentStream.newLineAtOffset(0, -20);
+                contentStream.showText("==========================");
+
+                contentStream.endText();
+            }
+
+            // Kreiranje foldera za čuvanje računa
+            String folderPath = "receipts/" + transactionDate;
+            Files.createDirectories(Paths.get(folderPath));
+            String filePath = folderPath + "/Receipt_" + salesId + ".pdf";
+
+            // Čuvanje dokumenta
+            document.save(new File(filePath));
+            System.out.println("Račun sačuvan: " + filePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String fetchEmployeeName(int employeeId) {
+        try {
+            URL url = new URL("http://localhost:8080/api/employees/" + employeeId);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("Authorization", "Bearer " + JwtResponse.getToken());
+
+            if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                try (Scanner scanner = new Scanner(connection.getInputStream())) {
+                    String response = scanner.useDelimiter("\\A").next();
+                    EmployeeDto employee = objectMapper.readValue(response, EmployeeDto.class);
+
+                    return employee.getName() + " " + employee.getSurname();
+                }
+            } else {
+                return "Nepoznati zaposleni";
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Greška pri učitavanju zaposlenog";
+        }
+    }
+
+    private void salesMouseClicked(MouseEvent e) {
+        dispose();
+        SalesHistory.start();
+    }
+
+    private void backMouseClicked(MouseEvent e) {
+        dispose();
+        MainMenuAdmin.start();
+    }
+
+    public void customizeTable(JTable table, TableModel model) {
+        // Set background color for the table header
+        JTableHeader header = table.getTableHeader();
+        Color headerBackgroundColor = new Color(0xb3, 0xd8, 0xa8); // Hex code #b3d8a8
+        header.setBackground(headerBackgroundColor);
+
+        // Optional: Set foreground (text) color for the header
+        Color headerForegroundColor = Color.DARK_GRAY; // Example: Dark gray text
+        header.setForeground(headerForegroundColor);
+
+        // Set font for the header
+        Font headerFont = new Font("Inter", Font.BOLD, 13);
+        header.setFont(headerFont);
+
+        // Set the model for the table
+        table.setModel(model);
+
+        // Set the background color for the viewport and scroll pane
+        Color backgroundColor = new Color(0xfb, 0xff, 0xe4); // Hex code #fbffe4
+        JViewport viewport1 = scrollPane1.getViewport();
+        viewport1.setBackground(backgroundColor);
+        scrollPane1.setBackground(backgroundColor);
+
+        JViewport viewport2 = scrollPane2.getViewport();
+        viewport2.setBackground(backgroundColor);
+        scrollPane2.setBackground(backgroundColor);
+
+        JViewport viewport3 = scrollPane3.getViewport();
+        viewport3.setBackground(backgroundColor);
+        scrollPane3.setBackground(backgroundColor);
+    }
+
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
         // Generated using JFormDesigner Educational license - Luka Nikolic (office)
@@ -1151,6 +1371,7 @@ public class CashRegister extends JFrame {
         back = new JButton();
         scrollPane1 = new JScrollPane();
         items = new JTable();
+        sales = new JButton();
         article_label = new JLabel();
         article = new JTextField();
         amm_label = new JLabel();
@@ -1160,16 +1381,19 @@ public class CashRegister extends JFrame {
         totalPrice = new JTextField();
         payment = new JButton();
         choosePrescription = new JDialog();
+        panel4 = new JPanel();
         question1 = new JLabel();
         electronic = new JRadioButton();
         paper = new JRadioButton();
         next = new JButton();
         electronicPrescription = new JDialog();
+        panel3 = new JPanel();
         back2 = new JButton();
         question2 = new JLabel();
         healthCard = new JTextField();
         nextER = new JButton();
         usersPrescriptions = new JDialog();
+        panel5 = new JPanel();
         back3 = new JButton();
         prescriptionsCB = new JComboBox();
         scrollPane2 = new JScrollPane();
@@ -1178,8 +1402,8 @@ public class CashRegister extends JFrame {
         paperPrescription = new JDialog();
         panel2 = new JPanel();
         article_label2 = new JLabel();
-        back4 = new JButton();
         articlePaper = new JTextField();
+        back4 = new JButton();
         scrollPane3 = new JScrollPane();
         paperPrescriptiontbl = new JTable();
         amm_label2 = new JLabel();
@@ -1194,11 +1418,13 @@ public class CashRegister extends JFrame {
         enterPaper = new JButton();
         popupMenu = new JPopupMenu();
         paymentType = new JDialog();
+        panel6 = new JPanel();
         label3 = new JLabel();
         cash = new JRadioButton();
         card = new JRadioButton();
         nextPaying = new JButton();
         cashPayment = new JDialog();
+        panel7 = new JPanel();
         label4 = new JLabel();
         totalPriceFinal = new JTextField();
         label5 = new JLabel();
@@ -1207,6 +1433,7 @@ public class CashRegister extends JFrame {
         change = new JTextField();
         finishCash = new JButton();
         cardPayment = new JDialog();
+        panel8 = new JPanel();
         label7 = new JLabel();
         totalPriceFinalCard = new JTextField();
         label8 = new JLabel();
@@ -1215,6 +1442,7 @@ public class CashRegister extends JFrame {
         cardPin = new JPasswordField();
         finishCard = new JButton();
         changeAmmount = new JDialog();
+        panel9 = new JPanel();
         label10 = new JLabel();
         newAmmount = new JTextField();
         finishAmmount = new JButton();
@@ -1226,8 +1454,9 @@ public class CashRegister extends JFrame {
         //======== panel1 ========
         {
             panel1.setPreferredSize(new Dimension(850, 909));
+            panel1.setBackground(new Color(0x3d8d7a));
             panel1.setLayout(new MigLayout(
-                "hidemode 3",
+                "fill,hidemode 3",
                 // columns
                 "[100,fill]" +
                 "[100,fill]" +
@@ -1253,12 +1482,27 @@ public class CashRegister extends JFrame {
 
             //---- back ----
             back.setText("Nazad");
+            back.setBackground(new Color(0xb3d8a8));
+            back.setForeground(Color.darkGray);
+            back.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    backMouseClicked(e);
+                }
+            });
             panel1.add(back, "cell 7 0");
 
             //======== scrollPane1 ========
             {
+                scrollPane1.setBackground(Color.darkGray);
+                scrollPane1.setForeground(Color.darkGray);
 
                 //---- items ----
+                items.setBackground(new Color(0xfbffe4));
+                items.setForeground(Color.darkGray);
+                items.setGridColor(Color.darkGray);
+                items.setSelectionBackground(new Color(0xb3d8a8));
+                items.setSelectionForeground(Color.darkGray);
                 items.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
@@ -1269,18 +1513,42 @@ public class CashRegister extends JFrame {
             }
             panel1.add(scrollPane1, "cell 0 1 5 7");
 
+            //---- sales ----
+            sales.setIcon(UIManager.getIcon("FileView.directoryIcon"));
+            sales.setBackground(new Color(0xb3d8a8));
+            sales.setForeground(Color.darkGray);
+            sales.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    salesMouseClicked(e);
+                }
+            });
+            panel1.add(sales, "cell 7 1");
+
             //---- article_label ----
             article_label.setText("Artikal:");
+            article_label.setForeground(new Color(0xfbffe4));
             panel1.add(article_label, "cell 5 2");
+
+            //---- article ----
+            article.setBackground(new Color(0xb3d8a8));
+            article.setForeground(Color.darkGray);
             panel1.add(article, "cell 5 3 2 1");
 
             //---- amm_label ----
             amm_label.setText("Kolicina:");
+            amm_label.setForeground(new Color(0xfbffe4));
             panel1.add(amm_label, "cell 5 4");
+
+            //---- ammount ----
+            ammount.setBackground(new Color(0xb3d8a8));
+            ammount.setForeground(Color.darkGray);
             panel1.add(ammount, "cell 6 4");
 
             //---- add ----
             add.setText("Dodaj");
+            add.setBackground(new Color(0xb3d8a8));
+            add.setForeground(Color.darkGray);
             add.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
@@ -1291,6 +1559,8 @@ public class CashRegister extends JFrame {
 
             //---- prescriptions ----
             prescriptions.setText("Recepti");
+            prescriptions.setBackground(new Color(0xb3d8a8));
+            prescriptions.setForeground(Color.darkGray);
             prescriptions.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
@@ -1298,10 +1568,16 @@ public class CashRegister extends JFrame {
                 }
             });
             panel1.add(prescriptions, "cell 6 6");
+
+            //---- totalPrice ----
+            totalPrice.setBackground(new Color(0xb3d8a8));
+            totalPrice.setForeground(Color.darkGray);
             panel1.add(totalPrice, "cell 4 8");
 
             //---- payment ----
             payment.setText("Placanje");
+            payment.setBackground(new Color(0xb3d8a8));
+            payment.setForeground(Color.darkGray);
             payment.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
@@ -1328,42 +1604,69 @@ public class CashRegister extends JFrame {
         {
             choosePrescription.setModal(true);
             var choosePrescriptionContentPane = choosePrescription.getContentPane();
-            choosePrescriptionContentPane.setLayout(new MigLayout(
-                "hidemode 3",
-                // columns
-                "[100,fill]" +
-                "[100,fill]" +
-                "[100,fill]" +
-                "[100,fill]",
-                // rows
-                "[40]" +
-                "[40]" +
-                "[40]" +
-                "[40]" +
-                "[40]"));
 
-            //---- question1 ----
-            question1.setText("Odaberite vrstu recepta:");
-            choosePrescriptionContentPane.add(question1, "cell 1 1 2 1");
+            //======== panel4 ========
+            {
+                panel4.setBackground(new Color(0x3d8d7a));
+                panel4.setLayout(new MigLayout(
+                    "insets 0,hidemode 3",
+                    // columns
+                    "[100,fill]" +
+                    "[100,fill]" +
+                    "[100,fill]" +
+                    "[100,fill]",
+                    // rows
+                    "[40]" +
+                    "[40]" +
+                    "[40]" +
+                    "[40]" +
+                    "[40]"));
 
-            //---- electronic ----
-            electronic.setText("E-recept");
-            electronic.setSelected(true);
-            choosePrescriptionContentPane.add(electronic, "cell 1 2 2 1");
+                //---- question1 ----
+                question1.setText("Odaberite vrstu recepta:");
+                question1.setForeground(new Color(0xfbffe4));
+                panel4.add(question1, "cell 1 1 2 1");
 
-            //---- paper ----
-            paper.setText("Papirni");
-            choosePrescriptionContentPane.add(paper, "cell 1 3 2 1");
+                //---- electronic ----
+                electronic.setText("E-recept");
+                electronic.setSelected(true);
+                electronic.setForeground(Color.darkGray);
+                electronic.setBackground(new Color(0x3d8d7a));
+                panel4.add(electronic, "cell 1 2");
 
-            //---- next ----
-            next.setText("Dalje");
-            next.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    nextMouseClicked(e);
-                }
-            });
-            choosePrescriptionContentPane.add(next, "cell 2 4");
+                //---- paper ----
+                paper.setText("Papirni");
+                paper.setForeground(Color.darkGray);
+                paper.setBackground(new Color(0x3d8d7a));
+                panel4.add(paper, "cell 1 3");
+
+                //---- next ----
+                next.setText("Dalje");
+                next.setBackground(new Color(0xb3d8a8));
+                next.setForeground(Color.darkGray);
+                next.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        nextMouseClicked(e);
+                    }
+                });
+                panel4.add(next, "cell 2 4");
+            }
+
+            GroupLayout choosePrescriptionContentPaneLayout = new GroupLayout(choosePrescriptionContentPane);
+            choosePrescriptionContentPane.setLayout(choosePrescriptionContentPaneLayout);
+            choosePrescriptionContentPaneLayout.setHorizontalGroup(
+                choosePrescriptionContentPaneLayout.createParallelGroup()
+                    .addGroup(GroupLayout.Alignment.TRAILING, choosePrescriptionContentPaneLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(panel4, GroupLayout.PREFERRED_SIZE, 390, GroupLayout.PREFERRED_SIZE))
+            );
+            choosePrescriptionContentPaneLayout.setVerticalGroup(
+                choosePrescriptionContentPaneLayout.createParallelGroup()
+                    .addGroup(choosePrescriptionContentPaneLayout.createSequentialGroup()
+                        .addComponent(panel4, GroupLayout.PREFERRED_SIZE, 240, GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+            );
             choosePrescription.pack();
             choosePrescription.setLocationRelativeTo(choosePrescription.getOwner());
         }
@@ -1372,38 +1675,67 @@ public class CashRegister extends JFrame {
         {
             electronicPrescription.setModal(true);
             var electronicPrescriptionContentPane = electronicPrescription.getContentPane();
-            electronicPrescriptionContentPane.setLayout(new MigLayout(
-                "hidemode 3",
-                // columns
-                "[100,fill]" +
-                "[100,fill]" +
-                "[100,fill]" +
-                "[100,fill]",
-                // rows
-                "[40]" +
-                "[40]" +
-                "[40]" +
-                "[40]" +
-                "[40]"));
 
-            //---- back2 ----
-            back2.setText("Nazad");
-            electronicPrescriptionContentPane.add(back2, "cell 0 0");
+            //======== panel3 ========
+            {
+                panel3.setBackground(new Color(0x3d8d7a));
+                panel3.setLayout(new MigLayout(
+                    "insets 0,hidemode 3",
+                    // columns
+                    "[100,fill]" +
+                    "[100,fill]" +
+                    "[100,fill]" +
+                    "[100,fill]",
+                    // rows
+                    "[40]" +
+                    "[40]" +
+                    "[40]" +
+                    "[40]" +
+                    "[40]"));
 
-            //---- question2 ----
-            question2.setText("Unesite broj zdravstvene kartice:");
-            electronicPrescriptionContentPane.add(question2, "cell 1 1 2 1");
-            electronicPrescriptionContentPane.add(healthCard, "cell 1 2 2 1");
+                //---- back2 ----
+                back2.setText("Nazad");
+                back2.setBackground(new Color(0xb3d8a8));
+                back2.setForeground(Color.darkGray);
+                panel3.add(back2, "cell 0 0");
 
-            //---- nextER ----
-            nextER.setText("Dalje");
-            nextER.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    nextERMouseClicked(e);
-                }
-            });
-            electronicPrescriptionContentPane.add(nextER, "cell 2 4");
+                //---- question2 ----
+                question2.setText("Unesite broj zdravstvene kartice:");
+                question2.setForeground(new Color(0xfbffe4));
+                panel3.add(question2, "cell 1 1 2 1");
+
+                //---- healthCard ----
+                healthCard.setBackground(new Color(0xb3d8a8));
+                healthCard.setForeground(Color.darkGray);
+                panel3.add(healthCard, "cell 1 2 2 1");
+
+                //---- nextER ----
+                nextER.setText("Dalje");
+                nextER.setBackground(new Color(0xb3d8a8));
+                nextER.setForeground(Color.darkGray);
+                nextER.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        nextERMouseClicked(e);
+                    }
+                });
+                panel3.add(nextER, "cell 2 4");
+            }
+
+            GroupLayout electronicPrescriptionContentPaneLayout = new GroupLayout(electronicPrescriptionContentPane);
+            electronicPrescriptionContentPane.setLayout(electronicPrescriptionContentPaneLayout);
+            electronicPrescriptionContentPaneLayout.setHorizontalGroup(
+                electronicPrescriptionContentPaneLayout.createParallelGroup()
+                    .addGroup(GroupLayout.Alignment.TRAILING, electronicPrescriptionContentPaneLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(panel3, GroupLayout.PREFERRED_SIZE, 390, GroupLayout.PREFERRED_SIZE))
+            );
+            electronicPrescriptionContentPaneLayout.setVerticalGroup(
+                electronicPrescriptionContentPaneLayout.createParallelGroup()
+                    .addGroup(GroupLayout.Alignment.TRAILING, electronicPrescriptionContentPaneLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(panel3, GroupLayout.PREFERRED_SIZE, 240, GroupLayout.PREFERRED_SIZE))
+            );
             electronicPrescription.pack();
             electronicPrescription.setLocationRelativeTo(electronicPrescription.getOwner());
         }
@@ -1418,48 +1750,83 @@ public class CashRegister extends JFrame {
                 }
             });
             var usersPrescriptionsContentPane = usersPrescriptions.getContentPane();
-            usersPrescriptionsContentPane.setLayout(new MigLayout(
-                "hidemode 3",
-                // columns
-                "[100,fill]" +
-                "[100,fill]" +
-                "[100,fill]" +
-                "[100,fill]" +
-                "[100,fill]" +
-                "[100,fill]",
-                // rows
-                "[45]" +
-                "[45]" +
-                "[45]" +
-                "[45]" +
-                "[45]" +
-                "[45]" +
-                "[]" +
-                "[45]"));
 
-            //---- back3 ----
-            back3.setText("Nazad");
-            usersPrescriptionsContentPane.add(back3, "cell 0 0");
-
-            //---- prescriptionsCB ----
-            prescriptionsCB.addItemListener(e -> prescriptionsCBItemStateChanged(e));
-            usersPrescriptionsContentPane.add(prescriptionsCB, "cell 2 0 2 1");
-
-            //======== scrollPane2 ========
+            //======== panel5 ========
             {
-                scrollPane2.setViewportView(usersPrescriptionstbl);
-            }
-            usersPrescriptionsContentPane.add(scrollPane2, "cell 0 1 6 4");
+                panel5.setBackground(new Color(0x3d8d7a));
+                panel5.setLayout(new MigLayout(
+                    "fill,hidemode 3",
+                    // columns
+                    "[100,fill]" +
+                    "[100,fill]" +
+                    "[100,fill]" +
+                    "[100,fill]" +
+                    "[100,fill]" +
+                    "[100,fill]",
+                    // rows
+                    "[45]" +
+                    "[45]" +
+                    "[45]" +
+                    "[45]" +
+                    "[45]" +
+                    "[45]" +
+                    "[]" +
+                    "[45]"));
 
-            //---- selectPrescription ----
-            selectPrescription.setText("Dodaj");
-            selectPrescription.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    selectPrescriptionMouseClicked(e);
+                //---- back3 ----
+                back3.setText("Nazad");
+                back3.setBackground(new Color(0xb3d8a8));
+                back3.setForeground(Color.darkGray);
+                panel5.add(back3, "cell 0 0");
+
+                //---- prescriptionsCB ----
+                prescriptionsCB.setBackground(new Color(0xb3d8a8));
+                prescriptionsCB.setForeground(Color.darkGray);
+                prescriptionsCB.addItemListener(e -> prescriptionsCBItemStateChanged(e));
+                panel5.add(prescriptionsCB, "cell 2 0 2 1");
+
+                //======== scrollPane2 ========
+                {
+                    scrollPane2.setBackground(Color.darkGray);
+                    scrollPane2.setForeground(Color.darkGray);
+
+                    //---- usersPrescriptionstbl ----
+                    usersPrescriptionstbl.setBackground(new Color(0xfbffe4));
+                    usersPrescriptionstbl.setForeground(Color.darkGray);
+                    usersPrescriptionstbl.setGridColor(Color.darkGray);
+                    usersPrescriptionstbl.setSelectionBackground(new Color(0xb3d8a8));
+                    usersPrescriptionstbl.setSelectionForeground(Color.darkGray);
+                    scrollPane2.setViewportView(usersPrescriptionstbl);
                 }
-            });
-            usersPrescriptionsContentPane.add(selectPrescription, "cell 4 6");
+                panel5.add(scrollPane2, "cell 0 2 6 5");
+
+                //---- selectPrescription ----
+                selectPrescription.setText("Dodaj");
+                selectPrescription.setBackground(new Color(0xb3d8a8));
+                selectPrescription.setForeground(Color.darkGray);
+                selectPrescription.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        selectPrescriptionMouseClicked(e);
+                    }
+                });
+                panel5.add(selectPrescription, "cell 4 7");
+            }
+
+            GroupLayout usersPrescriptionsContentPaneLayout = new GroupLayout(usersPrescriptionsContentPane);
+            usersPrescriptionsContentPane.setLayout(usersPrescriptionsContentPaneLayout);
+            usersPrescriptionsContentPaneLayout.setHorizontalGroup(
+                usersPrescriptionsContentPaneLayout.createParallelGroup()
+                    .addGroup(GroupLayout.Alignment.TRAILING, usersPrescriptionsContentPaneLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(panel5, GroupLayout.PREFERRED_SIZE, 610, GroupLayout.PREFERRED_SIZE))
+            );
+            usersPrescriptionsContentPaneLayout.setVerticalGroup(
+                usersPrescriptionsContentPaneLayout.createParallelGroup()
+                    .addGroup(usersPrescriptionsContentPaneLayout.createSequentialGroup()
+                        .addComponent(panel5, GroupLayout.PREFERRED_SIZE, 365, GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+            );
             usersPrescriptions.pack();
             usersPrescriptions.setLocationRelativeTo(usersPrescriptions.getOwner());
         }
@@ -1472,6 +1839,7 @@ public class CashRegister extends JFrame {
             //======== panel2 ========
             {
                 panel2.setPreferredSize(new Dimension(850, 909));
+                panel2.setBackground(new Color(0x3d8d7a));
                 panel2.setLayout(new MigLayout(
                     "hidemode 3",
                     // columns
@@ -1504,40 +1872,74 @@ public class CashRegister extends JFrame {
 
                 //---- article_label2 ----
                 article_label2.setText("Artikal:");
+                article_label2.setForeground(new Color(0xfbffe4));
                 panel2.add(article_label2, "cell 1 0");
+
+                //---- articlePaper ----
+                articlePaper.setBackground(new Color(0xb3d8a8));
+                articlePaper.setForeground(Color.darkGray);
+                panel2.add(articlePaper, "cell 1 1 4 1");
 
                 //---- back4 ----
                 back4.setText("Nazad");
-                panel2.add(back4, "cell 7 0");
-                panel2.add(articlePaper, "cell 1 1 4 1");
+                back4.setBackground(new Color(0xb3d8a8));
+                back4.setForeground(Color.darkGray);
+                panel2.add(back4, "cell 7 1");
 
                 //======== scrollPane3 ========
                 {
+                    scrollPane3.setBackground(Color.darkGray);
+                    scrollPane3.setForeground(Color.darkGray);
+
+                    //---- paperPrescriptiontbl ----
+                    paperPrescriptiontbl.setBackground(new Color(0xfbffe4));
+                    paperPrescriptiontbl.setForeground(Color.darkGray);
+                    paperPrescriptiontbl.setGridColor(Color.darkGray);
+                    paperPrescriptiontbl.setSelectionBackground(new Color(0xb3d8a8));
+                    paperPrescriptiontbl.setSelectionForeground(Color.darkGray);
                     scrollPane3.setViewportView(paperPrescriptiontbl);
                 }
                 panel2.add(scrollPane3, "cell 0 3 5 7");
 
                 //---- amm_label2 ----
                 amm_label2.setText("Kolicina:");
+                amm_label2.setForeground(new Color(0xfbffe4));
                 panel2.add(amm_label2, "cell 5 4");
+
+                //---- ammountPaper ----
+                ammountPaper.setBackground(new Color(0xb3d8a8));
+                ammountPaper.setForeground(Color.darkGray);
                 panel2.add(ammountPaper, "cell 6 4");
 
                 //---- dosagelbl ----
                 dosagelbl.setText("Doza:");
+                dosagelbl.setForeground(new Color(0xfbffe4));
                 panel2.add(dosagelbl, "cell 5 5");
+
+                //---- dosage ----
+                dosage.setBackground(new Color(0xb3d8a8));
+                dosage.setForeground(Color.darkGray);
                 panel2.add(dosage, "cell 6 5");
 
                 //---- label1 ----
                 label1.setText("Popust:");
+                label1.setForeground(new Color(0xfbffe4));
                 panel2.add(label1, "cell 5 6");
+
+                //---- discount ----
+                discount.setBackground(new Color(0xb3d8a8));
+                discount.setForeground(Color.darkGray);
                 panel2.add(discount, "cell 6 6");
 
                 //---- label2 ----
                 label2.setText("%");
+                label2.setForeground(new Color(0xfbffe4));
                 panel2.add(label2, "cell 7 6");
 
                 //---- addPaper ----
                 addPaper.setText("Dodaj");
+                addPaper.setBackground(new Color(0xb3d8a8));
+                addPaper.setForeground(Color.darkGray);
                 addPaper.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
@@ -1545,10 +1947,16 @@ public class CashRegister extends JFrame {
                     }
                 });
                 panel2.add(addPaper, "cell 5 8");
+
+                //---- totalPricePaper ----
+                totalPricePaper.setBackground(new Color(0xb3d8a8));
+                totalPricePaper.setForeground(Color.darkGray);
                 panel2.add(totalPricePaper, "cell 4 10");
 
                 //---- enterPaper ----
                 enterPaper.setText("Unesi");
+                enterPaper.setBackground(new Color(0xb3d8a8));
+                enterPaper.setForeground(Color.darkGray);
                 enterPaper.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
@@ -1562,62 +1970,89 @@ public class CashRegister extends JFrame {
             paperPrescriptionContentPane.setLayout(paperPrescriptionContentPaneLayout);
             paperPrescriptionContentPaneLayout.setHorizontalGroup(
                 paperPrescriptionContentPaneLayout.createParallelGroup()
-                    .addGroup(paperPrescriptionContentPaneLayout.createSequentialGroup()
-                        .addGap(0, 5, Short.MAX_VALUE)
-                        .addComponent(panel2, GroupLayout.PREFERRED_SIZE, 853, GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 5, Short.MAX_VALUE))
+                    .addComponent(panel2, GroupLayout.DEFAULT_SIZE, 863, Short.MAX_VALUE)
             );
             paperPrescriptionContentPaneLayout.setVerticalGroup(
                 paperPrescriptionContentPaneLayout.createParallelGroup()
-                    .addGroup(paperPrescriptionContentPaneLayout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(panel2, GroupLayout.PREFERRED_SIZE, 469, GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(panel2, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 469, Short.MAX_VALUE)
             );
             paperPrescription.pack();
             paperPrescription.setLocationRelativeTo(paperPrescription.getOwner());
+        }
+
+        //======== popupMenu ========
+        {
+            popupMenu.setBackground(new Color(0xb3d8a8));
+            popupMenu.setForeground(Color.darkGray);
         }
 
         //======== paymentType ========
         {
             paymentType.setModal(true);
             var paymentTypeContentPane = paymentType.getContentPane();
-            paymentTypeContentPane.setLayout(new MigLayout(
-                "insets 0,hidemode 3",
-                // columns
-                "[100,fill]" +
-                "[100,fill]" +
-                "[100,fill]" +
-                "[100,fill]",
-                // rows
-                "[40]" +
-                "[40]" +
-                "[40]" +
-                "[40]" +
-                "[40]"));
 
-            //---- label3 ----
-            label3.setText("Odaberite tip placanja:");
-            paymentTypeContentPane.add(label3, "cell 1 1 2 1");
+            //======== panel6 ========
+            {
+                panel6.setBackground(new Color(0x3d8d7a));
+                panel6.setLayout(new MigLayout(
+                    "fill,hidemode 3",
+                    // columns
+                    "[100,fill]" +
+                    "[100,fill]" +
+                    "[100,fill]" +
+                    "[100,fill]",
+                    // rows
+                    "[40]" +
+                    "[40]" +
+                    "[40]" +
+                    "[40]" +
+                    "[40]"));
 
-            //---- cash ----
-            cash.setText("Gotovina");
-            cash.setSelected(true);
-            paymentTypeContentPane.add(cash, "cell 1 2 2 1");
+                //---- label3 ----
+                label3.setText("Odaberite tip placanja:");
+                label3.setForeground(new Color(0xfbffe4));
+                panel6.add(label3, "cell 1 1 2 1");
 
-            //---- card ----
-            card.setText("Kreditna kartica");
-            paymentTypeContentPane.add(card, "cell 1 3 2 1");
+                //---- cash ----
+                cash.setText("Gotovina");
+                cash.setSelected(true);
+                cash.setBackground(new Color(0x3d8d7a));
+                cash.setForeground(Color.darkGray);
+                panel6.add(cash, "cell 1 2");
 
-            //---- nextPaying ----
-            nextPaying.setText("Dalje");
-            nextPaying.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    nextPayingMouseClicked(e);
-                }
-            });
-            paymentTypeContentPane.add(nextPaying, "cell 2 4");
+                //---- card ----
+                card.setText("Kreditna kartica");
+                card.setBackground(new Color(0x3d8d7a));
+                card.setForeground(Color.darkGray);
+                panel6.add(card, "cell 1 3 2 1");
+
+                //---- nextPaying ----
+                nextPaying.setText("Dalje");
+                nextPaying.setBackground(new Color(0xb3d8a8));
+                nextPaying.setForeground(Color.darkGray);
+                nextPaying.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        nextPayingMouseClicked(e);
+                    }
+                });
+                panel6.add(nextPaying, "cell 2 4");
+            }
+
+            GroupLayout paymentTypeContentPaneLayout = new GroupLayout(paymentTypeContentPane);
+            paymentTypeContentPane.setLayout(paymentTypeContentPaneLayout);
+            paymentTypeContentPaneLayout.setHorizontalGroup(
+                paymentTypeContentPaneLayout.createParallelGroup()
+                    .addGroup(GroupLayout.Alignment.TRAILING, paymentTypeContentPaneLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(panel6, GroupLayout.PREFERRED_SIZE, 395, GroupLayout.PREFERRED_SIZE))
+            );
+            paymentTypeContentPaneLayout.setVerticalGroup(
+                paymentTypeContentPaneLayout.createParallelGroup()
+                    .addGroup(GroupLayout.Alignment.TRAILING, paymentTypeContentPaneLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(panel6, GroupLayout.PREFERRED_SIZE, 240, GroupLayout.PREFERRED_SIZE))
+            );
             paymentType.pack();
             paymentType.setLocationRelativeTo(paymentType.getOwner());
         }
@@ -1632,49 +2067,85 @@ public class CashRegister extends JFrame {
                 }
             });
             var cashPaymentContentPane = cashPayment.getContentPane();
-            cashPaymentContentPane.setLayout(new MigLayout(
-                "insets 0,hidemode 3",
-                // columns
-                "[100,fill]" +
-                "[100,fill]" +
-                "[100,fill]" +
-                "[100,fill]",
-                // rows
-                "[40]" +
-                "[40]" +
-                "[40]" +
-                "[40]" +
-                "[40]" +
-                "[40]" +
-                "[40]"));
 
-            //---- label4 ----
-            label4.setText("Ukupna cena:");
-            cashPaymentContentPane.add(label4, "cell 1 1");
-            cashPaymentContentPane.add(totalPriceFinal, "cell 2 1");
+            //======== panel7 ========
+            {
+                panel7.setBackground(new Color(0x3d8d7a));
+                panel7.setLayout(new MigLayout(
+                    "fill,hidemode 3",
+                    // columns
+                    "[100,fill]" +
+                    "[100,fill]" +
+                    "[100,fill]" +
+                    "[100,fill]",
+                    // rows
+                    "[40]" +
+                    "[40]" +
+                    "[40]" +
+                    "[40]" +
+                    "[40]" +
+                    "[40]" +
+                    "[40]"));
 
-            //---- label5 ----
-            label5.setText("Placeno:");
-            cashPaymentContentPane.add(label5, "cell 1 2");
-            cashPaymentContentPane.add(payed, "cell 2 2");
+                //---- label4 ----
+                label4.setText("Ukupna cena:");
+                label4.setForeground(new Color(0xfbffe4));
+                panel7.add(label4, "cell 1 1");
 
-            //---- label6 ----
-            label6.setText("Kusur:");
-            cashPaymentContentPane.add(label6, "cell 1 3");
-            cashPaymentContentPane.add(change, "cell 2 3");
+                //---- totalPriceFinal ----
+                totalPriceFinal.setEditable(false);
+                totalPriceFinal.setBackground(new Color(0xb3d8a8));
+                totalPriceFinal.setForeground(Color.darkGray);
+                panel7.add(totalPriceFinal, "cell 2 1");
 
-            //---- finishCash ----
-            finishCash.setText("Zavrsi");
-            finishCash.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    try {
-finishCashMouseClicked(e);} catch (InterruptedException ex) {
-    throw new RuntimeException(ex);
-}
-                }
-            });
-            cashPaymentContentPane.add(finishCash, "cell 2 5");
+                //---- label5 ----
+                label5.setText("Placeno:");
+                label5.setForeground(new Color(0xfbffe4));
+                panel7.add(label5, "cell 1 2");
+
+                //---- payed ----
+                payed.setBackground(new Color(0xb3d8a8));
+                payed.setForeground(Color.darkGray);
+                panel7.add(payed, "cell 2 2");
+
+                //---- label6 ----
+                label6.setText("Kusur:");
+                label6.setForeground(new Color(0xfbffe4));
+                panel7.add(label6, "cell 1 3");
+
+                //---- change ----
+                change.setEditable(false);
+                change.setBackground(new Color(0xb3d8a8));
+                change.setForeground(Color.darkGray);
+                panel7.add(change, "cell 2 3");
+
+                //---- finishCash ----
+                finishCash.setText("Zavrsi");
+                finishCash.setBackground(new Color(0xb3d8a8));
+                finishCash.setForeground(Color.darkGray);
+                finishCash.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        finishCashMouseClicked(e);
+                    }
+                });
+                panel7.add(finishCash, "cell 2 5");
+            }
+
+            GroupLayout cashPaymentContentPaneLayout = new GroupLayout(cashPaymentContentPane);
+            cashPaymentContentPane.setLayout(cashPaymentContentPaneLayout);
+            cashPaymentContentPaneLayout.setHorizontalGroup(
+                cashPaymentContentPaneLayout.createParallelGroup()
+                    .addGroup(GroupLayout.Alignment.TRAILING, cashPaymentContentPaneLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(panel7, GroupLayout.PREFERRED_SIZE, 395, GroupLayout.PREFERRED_SIZE))
+            );
+            cashPaymentContentPaneLayout.setVerticalGroup(
+                cashPaymentContentPaneLayout.createParallelGroup()
+                    .addGroup(GroupLayout.Alignment.TRAILING, cashPaymentContentPaneLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(panel7, GroupLayout.PREFERRED_SIZE, 290, GroupLayout.PREFERRED_SIZE))
+            );
             cashPayment.pack();
             cashPayment.setLocationRelativeTo(cashPayment.getOwner());
         }
@@ -1689,49 +2160,87 @@ finishCashMouseClicked(e);} catch (InterruptedException ex) {
                 }
             });
             var cardPaymentContentPane = cardPayment.getContentPane();
-            cardPaymentContentPane.setLayout(new MigLayout(
-                "insets 0,hidemode 3",
-                // columns
-                "[100,fill]" +
-                "[100,fill]" +
-                "[100,fill]" +
-                "[100,fill]" +
-                "[100,fill]" +
-                "[100,fill]" +
-                "[fill]",
-                // rows
-                "[40]" +
-                "[40]" +
-                "[40]" +
-                "[40]" +
-                "[40]" +
-                "[40]" +
-                "[40]"));
 
-            //---- label7 ----
-            label7.setText("Ukupna cena:");
-            cardPaymentContentPane.add(label7, "cell 1 1");
-            cardPaymentContentPane.add(totalPriceFinalCard, "cell 2 1");
+            //======== panel8 ========
+            {
+                panel8.setBackground(new Color(0x3d8d7a));
+                panel8.setLayout(new MigLayout(
+                    "fill,hidemode 3",
+                    // columns
+                    "[100,fill]" +
+                    "[100,fill]" +
+                    "[100,fill]" +
+                    "[100,fill]" +
+                    "[100,fill]" +
+                    "[100,fill]" +
+                    "[fill]",
+                    // rows
+                    "[40]" +
+                    "[40]" +
+                    "[40]" +
+                    "[40]" +
+                    "[40]" +
+                    "[40]" +
+                    "[40]"));
 
-            //---- label8 ----
-            label8.setText("Broj kartice:");
-            cardPaymentContentPane.add(label8, "cell 1 2");
-            cardPaymentContentPane.add(cardNumber, "cell 2 2 3 1");
+                //---- label7 ----
+                label7.setText("Ukupna cena:");
+                label7.setForeground(new Color(0xfbffe4));
+                panel8.add(label7, "cell 1 2");
 
-            //---- label9 ----
-            label9.setText("PIN:");
-            cardPaymentContentPane.add(label9, "cell 1 3");
-            cardPaymentContentPane.add(cardPin, "cell 2 3");
+                //---- totalPriceFinalCard ----
+                totalPriceFinalCard.setEditable(false);
+                totalPriceFinalCard.setBackground(new Color(0xb3d8a8));
+                totalPriceFinalCard.setForeground(Color.darkGray);
+                panel8.add(totalPriceFinalCard, "cell 2 2");
 
-            //---- finishCard ----
-            finishCard.setText("Zavrsi");
-            finishCard.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    finishCardMouseClicked(e);
-                }
-            });
-            cardPaymentContentPane.add(finishCard, "cell 3 5");
+                //---- label8 ----
+                label8.setText("Broj kartice:");
+                label8.setForeground(new Color(0xfbffe4));
+                panel8.add(label8, "cell 1 3");
+
+                //---- cardNumber ----
+                cardNumber.setBackground(new Color(0xb3d8a8));
+                cardNumber.setForeground(Color.darkGray);
+                panel8.add(cardNumber, "cell 2 3 3 1");
+
+                //---- label9 ----
+                label9.setText("PIN:");
+                label9.setForeground(new Color(0xfbffe4));
+                panel8.add(label9, "cell 1 4");
+
+                //---- cardPin ----
+                cardPin.setBackground(new Color(0xb3d8a8));
+                cardPin.setForeground(Color.darkGray);
+                panel8.add(cardPin, "cell 2 4");
+
+                //---- finishCard ----
+                finishCard.setText("Zavrsi");
+                finishCard.setBackground(new Color(0xb3d8a8));
+                finishCard.setForeground(Color.darkGray);
+                finishCard.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        finishCardMouseClicked(e);
+                    }
+                });
+                panel8.add(finishCard, "cell 4 5");
+            }
+
+            GroupLayout cardPaymentContentPaneLayout = new GroupLayout(cardPaymentContentPane);
+            cardPaymentContentPane.setLayout(cardPaymentContentPaneLayout);
+            cardPaymentContentPaneLayout.setHorizontalGroup(
+                cardPaymentContentPaneLayout.createParallelGroup()
+                    .addGroup(GroupLayout.Alignment.TRAILING, cardPaymentContentPaneLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(panel8, GroupLayout.PREFERRED_SIZE, 570, GroupLayout.PREFERRED_SIZE))
+            );
+            cardPaymentContentPaneLayout.setVerticalGroup(
+                cardPaymentContentPaneLayout.createParallelGroup()
+                    .addGroup(GroupLayout.Alignment.TRAILING, cardPaymentContentPaneLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(panel8, GroupLayout.PREFERRED_SIZE, 290, GroupLayout.PREFERRED_SIZE))
+            );
             cardPayment.pack();
             cardPayment.setLocationRelativeTo(cardPayment.getOwner());
         }
@@ -1746,35 +2255,62 @@ finishCashMouseClicked(e);} catch (InterruptedException ex) {
                 }
             });
             var changeAmmountContentPane = changeAmmount.getContentPane();
-            changeAmmountContentPane.setLayout(new MigLayout(
-                "insets 0,hidemode 3",
-                // columns
-                "[100,fill]" +
-                "[100,fill]" +
-                "[100,fill]" +
-                "[100,fill]",
-                // rows
-                "[40]" +
-                "[40]" +
-                "[40]" +
-                "[40]" +
-                "[40]" +
-                "[40]"));
 
-            //---- label10 ----
-            label10.setText("Unesite novu kolicinu:");
-            changeAmmountContentPane.add(label10, "cell 1 1 2 1");
-            changeAmmountContentPane.add(newAmmount, "cell 1 2 2 1");
+            //======== panel9 ========
+            {
+                panel9.setBackground(new Color(0x3d8d7a));
+                panel9.setLayout(new MigLayout(
+                    "fill,hidemode 3",
+                    // columns
+                    "[100,fill]" +
+                    "[100,fill]" +
+                    "[100,fill]" +
+                    "[100,fill]",
+                    // rows
+                    "[40]" +
+                    "[40]" +
+                    "[40]" +
+                    "[40]" +
+                    "[40]" +
+                    "[40]"));
 
-            //---- finishAmmount ----
-            finishAmmount.setText("Zavrsi");
-            finishAmmount.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    finishAmmountMouseClicked(e);
-                }
-            });
-            changeAmmountContentPane.add(finishAmmount, "cell 2 4");
+                //---- label10 ----
+                label10.setText("Unesite novu kolicinu:");
+                label10.setForeground(new Color(0xfbffe4));
+                panel9.add(label10, "cell 1 1 2 1");
+
+                //---- newAmmount ----
+                newAmmount.setBackground(new Color(0xb3d8a8));
+                newAmmount.setForeground(Color.darkGray);
+                panel9.add(newAmmount, "cell 1 2 2 1");
+
+                //---- finishAmmount ----
+                finishAmmount.setText("Zavrsi");
+                finishAmmount.setBackground(new Color(0xb3d8a8));
+                finishAmmount.setForeground(Color.darkGray);
+                finishAmmount.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        finishAmmountMouseClicked(e);
+                    }
+                });
+                panel9.add(finishAmmount, "cell 2 4");
+            }
+
+            GroupLayout changeAmmountContentPaneLayout = new GroupLayout(changeAmmountContentPane);
+            changeAmmountContentPane.setLayout(changeAmmountContentPaneLayout);
+            changeAmmountContentPaneLayout.setHorizontalGroup(
+                changeAmmountContentPaneLayout.createParallelGroup()
+                    .addGroup(GroupLayout.Alignment.TRAILING, changeAmmountContentPaneLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(panel9, GroupLayout.PREFERRED_SIZE, 345, GroupLayout.PREFERRED_SIZE))
+            );
+            changeAmmountContentPaneLayout.setVerticalGroup(
+                changeAmmountContentPaneLayout.createParallelGroup()
+                    .addGroup(changeAmmountContentPaneLayout.createSequentialGroup()
+                        .addComponent(panel9, GroupLayout.PREFERRED_SIZE, 255, GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+            );
             changeAmmount.pack();
             changeAmmount.setLocationRelativeTo(changeAmmount.getOwner());
         }
@@ -1797,6 +2333,7 @@ finishCashMouseClicked(e);} catch (InterruptedException ex) {
     private JButton back;
     private JScrollPane scrollPane1;
     private JTable items;
+    private JButton sales;
     private JLabel article_label;
     private JTextField article;
     private JLabel amm_label;
@@ -1806,16 +2343,19 @@ finishCashMouseClicked(e);} catch (InterruptedException ex) {
     private JTextField totalPrice;
     private JButton payment;
     private JDialog choosePrescription;
+    private JPanel panel4;
     private JLabel question1;
     private JRadioButton electronic;
     private JRadioButton paper;
     private JButton next;
     private JDialog electronicPrescription;
+    private JPanel panel3;
     private JButton back2;
     private JLabel question2;
     private JTextField healthCard;
     private JButton nextER;
     private JDialog usersPrescriptions;
+    private JPanel panel5;
     private JButton back3;
     private JComboBox prescriptionsCB;
     private JScrollPane scrollPane2;
@@ -1824,8 +2364,8 @@ finishCashMouseClicked(e);} catch (InterruptedException ex) {
     private JDialog paperPrescription;
     private JPanel panel2;
     private JLabel article_label2;
-    private JButton back4;
     private JTextField articlePaper;
+    private JButton back4;
     private JScrollPane scrollPane3;
     private JTable paperPrescriptiontbl;
     private JLabel amm_label2;
@@ -1840,11 +2380,13 @@ finishCashMouseClicked(e);} catch (InterruptedException ex) {
     private JButton enterPaper;
     private JPopupMenu popupMenu;
     private JDialog paymentType;
+    private JPanel panel6;
     private JLabel label3;
     private JRadioButton cash;
     private JRadioButton card;
     private JButton nextPaying;
     private JDialog cashPayment;
+    private JPanel panel7;
     private JLabel label4;
     private JTextField totalPriceFinal;
     private JLabel label5;
@@ -1853,6 +2395,7 @@ finishCashMouseClicked(e);} catch (InterruptedException ex) {
     private JTextField change;
     private JButton finishCash;
     private JDialog cardPayment;
+    private JPanel panel8;
     private JLabel label7;
     private JTextField totalPriceFinalCard;
     private JLabel label8;
@@ -1861,6 +2404,7 @@ finishCashMouseClicked(e);} catch (InterruptedException ex) {
     private JPasswordField cardPin;
     private JButton finishCard;
     private JDialog changeAmmount;
+    private JPanel panel9;
     private JLabel label10;
     private JTextField newAmmount;
     private JButton finishAmmount;

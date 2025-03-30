@@ -35,15 +35,42 @@ public class DTOConverter {
         dto.setDescription(subcategory.getDescription());
         return dto;
     }
+//    public static ProductDto toProductDTO(Product product) {
+//        ProductDto dto = new ProductDto();
+//        dto.setId(product.getId());
+//        dto.setName(product.getName());
+//        dto.setDescription(product.getDescription());
+//        dto.setPurchasePrice(product.getPurchasePrice());
+//        dto.setSellingPrice(product.getSellingPrice());
+//        dto.setStockQuantity(product.getStockQuantity());
+//        return dto;
+//    }
+
     public static ProductDto toProductDTO(Product product) {
-        ProductDto dto = new ProductDto();
-        dto.setId(product.getId());
-        dto.setName(product.getName());
-        dto.setDescription(product.getDescription());
-        dto.setPurchasePrice(product.getPurchasePrice());
-        dto.setSellingPrice(product.getSellingPrice());
-        dto.setStockQuantity(product.getStockQuantity());
-        return dto;
+        if (product == null) {
+            return null;
+        }
+
+        // Create SubcategoryDto if subcategory exists
+        SubcategoryDto subcategoryDto = null;
+        if (product.getSubcategory() != null) {
+            subcategoryDto = new SubcategoryDto(
+                    product.getSubcategory().getId(),
+                    product.getSubcategory().getName()
+            );
+        }
+
+        // Create and return ProductDto
+        return new ProductDto(
+                product.getId(),
+                product.getName(),
+                product.getDosage(),
+                subcategoryDto,
+                product.getDescription(),
+                product.getPurchasePrice(),
+                product.getSellingPrice(),
+                product.getStockQuantity()
+        );
     }
 
 

@@ -34,19 +34,20 @@ public class AuthController {
             throw new BadCredentialsException("Bad credentials");
         }
 
-        // Dohvati ID zaposlenog iz baze
         CustomUserDetails user = (CustomUserDetails) userDetails;
-        int userId = user.getId();  // Metoda `getId()` mora postojati u `CustomUserDetails`
+        int userId = user.getId();
+        int typeId = user.getTypeId();
 
-        // Generiši token sa ID-jem
         String jwtToken = jwtUtils.generateToken(userDetails, userId);
 
         // Sačuvaj token i ID
         JwtResponse.setToken(jwtToken);
         JwtResponse.setUserId(userId);
+        JwtResponse.setTypeId(typeId);
 
         System.out.println("Dobijeni token: " + jwtToken);
         System.out.println("ID zaposlenog: " + userId);
+        System.out.println("ID tipa zaposlenog: " + typeId);
 
         return ResponseEntity.ok(jwtToken);
     }

@@ -1,6 +1,6 @@
 package com.asss.www.ApotekarskaUstanova.Service;
 
-import com.asss.www.ApotekarskaUstanova.Dao.PrescriptionRepository;
+import com.asss.www.ApotekarskaUstanova.Repository.PrescriptionRepository;
 import com.asss.www.ApotekarskaUstanova.Entity.Prescription;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;

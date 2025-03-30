@@ -1,6 +1,6 @@
 package com.asss.www.ApotekarskaUstanova.Service;
 
-import com.asss.www.ApotekarskaUstanova.Dao.AddressRepository;
+import com.asss.www.ApotekarskaUstanova.Repository.AddressRepository;
 import com.asss.www.ApotekarskaUstanova.Entity.Address;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

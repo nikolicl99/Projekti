@@ -4,11 +4,15 @@
 
 package com.asss.www.ApotekarskaUstanova.GUI.Suppliers.SupplierShipments;
 
+import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.GroupLayout;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableModel;
 
+import com.asss.www.ApotekarskaUstanova.Dto.ShipmentDto;
 import com.asss.www.ApotekarskaUstanova.Security.JwtResponse;
 import com.asss.www.ApotekarskaUstanova.Dto.Shipment_ItemsDto;
 import com.asss.www.ApotekarskaUstanova.Entity.Shipment;
@@ -17,23 +21,45 @@ import com.asss.www.ApotekarskaUstanova.GUI.Suppliers.SupplierInfo.SupplierInfo;
 import com.asss.www.ApotekarskaUstanova.GUI.Suppliers.SupplierList.SupplierList;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import net.miginfocom.swing.MigLayout;
 
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 import static com.asss.www.ApotekarskaUstanova.GUI.Suppliers.SupplierInfo.SupplierInfo.getFormBefore;
+import static com.asss.www.ApotekarskaUstanova.GUI.Suppliers.SupplierInfo.SupplierInfo.getSpecificShipment;
 
 
 /**
  * @author lniko
  */
 public class SupplierShipments extends JFrame {
+    private final ObjectMapper objectMapper; // Dodajte ObjectMapper kao polje klase
+    private int specificShipmentId; // Dodajte polje za čuvanje ID-a specifične dostave
+
     public SupplierShipments() {
+        this.objectMapper = new ObjectMapper();
+        this.objectMapper.registerModule(new JavaTimeModule()); // Registrujte JavaTimeModule
         initComponents();
+
+        String[] columnNames = {"Naziv proizvoda", "Količina", "Cena"};
+        DefaultTableModel model = new DefaultTableModel(columnNames, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;  // Onemogući uređivanje ćelija
+            }
+        };
+        Items.setModel(model);
+        customizeTable(Items, model);
+
         LoadData();
     }
 
@@ -55,8 +81,8 @@ public class SupplierShipments extends JFrame {
     private void Shippment(ActionEvent e) {
         String selectedItem = (String) Shippment.getSelectedItem();
         if (selectedItem != null) {
-            long shipmentId = Long.parseLong(selectedItem.split(" - ")[0]); // Dobij ID iz selektovane dostave
-            LoadShipmentItems(shipmentId);
+            int shipmentId = Integer.parseInt(selectedItem.split(" - ")[0]); // Dobij ID iz selektovane dostave
+            LoadShipmentItems(shipmentId); // Učitaj stavke za izabranu dostavu
         }
     }
 
@@ -75,6 +101,7 @@ public class SupplierShipments extends JFrame {
 
         //======== panel1 ========
         {
+            panel1.setBackground(new Color(0x3d8d7a));
             panel1.setLayout(new MigLayout(
                 "hidemode 3",
                 // columns
@@ -103,6 +130,8 @@ public class SupplierShipments extends JFrame {
 
             //---- Back ----
             Back.setText("Nazad");
+            Back.setBackground(new Color(0xb3d8a8));
+            Back.setForeground(Color.darkGray);
             Back.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
@@ -112,11 +141,22 @@ public class SupplierShipments extends JFrame {
             panel1.add(Back, "cell 1 1");
 
             //---- Shippment ----
+            Shippment.setBackground(new Color(0xb3d8a8));
+            Shippment.setForeground(Color.darkGray);
             Shippment.addActionListener(e -> Shippment(e));
             panel1.add(Shippment, "cell 3 1 4 1");
 
             //======== scrollPane1 ========
             {
+                scrollPane1.setBackground(Color.darkGray);
+                scrollPane1.setForeground(Color.darkGray);
+
+                //---- Items ----
+                Items.setBackground(new Color(0xfbffe4));
+                Items.setForeground(Color.darkGray);
+                Items.setGridColor(Color.darkGray);
+                Items.setSelectionBackground(new Color(0xb3d8a8));
+                Items.setSelectionForeground(Color.darkGray);
                 scrollPane1.setViewportView(Items);
             }
             panel1.add(scrollPane1, "cell 2 3 6 7");
@@ -155,7 +195,7 @@ public class SupplierShipments extends JFrame {
         if (getFormBefore() == 2) {
             supplierId = SupplierList.getSelectedSupplierId();
         }
-//        int supplierId = InventoryBatch.getSelectedSupplierId();  // Dobij ID kurira
+
         try {
             URL url = new URL("http://localhost:8080/api/suppliers/" + supplierId + "/shipments");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -167,14 +207,49 @@ public class SupplierShipments extends JFrame {
                 try (Scanner scanner = new Scanner(connection.getInputStream())) {
                     String response = scanner.useDelimiter("\\A").next();
 
-                    // Parsiranje JSON odgovora
-                    ObjectMapper objectMapper = new ObjectMapper();
-                    List<Shipment> shipments = objectMapper.readValue(response, new TypeReference<List<Shipment>>() {});
+                    // Parsiranje JSON odgovora koristeći već kreirani ObjectMapper
+                    List<ShipmentDto> shipments = objectMapper.readValue(response, new TypeReference<List<ShipmentDto>>() {});
+
+                    // Sortiraj ID-jeve od najvećeg ka najmanjem
+                    List<Integer> sortedShipmentIds = sortShipmentIds(shipments);
 
                     // Dodavanje u ComboBox
                     Shippment.removeAllItems();
-                    for (Shipment shipment : shipments) {
-                        Shippment.addItem(shipment.getId() + " - " + shipment.getArrivalTime());
+                    for (Integer shipmentId : sortedShipmentIds) {
+                        // Pronađi odgovarajuću pošiljku po ID-u
+                        ShipmentDto shipment = shipments.stream()
+                                .filter(s -> s.getId() == shipmentId)
+                                .findFirst()
+                                .orElse(null);
+
+                        if (shipment != null) {
+                            Shippment.addItem(shipment.getId() + " - " + shipment.getArrivalDate() + " - " + shipment.getArrivalTime());
+                        }
+                    }
+
+                    // Ako je forma otvorena putem klika na određenu dostavu, prikaži tu dostavu
+                    if (SupplierInfo.getFormPart() == 2) {
+                        specificShipmentId = getSpecificShipment();
+                        Shippment.setSelectedItem(specificShipmentId + " - " + shipments.stream()
+                                .filter(s -> s.getId() == specificShipmentId)
+                                .findFirst()
+                                .map(s -> s.getArrivalDate() + " - " + s.getArrivalTime())
+                                .orElse(""));
+                        LoadShipmentItems(specificShipmentId);
+                    } else if (SupplierInfo.getFormPart() == 1) {
+                        // Ako je forma otvorena putem dugmeta "Prikaži sve dostave", prikaži poslednju dostavu (najveći ID)
+                        if (!sortedShipmentIds.isEmpty()) {
+                            int lastShipmentId = sortedShipmentIds.get(0); // Prvi u sortiranoj listi je najveći ID
+                            ShipmentDto lastShipment = shipments.stream()
+                                    .filter(s -> s.getId() == lastShipmentId)
+                                    .findFirst()
+                                    .orElse(null);
+
+                            if (lastShipment != null) {
+                                Shippment.setSelectedItem(lastShipment.getId() + " - " + lastShipment.getArrivalDate() + " - " + lastShipment.getArrivalTime());
+                                LoadShipmentItems(lastShipment.getId());
+                            }
+                        }
                     }
                 }
             } else {
@@ -187,9 +262,18 @@ public class SupplierShipments extends JFrame {
             JOptionPane.showMessageDialog(this, "Greška pri popunjavanju ComboBox-a.", "Greška", JOptionPane.ERROR_MESSAGE);
         }
     }
-    private void LoadShipmentItems(long shipmentId) {
+
+    private List<Integer> sortShipmentIds(List<ShipmentDto> shipments) {
+        return shipments.stream()
+                .map(ShipmentDto::getId).sorted(Collections.reverseOrder()).collect(Collectors.toList());
+    }
+
+    private void LoadShipmentItems(int shipmentId) {
+        DefaultTableModel model = (DefaultTableModel) Items.getModel();
+        model.setRowCount(0); // Obriši sve postojeće redove
+
         try {
-            URL url = new URL("http://localhost:8080/api/shipments/" + shipmentId + "/items");
+            URL url = new URL("http://localhost:8080/api/shipment-items/" + shipmentId + "/items");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             connection.setRequestProperty("Authorization", "Bearer " + JwtResponse.getToken());
@@ -201,25 +285,12 @@ public class SupplierShipments extends JFrame {
                     String response = scanner.useDelimiter("\\A").next();
                     System.out.println("JSON Response: " + response); // Ispis JSON odgovora
 
-                    // Deserializacija JSON odgovora u listu Shipment_ItemsDto objekata
-                    ObjectMapper objectMapper = new ObjectMapper();
+                    // Deserializacija JSON odgovora koristeći već kreirani ObjectMapper
                     List<Shipment_ItemsDto> items = objectMapper.readValue(response, new TypeReference<List<Shipment_ItemsDto>>() {});
 
-                    // Postavljanje podataka u tabelu
-                    String[] columnNames = {"Naziv proizvoda", "Količina", "Cena"};
-                    Object[][] data = new Object[items.size()][3];
-
-                    for (int i = 0; i < items.size(); i++) {
-                        Shipment_ItemsDto item = items.get(i);
-                        data[i][0] = item.getName();
-                        data[i][1] = item.getQuantity();
-                        data[i][2] = item.getPurchasePrice();
-
-                        // Ispis za debagovanje
-                        System.out.println("kolona: " + i + ", ime: " + item.getName() + ", kolicina: " + item.getQuantity() + ", cena: " + item.getPurchasePrice());
+                    for (Shipment_ItemsDto item : items) {
+                        model.addRow(new Object[]{item.getProductBatch().getProduct().getName(), item.getQuantity(), item.getProductBatch().getProduct().getSellingPrice()});
                     }
-
-                    Items.setModel(new DefaultTableModel(data, columnNames));
                 }
             } else {
                 JOptionPane.showMessageDialog(this, "Greška pri učitavanju stavki dostave.", "Greška", JOptionPane.ERROR_MESSAGE);
@@ -229,9 +300,32 @@ public class SupplierShipments extends JFrame {
         } catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Greška pri popunjavanju tabele.", "Greška", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            customizeTable(Items, model);
         }
     }
 
+    public void customizeTable(JTable table, TableModel model) {
+        // Set background color for the table header
+        JTableHeader header = table.getTableHeader();
+        Color headerBackgroundColor = new Color(0xb3, 0xd8, 0xa8); // Hex code #b3d8a8
+        header.setBackground(headerBackgroundColor);
 
+        // Optional: Set foreground (text) color for the header
+        Color headerForegroundColor = Color.DARK_GRAY; // Example: Dark gray text
+        header.setForeground(headerForegroundColor);
 
+        // Set font for the header
+        Font headerFont = new Font("Inter", Font.BOLD, 13);
+        header.setFont(headerFont);
+
+        // Set the model for the table
+        table.setModel(model);
+
+        // Set the background color for the viewport and scroll pane
+        Color backgroundColor = new Color(0xfb, 0xff, 0xe4); // Hex code #fbffe4
+        JViewport viewport = scrollPane1.getViewport();
+        viewport.setBackground(backgroundColor);
+        scrollPane1.setBackground(backgroundColor);
+    }
 }

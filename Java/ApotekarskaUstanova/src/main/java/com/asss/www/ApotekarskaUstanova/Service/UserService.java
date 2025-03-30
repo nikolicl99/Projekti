@@ -1,7 +1,7 @@
 package com.asss.www.ApotekarskaUstanova.Service;
 
 import com.asss.www.ApotekarskaUstanova.Entity.User;
-import com.asss.www.ApotekarskaUstanova.Dao.UserRepository;
+import com.asss.www.ApotekarskaUstanova.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

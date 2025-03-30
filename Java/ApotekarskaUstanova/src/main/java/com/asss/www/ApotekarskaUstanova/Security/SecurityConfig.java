@@ -31,6 +31,9 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable()) // Onemogućavanje CSRF zaštite (za REST API)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll() // Dozvoljava pristup rutama za autentifikaciju
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/cashier/**").hasRole("CASHIER")
+                        .requestMatchers("/inventory/**").hasRole("INVENTORY")
                         .anyRequest().authenticated() // Sve ostale rute zahtevaju autentifikaciju
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)); // Bez sesija
@@ -63,3 +66,4 @@ public class SecurityConfig {
         return provider;
     }
 }
+

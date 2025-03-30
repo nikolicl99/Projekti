@@ -10,7 +10,7 @@ public class Shipment_Items {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private int id;
 
     @ManyToOne
     @JoinColumn(name = "shipment_id", nullable = false)
@@ -18,18 +18,18 @@ public class Shipment_Items {
 
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
-    private Product product;
+    private ProductBatch productBatch;
 
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
     // Getters and Setters
 
-    public Long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -41,12 +41,12 @@ public class Shipment_Items {
         this.shipment = shipment;
     }
 
-    public Product getProduct() {
-        return product;
+    public ProductBatch getProductBatch() {
+        return productBatch;
     }
 
-    public void setProduct(Product product) {
-        this.product = product;
+    public void setProductBatch(ProductBatch productBatch) {
+        this.productBatch = productBatch;
     }
 
     public Integer getQuantity() {

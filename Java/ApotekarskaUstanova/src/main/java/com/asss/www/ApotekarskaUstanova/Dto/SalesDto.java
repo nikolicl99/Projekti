@@ -1,15 +1,38 @@
 package com.asss.www.ApotekarskaUstanova.Dto;
 
-import java.time.LocalDateTime;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import java.sql.Time;
+import java.time.LocalDate;
+import java.util.Date;
 
 public class SalesDto {
 
     private int id;
     private double totalPrice;
-    private double receipt_change;
-    private LocalDateTime transaction_date;
-//    private String receipt_type;
-    private long cashier_id;
+
+    @JsonProperty("change")
+    private double receiptChange;
+
+    @JsonProperty("transactionDate")
+    private LocalDate transactionDate;
+
+    @JsonProperty("transactionTime")
+    private Time transactionTime;
+
+//    @JsonProperty("payment_type")
+    private String paymentType;
+
+
+    private int employeeId; // For JSON deserialization
+
+//    @JsonIgnore // This field will not be serialized/deserialized
+@JsonProperty("cashier")
+    private EmployeeDto employeeDto; // For business logic
+
+    // Constructors, getters, and setters
 
     public int getId() {
         return id;
@@ -27,35 +50,51 @@ public class SalesDto {
         this.totalPrice = totalPrice;
     }
 
-    public double getReceipt_change() {
-        return receipt_change;
+    public double getReceiptChange() {
+        return receiptChange;
     }
 
-    public void setReceipt_change(double receipt_change) {
-        this.receipt_change = receipt_change;
+    public void setReceiptChange(double receiptChange) {
+        this.receiptChange = receiptChange;
     }
 
-    public LocalDateTime getTransaction_date() {
-        return transaction_date;
+    public LocalDate getTransactionDate() {
+        return transactionDate;
     }
 
-    public void setTransaction_date(LocalDateTime transaction_date) {
-        this.transaction_date = transaction_date;
+    public void setTransactionDate(LocalDate transactionDate) {
+        this.transactionDate = transactionDate;
     }
 
-//    public String getReceipt_type() {
-//        return receipt_type;
-//    }
-//
-//    public void setReceipt_type(String receipt_type) {
-//        this.receipt_type = receipt_type;
-//    }
-
-    public long getCashier_id() {
-        return cashier_id;
+    public Time getTransactionTime() {
+        return transactionTime;
     }
 
-    public void setCashier_id(long cashier_id) {
-        this.cashier_id = cashier_id;
+    public void setTransactionTime(Time transactionTime) {
+        this.transactionTime = transactionTime;
+    }
+
+    public String getPaymentType() {
+        return paymentType;
+    }
+
+    public void setPaymentType(String paymentType) {
+        this.paymentType = paymentType;
+    }
+
+    public int getEmployeeId() {
+        return employeeId;
+    }
+
+    public void setEmployeeId(int employeeId) {
+        this.employeeId = employeeId;
+    }
+
+    public EmployeeDto getEmployeeDto() {
+        return employeeDto;
+    }
+
+    public void setEmployeeDto(EmployeeDto employeeDto) {
+        this.employeeDto = employeeDto;
     }
 }

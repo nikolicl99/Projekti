@@ -30,36 +30,17 @@ public class EmployeesController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<String> addEmployee(@RequestBody @Valid EmployeeDto employeeDto, @RequestHeader("Authorization") String token) {
+    public ResponseEntity<EmployeeDto> addEmployee(@RequestBody @Valid EmployeeDto employeeDto, @RequestHeader("Authorization") String token) {
         System.out.println("Received JSON: " + employeeDto);
 
-        // Provera da li Base64 string nije null ili prazan
-        if (EmployeeDto.getProfileImage() == null || EmployeeDto.getProfileImage().isEmpty()) {
-            System.out.println("Image field is null or empty!");
-            return ResponseEntity.badRequest().body("Image data is missing");
-        }
-
-        if (token == null || !employeesService.isValidToken(token)) {
-            return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
-        }
-
-        boolean isAdded = employeesService.addEmployee(employeeDto);
-        if (isAdded) {
-            return new ResponseEntity<>("Employee successfully added", HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("Error while adding employee", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        EmployeeDto addEmployee = employeesService.addEmployee(employeeDto);
+        return ResponseEntity.ok(addEmployee);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteEmployee(
-            @PathVariable("id") long id,
+            @PathVariable("id") int id,
             @RequestHeader("Authorization") String token) {
-
-        // Provera validnosti tokena
-        if (!employeesService.isValidToken(token)) {
-            return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
-        }
 
         boolean isDeleted = employeesService.deleteEmployee(id);
         if (isDeleted) {
@@ -67,6 +48,18 @@ public class EmployeesController {
         } else {
             return new ResponseEntity<>("Employee not found", HttpStatus.NOT_FOUND);
         }
+    }
+
+    @PutMapping("/fire/{id}")
+    public ResponseEntity<String> fireEmployee(@PathVariable int id) {
+        employeesService.fireEmployee(id);
+        return ResponseEntity.ok("Zaposleni uspešno otpušten.");
+    }
+
+    @PutMapping("/rehire/{id}")
+    public ResponseEntity<String> rehireEmployee(@PathVariable int id) {
+        employeesService.rehireEmployee(id);
+        return ResponseEntity.ok("Zaposleni uspešno otpušten.");
     }
 
 }

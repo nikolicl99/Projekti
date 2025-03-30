@@ -1,6 +1,6 @@
 package com.asss.www.ApotekarskaUstanova.Service;
 
-import com.asss.www.ApotekarskaUstanova.Dao.PrescriptionItemsRepository;
+import com.asss.www.ApotekarskaUstanova.Repository.PrescriptionItemsRepository;
 import com.asss.www.ApotekarskaUstanova.Entity.Prescription_Items;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

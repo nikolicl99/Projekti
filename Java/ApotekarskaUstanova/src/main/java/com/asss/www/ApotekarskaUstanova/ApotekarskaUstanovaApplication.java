@@ -11,14 +11,8 @@ import javax.swing.*;
 public class ApotekarskaUstanovaApplication {
 
 	public static void main(String[] args) {
-		// Pokretanje Spring Boot aplikacije
 		System.setProperty("java.awt.headless", "false");
 		ApplicationContext context = SpringApplication.run(ApotekarskaUstanovaApplication.class, args);
-
-		// Pokretanje Swing GUI-a na Event Dispatch Thread
-		SwingUtilities.invokeLater(() -> {
-			JFrame pocetnaStrana = context.getBean(StartPage.class);
-			pocetnaStrana.setVisible(true);
-		});
+        SwingUtilities.invokeLater(StartPage::start);
 	}
 }

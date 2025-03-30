@@ -1,19 +1,18 @@
 package com.asss.www.ApotekarskaUstanova.Controllers;
 
 import com.asss.www.ApotekarskaUstanova.Dto.ShipmentDto;
-import com.asss.www.ApotekarskaUstanova.Entity.Address;
+import com.asss.www.ApotekarskaUstanova.Dto.SupplierDto;
 import com.asss.www.ApotekarskaUstanova.Entity.Shipment;
 import com.asss.www.ApotekarskaUstanova.Entity.Supplier;
 import com.asss.www.ApotekarskaUstanova.Service.SuppliersService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-import java.util.List;
-import java.util.Map;
 import java.util.Collections;
+import java.util.List;
 
 @RestController
 @RequestMapping("api/suppliers")
@@ -23,8 +22,9 @@ public class SuppliersController {
     private SuppliersService suppliersService;
 
     @GetMapping
-    public List<Supplier> getAllSuppliers() {
-        return suppliersService.getSuppliers();
+    public ResponseEntity<List<SupplierDto>> getAllSuppliers() {
+        List<SupplierDto> suppliers = suppliersService.getAllSuppliers();
+        return ResponseEntity.ok(suppliers);
     }
 
     @PostMapping("/add")
@@ -46,36 +46,34 @@ public class SuppliersController {
     }
 
     @GetMapping("/name/{name}")
-    public ResponseEntity<Map<String, Integer>> getSupplierId(@PathVariable String name) {
-        int supplierId = suppliersService.getSupplierIdByName(name);
+    public ResponseEntity<Integer> getSupplierId(@PathVariable String name) {
+        Integer supplierId = suppliersService.getSupplierIdByName(name);
 
-        if (supplierId != -1) {
-            return ResponseEntity.ok(Collections.singletonMap("id", supplierId));
+        if (supplierId != null) {
+            return ResponseEntity.ok(supplierId); // Return the supplierId directly
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Collections.singletonMap("error", -1));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(-1); // Return -1 if not found
         }
     }
 
-    // Novi endpoint za dohvatanje poslednjih 4-5 isporuka dobavljača
-    @GetMapping("/{id}/recent-shipments")
-    public ResponseEntity<List<ShipmentDto>> getRecentShipments(@PathVariable int id) {
-        List<Shipment> shipments = suppliersService.getRecentShipments(id);
-
-        if (shipments.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.emptyList());
+    @GetMapping("/{supplierId}/shipments")
+    public ResponseEntity<?> getAllShipmentsBySupplierId(@PathVariable int supplierId) {
+        try {
+            List<ShipmentDto> shipments = suppliersService.getAllShipmentsBySupplierId(supplierId);
+            return ResponseEntity.ok(shipments);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
-
-        // Mapiranje entiteta u DTO kako bi izbegli LAZY problema
-        List<ShipmentDto> shipmentDtos = shipments.stream()
-                .map(shipment -> new ShipmentDto(
-                        shipment.getId(),
-                        shipment.getArrivalTime(),
-                        shipment.getSupplier().getName() // Izbegavanje LAZY problema
-                ))
-                .toList();
-
-        return ResponseEntity.ok(shipmentDtos);
     }
 
+    // Endpoint za dohvatanje poslednjih 5 isporuka za određenog dobavljača
+    @GetMapping("/{supplierId}/recent-shipments")
+    public ResponseEntity<?> getRecentShipments(@PathVariable int supplierId) {
+        try {
+            List<ShipmentDto> shipments = suppliersService.getRecentShipments(supplierId);
+            return ResponseEntity.ok(shipments);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
 }

@@ -4,8 +4,12 @@
 
 package com.asss.www.ApotekarskaUstanova.GUI.Start.StartPage;
 
-import com.asss.www.ApotekarskaUstanova.GUI.Start.MainMenu.MainMenu;
+import com.asss.www.ApotekarskaUstanova.GUI.CashRegister.CashRegister.CashRegister;
+import com.asss.www.ApotekarskaUstanova.GUI.Start.MainMenuAdmin.MainMenuAdmin;
+import com.asss.www.ApotekarskaUstanova.GUI.Start.MainMenuInventory.MainMenuInventory;
+import com.asss.www.ApotekarskaUstanova.Security.JwtResponse;
 import com.asss.www.ApotekarskaUstanova.Util.PasswordUtil;
+import net.miginfocom.swing.*;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.client.WebSocketClient;
 
@@ -27,29 +31,39 @@ import java.awt.event.MouseEvent;
 @Configuration
 public class StartPage extends JFrame {
 
-    private WebSocketClient webSocketClient;
-
     public StartPage() {
         initComponents();
+    }
+
+    public static void start() {
+        SwingUtilities.invokeLater(() -> {
+            StartPage frame = new StartPage();
+            frame.setTitle("Apotekarska Ustanova");
+            frame.setSize(500, 500); // Adjusted size to match the preferred bounds
+            frame.setLocationRelativeTo(null); // Center on screen
+            frame.setVisible(true);
+        });
     }
 
     private void loginMouseClicked(MouseEvent e) {
         try {
             String username = email.getText().trim();
-            String password = new String(sifra.getPassword()).trim();
+            String password = String.valueOf(sifra.getPassword()).trim();
 
             if (username.isEmpty() || password.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Unesite sve podatke!", "Greška", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            System.out.println(username);
-            String hashedPassword = PasswordUtil.hashPassword(password); // Koristi PasswordUtils za heširanje
-
             if (authenticate(username, password)) {
-                JOptionPane.showMessageDialog(this, "Uspešno ste se prijavili!");
                 dispose();
-                MainMenu.start();
+                if (JwtResponse.getTypeId() == 1) {
+                    MainMenuAdmin.start();
+                } else if (JwtResponse.getTypeId() == 2) {
+                    CashRegister.start();
+                } else if (JwtResponse.getTypeId() == 4) {
+                    MainMenuInventory.start();
+                }
             } else {
                 JOptionPane.showMessageDialog(this, "Prijava nije uspela. Proverite podatke.", "Greška", JOptionPane.ERROR_MESSAGE);
             }
@@ -60,7 +74,6 @@ public class StartPage extends JFrame {
     }
 
     private boolean authenticate(String email, String hashedPassword) throws IOException {
-        // Kreiraj JSON objekat za prijavu
         String jsonPayload = String.format("{\"email\":\"%s\", \"password\":\"%s\"}",
                 email, hashedPassword);
 
@@ -82,7 +95,6 @@ public class StartPage extends JFrame {
             try (Scanner scanner = new Scanner(connection.getInputStream())) {
                 if (scanner.hasNextLine()) {
                     String response = scanner.nextLine();
-//                    return "LOGIN_SUCCESS".equalsIgnoreCase(response.trim());
                     return true;
                 }
             }
@@ -95,22 +107,72 @@ public class StartPage extends JFrame {
         // Generated using JFormDesigner Educational license - Luka Nikolic (office)
         panel1 = new JPanel();
         label1 = new JLabel();
-        login = new JButton();
-        email = new JTextField();
         emailLabel = new JLabel();
-        sifra = new JPasswordField();
+        email = new JTextField();
         sifraLabel = new JLabel();
+        sifra = new JPasswordField();
+        login = new JButton();
 
         //======== this ========
         setPreferredSize(new Dimension(500, 500));
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        setResizable(false);
         var contentPane = getContentPane();
 
         //======== panel1 ========
         {
+            panel1.setBackground(new Color(0x3d8d7a));
+            panel1.setMinimumSize(new Dimension(254, 166));
+            panel1.setLayout(new MigLayout(
+                "fill,insets 0,hidemode 3,gap 5 5",
+                // columns
+                "[50]" +
+                "[50]" +
+                "[50]" +
+                "[50]" +
+                "[50]" +
+                "[50]" +
+                "[50]" +
+                "[50]" +
+                "[50]" +
+                "[50]",
+                // rows
+                "[75]" +
+                "[75]" +
+                "[75]" +
+                "[75]" +
+                "[75]" +
+                "[75]" +
+                "[75]" +
+                "[75]" +
+                "[75]" +
+                "[75]"));
 
             //---- label1 ----
             label1.setText("Apoteka \"Bolji Zivot\"");
+            label1.setFont(new Font("Inter", Font.PLAIN, 18));
+            label1.setForeground(new Color(0xfbffe4));
+            panel1.add(label1, "cell 3 2 4 1,alignx center,growx 0");
+
+            //---- emailLabel ----
+            emailLabel.setText("Email:");
+            emailLabel.setForeground(new Color(0xfbffe4));
+            panel1.add(emailLabel, "cell 3 3");
+
+            //---- email ----
+            email.setForeground(Color.darkGray);
+            email.setBackground(new Color(0xb3d8a8));
+            panel1.add(email, "cell 4 3 3 1,growx");
+
+            //---- sifraLabel ----
+            sifraLabel.setText("Sifra:");
+            sifraLabel.setForeground(new Color(0xfbffe4));
+            panel1.add(sifraLabel, "cell 3 4");
+
+            //---- sifra ----
+            sifra.setForeground(Color.darkGray);
+            sifra.setBackground(new Color(0xb3d8a8));
+            panel1.add(sifra, "cell 4 4 3 1,growx");
 
             //---- login ----
             login.setIcon(null);
@@ -118,76 +180,25 @@ public class StartPage extends JFrame {
             login.setSelectedIcon(null);
             login.setText("Login");
             login.setBorder(new LineBorder(Color.black, 1, true));
+            login.setBackground(new Color(0xb3d8a8));
             login.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
                     loginMouseClicked(e);
                 }
             });
-
-            //---- emailLabel ----
-            emailLabel.setText("Email:");
-
-            //---- sifraLabel ----
-            sifraLabel.setText("Sifra:");
-
-            GroupLayout panel1Layout = new GroupLayout(panel1);
-            panel1.setLayout(panel1Layout);
-            panel1Layout.setHorizontalGroup(
-                panel1Layout.createParallelGroup()
-                    .addGroup(panel1Layout.createSequentialGroup()
-                        .addGroup(panel1Layout.createParallelGroup()
-                            .addGroup(panel1Layout.createSequentialGroup()
-                                .addGap(145, 145, 145)
-                                .addGroup(panel1Layout.createParallelGroup()
-                                    .addGroup(panel1Layout.createSequentialGroup()
-                                        .addGap(25, 25, 25)
-                                        .addComponent(label1))
-                                    .addGroup(panel1Layout.createSequentialGroup()
-                                        .addComponent(emailLabel, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
-                                        .addGap(10, 10, 10)
-                                        .addComponent(email, GroupLayout.PREFERRED_SIZE, 150, GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(panel1Layout.createSequentialGroup()
-                                        .addComponent(sifraLabel, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
-                                        .addGap(10, 10, 10)
-                                        .addComponent(sifra, GroupLayout.PREFERRED_SIZE, 150, GroupLayout.PREFERRED_SIZE))))
-                            .addGroup(panel1Layout.createSequentialGroup()
-                                .addGap(187, 187, 187)
-                                .addComponent(login, GroupLayout.PREFERRED_SIZE, 105, GroupLayout.PREFERRED_SIZE)))
-                        .addContainerGap(153, Short.MAX_VALUE))
-            );
-            panel1Layout.setVerticalGroup(
-                panel1Layout.createParallelGroup()
-                    .addGroup(panel1Layout.createSequentialGroup()
-                        .addGap(87, 87, 87)
-                        .addComponent(label1)
-                        .addGap(38, 38, 38)
-                        .addGroup(panel1Layout.createParallelGroup()
-                            .addGroup(panel1Layout.createSequentialGroup()
-                                .addGap(5, 5, 5)
-                                .addComponent(emailLabel))
-                            .addComponent(email, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE))
-                        .addGap(25, 25, 25)
-                        .addGroup(panel1Layout.createParallelGroup()
-                            .addGroup(panel1Layout.createSequentialGroup()
-                                .addGap(5, 5, 5)
-                                .addComponent(sifraLabel))
-                            .addComponent(sifra, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 126, Short.MAX_VALUE)
-                        .addComponent(login, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
-                        .addGap(86, 86, 86))
-            );
+            panel1.add(login, "cell 4 6 2 1,grow");
         }
 
         GroupLayout contentPaneLayout = new GroupLayout(contentPane);
         contentPane.setLayout(contentPaneLayout);
         contentPaneLayout.setHorizontalGroup(
             contentPaneLayout.createParallelGroup()
-                .addComponent(panel1, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(panel1, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 498, Short.MAX_VALUE)
         );
         contentPaneLayout.setVerticalGroup(
             contentPaneLayout.createParallelGroup()
-                .addComponent(panel1, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(panel1, GroupLayout.DEFAULT_SIZE, 469, Short.MAX_VALUE)
         );
         pack();
         setLocationRelativeTo(getOwner());
@@ -198,10 +209,10 @@ public class StartPage extends JFrame {
     // Generated using JFormDesigner Educational license - Luka Nikolic (office)
     private JPanel panel1;
     private JLabel label1;
-    private JButton login;
-    private JTextField email;
     private JLabel emailLabel;
-    private JPasswordField sifra;
+    private JTextField email;
     private JLabel sifraLabel;
+    private JPasswordField sifra;
+    private JButton login;
     // JFormDesigner - End of variables declaration  //GEN-END:variables  @formatter:on
 }

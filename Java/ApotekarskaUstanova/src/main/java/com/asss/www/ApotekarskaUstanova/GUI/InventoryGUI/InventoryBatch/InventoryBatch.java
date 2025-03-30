@@ -15,6 +15,8 @@ import java.util.Scanner;
 import javax.swing.*;
 import javax.swing.GroupLayout;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableModel;
 
 import com.asss.www.ApotekarskaUstanova.GUI.Suppliers.SupplierInfo.SupplierInfo;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -23,6 +25,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.asss.www.ApotekarskaUstanova.Security.JwtResponse;
 import com.asss.www.ApotekarskaUstanova.Dto.ProductBatchDto;
 import com.asss.www.ApotekarskaUstanova.GUI.InventoryGUI.Inventory.Inventory;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import net.miginfocom.swing.*;
 import org.json.JSONObject;
 
@@ -30,7 +33,11 @@ import org.json.JSONObject;
  * @author lniko
  */
 public class InventoryBatch extends JFrame {
+    private final ObjectMapper objectMapper; // Dodajte ObjectMapper kao polje klase
+
     public InventoryBatch() {
+        this.objectMapper = new ObjectMapper();
+        this.objectMapper.registerModule(new JavaTimeModule()); // Registrujte JavaTimeModule
         initComponents();
         prikaziPodatke();
     }
@@ -65,15 +72,97 @@ public class InventoryBatch extends JFrame {
             // Ako je dvoklik, otvara se forma za dobavljača
             if (e.getClickCount() == 2) {
                 JOptionPane.showMessageDialog(this, "Izabran dobavljač ID: " + getSelectedSupplierId());
-
                 SupplierInfo.setFormBefore(1);
-
                 dispose();
                 SupplierInfo.start();
             }
 
         }
     }
+
+    private void prikaziPodatke() {
+        DefaultTableModel model = new DefaultTableModel() {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;  // Onemogući uređivanje ćelija
+            }
+        };
+        model.addColumn("Batch ID");
+        model.addColumn("Naziv Isporuke");
+        model.addColumn("Datum Isporuke");
+        model.addColumn("Datum isteka");
+        model.addColumn("Količina");
+        model.addColumn("Dobavljac");
+
+        try {
+            // URL REST API-ja
+            long selectedProductId = Inventory.getSelectedItemId(); // Pretpostavljam da vraća ID proizvoda
+            System.out.println("izabrani id je: " + selectedProductId);
+            URL url = new URL("http://localhost:8080/api/batches/product/" + selectedProductId);
+
+            // Konfigurisanje HTTP zahteva
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("Authorization", "Bearer " + JwtResponse.getToken());
+
+            // Provera odgovora API-ja
+            int responseCode = connection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                try (Scanner scanner = new Scanner(connection.getInputStream())) {
+                    String response = scanner.useDelimiter("\\A").next();
+
+                    System.out.println(response);
+
+                    // Parsiranje JSON odgovora koristeći već kreirani ObjectMapper
+                    List<ProductBatchDto> batchList = objectMapper.readValue(response, new TypeReference<List<ProductBatchDto>>() {});
+
+                    for (ProductBatchDto batch : batchList) {
+                        model.addRow(new Object[]{
+                                batch.getId(),
+                                batch.getBatchNumber(),
+                                batch.getShipmentDto().getArrivalDate(),
+                                batch.getExpirationDate(),
+                                batch.getQuantityRemaining(),
+                                batch.getShipmentDto().getSupplier().getName() != null ? batch.getShipmentDto().getSupplier().getName() : "Nepoznat dobavljac"
+                        });
+                    }
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Greška API-ja: " + responseCode, "Greška", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Greška prilikom učitavanja podataka!", "Greška", JOptionPane.ERROR_MESSAGE);
+        }
+
+        Batch.setModel(model);
+        customizeTable(Batch, model);
+    }
+
+    public void customizeTable(JTable table, TableModel model) {
+        // Set background color for the table header
+        JTableHeader header = table.getTableHeader();
+        Color headerBackgroundColor = new Color(0xb3, 0xd8, 0xa8); // Hex code #b3d8a8
+        header.setBackground(headerBackgroundColor);
+
+        // Optional: Set foreground (text) color for the header
+        Color headerForegroundColor = Color.DARK_GRAY; // Example: Dark gray text
+        header.setForeground(headerForegroundColor);
+
+        // Set font for the header
+        Font headerFont = new Font("Inter", Font.BOLD, 13);
+        header.setFont(headerFont);
+
+        // Set the model for the table
+        table.setModel(model);
+
+        // Set the background color for the viewport and scroll pane
+        Color backgroundColor = new Color(0xfb, 0xff, 0xe4); // Hex code #fbffe4
+        JViewport viewport = scrollPane1.getViewport();
+        viewport.setBackground(backgroundColor);
+        scrollPane1.setBackground(backgroundColor);
+    }
+
 
     private int dobijanjeIDDobavljaca(String naziv_Dobavljaca) {
         System.out.println("Naziv dobavljača: " + naziv_Dobavljaca);
@@ -100,8 +189,8 @@ public class InventoryBatch extends JFrame {
                     String response = scanner.useDelimiter("\\A").next();
                     System.out.println("Odgovor servera: " + response);
 
-                    JSONObject jsonResponse = new JSONObject(response);
-                    return jsonResponse.getInt("id");
+                    // Parsiranje odgovora kao broja (umesto JSON objekta)
+                    return Integer.parseInt(response.trim()); // Pretvaramo odgovor u broj
                 }
             } else {
                 JOptionPane.showMessageDialog(null,
@@ -118,12 +207,9 @@ public class InventoryBatch extends JFrame {
         return -1; // Vraćamo -1 ako dođe do greške
     }
 
-
-
-
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
-        // Generated using JFormDesigner Evaluation license - Luka Nikolić
+        // Generated using JFormDesigner Educational license - Luka Nikolic (office)
         panel1 = new JPanel();
         Back = new JButton();
         scrollPane1 = new JScrollPane();
@@ -138,12 +224,7 @@ public class InventoryBatch extends JFrame {
 
         //======== panel1 ========
         {
-            panel1.setBorder (new javax. swing. border. CompoundBorder( new javax .swing .border .TitledBorder (new javax. swing. border.
-            EmptyBorder( 0, 0, 0, 0) , "JF\u006frmDes\u0069gner \u0045valua\u0074ion", javax. swing. border. TitledBorder. CENTER, javax. swing
-            . border. TitledBorder. BOTTOM, new java .awt .Font ("D\u0069alog" ,java .awt .Font .BOLD ,12 ),
-            java. awt. Color. red) ,panel1. getBorder( )) ); panel1. addPropertyChangeListener (new java. beans. PropertyChangeListener( )
-            { @Override public void propertyChange (java .beans .PropertyChangeEvent e) {if ("\u0062order" .equals (e .getPropertyName () ))
-            throw new RuntimeException( ); }} );
+            panel1.setBackground(new Color(0x3d8d7a));
             panel1.setLayout(new MigLayout(
                 "hidemode 3",
                 // columns
@@ -165,6 +246,8 @@ public class InventoryBatch extends JFrame {
 
             //---- Back ----
             Back.setText("Nazad");
+            Back.setBackground(new Color(0xb3d8a8));
+            Back.setForeground(Color.darkGray);
             Back.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
@@ -175,8 +258,15 @@ public class InventoryBatch extends JFrame {
 
             //======== scrollPane1 ========
             {
+                scrollPane1.setBackground(Color.darkGray);
+                scrollPane1.setForeground(Color.darkGray);
 
                 //---- Batch ----
+                Batch.setBackground(new Color(0xfbffe4));
+                Batch.setForeground(Color.darkGray);
+                Batch.setGridColor(Color.darkGray);
+                Batch.setSelectionBackground(new Color(0xb3d8a8));
+                Batch.setSelectionForeground(Color.darkGray);
                 Batch.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
@@ -204,13 +294,13 @@ public class InventoryBatch extends JFrame {
     }
 
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables  @formatter:off
-    // Generated using JFormDesigner Evaluation license - Luka Nikolić
+    // Generated using JFormDesigner Educational license - Luka Nikolic (office)
     private JPanel panel1;
     private JButton Back;
     private JScrollPane scrollPane1;
     private JTable Batch;
-    private static int SelectedSupplierId;
     // JFormDesigner - End of variables declaration  //GEN-END:variables  @formatter:on
+    private static int SelectedSupplierId;
 
 
     public static int getSelectedSupplierId() {
@@ -221,66 +311,5 @@ public class InventoryBatch extends JFrame {
         SelectedSupplierId = selectedSupplierId;
     }
 
-    private void prikaziPodatke() {
-        DefaultTableModel model = new DefaultTableModel() {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;  // Onemogući uređivanje ćelija
-            }
-        };
-        model.addColumn("Batch ID");
-        model.addColumn("Naziv Isporuke");
-        model.addColumn("Datum Isporuke");
-        model.addColumn("Datum isteka");
-        model.addColumn("Količina");
-        model.addColumn("Dobavljac");
 
-        try {
-            // URL REST API-ja
-            long selectedProductId = Inventory.getSelectedItemId(); // Pretpostavljam da vraća ID proizvoda
-            System.out.println("izabrani id je: " + selectedProductId);
-            URL url = new URL("http://localhost:8080/api/products/batches/" + selectedProductId);
-
-
-            // Konfigurisanje HTTP zahteva
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-            connection.setRequestProperty("Authorization", "Bearer " + JwtResponse.getToken());
-
-            // Provera odgovora API-ja
-            int responseCode = connection.getResponseCode();
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                try (Scanner scanner = new Scanner(connection.getInputStream())) {
-                    String response = scanner.useDelimiter("\\A").next();
-
-                    System.out.println(response);
-
-                    // Parsiranje JSON odgovora u listu batch objekata
-                    // Parsiranje odgovora u listu objekata ProductBatch
-                    ObjectMapper objectMapper = new ObjectMapper();
-                    List<ProductBatchDto> batchList = objectMapper.readValue(response, new TypeReference<List<ProductBatchDto>>() {});
-
-// Popunjavanje modela tabele
-                    for (ProductBatchDto batch : batchList) {
-                        model.addRow(new Object[]{
-                                batch.getId(),
-                                batch.getBatchNumber(),
-                                batch.getReceivedDate(),
-                                batch.getExpirationDate(),
-                                batch.getQuantityRemaining(),
-                                batch.getSupplierName() != null ? batch.getSupplierName() : "Nepoznat dobavljac"
-                        });
-                    }
-
-                }
-            } else {
-                JOptionPane.showMessageDialog(this, "Greška API-ja: " + responseCode, "Greška", JOptionPane.ERROR_MESSAGE);
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Greška prilikom učitavanja podataka!", "Greška", JOptionPane.ERROR_MESSAGE);
-        }
-
-        Batch.setModel(model);
-    }
 }

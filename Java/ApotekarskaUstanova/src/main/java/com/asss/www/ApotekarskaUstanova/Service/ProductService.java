@@ -1,15 +1,15 @@
 package com.asss.www.ApotekarskaUstanova.Service;
 
 import com.asss.www.ApotekarskaUstanova.Converter.DTOConverter;
-import com.asss.www.ApotekarskaUstanova.Dao.ProductBatchRepository;
+import com.asss.www.ApotekarskaUstanova.Repository.ProductBatchRepository;
 import com.asss.www.ApotekarskaUstanova.Dto.ProductDto;
 import com.asss.www.ApotekarskaUstanova.Entity.Product;
-import com.asss.www.ApotekarskaUstanova.Dao.ProductRepository;
+import com.asss.www.ApotekarskaUstanova.Repository.ProductRepository;
 import com.asss.www.ApotekarskaUstanova.Entity.ProductBatch;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -30,7 +30,7 @@ public class ProductService {
     public List<ProductDto> getAllProducts() {
         List<Product> products = productRepository.findAll();
         return products.stream()
-                .map(DTOConverter::toProductDTO)
+                .map(DTOConverter::toProductDTO) // Use DTOConverter to map Product to ProductDto
                 .collect(Collectors.toList());
     }
 
@@ -56,10 +56,33 @@ public class ProductService {
         return productRepository.findById(productBatch.getProduct().getId());
     }
 
-    public Long getProductIdByName(String name) {
+    public int getProductIdByName(String name) {
         Optional<Product> product = productRepository.findByName(name);
         return product.map(Product::getId).orElse(null);
     }
 
 
+    public List<ProductDto> findByName(String query) {
+        return productRepository.findByProductName(query).stream()
+                .map(DTOConverter::toProductDTO) // Poziv statičke metode
+                .collect(Collectors.toList());
+    }
+
+    public List<ProductDto> getLowStockProducts() {
+        List<Product> products = productRepository.findAll();
+        List<ProductDto> lowStockProducts = new ArrayList<>();
+
+        for (Product product : products) {
+            int totalRemainingQuantity = productBatchRepository.sumRemainingQuantityByProductId(product.getId());
+
+            if (totalRemainingQuantity < product.getMinQuantity()) {
+                ProductDto productDto = new ProductDto(product);
+                productDto.setStockQuantity(totalRemainingQuantity);
+                productDto.setMinQuantity(product.getMinQuantity());
+                lowStockProducts.add(productDto);
+            }
+        }
+
+        return lowStockProducts;
+    }
 }

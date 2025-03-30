@@ -1,3 +1,7 @@
+# Environment variables
+.env
+
+# Existing content below
 HELP.md
 target/
 !.mvn/wrapper/maven-wrapper.jar

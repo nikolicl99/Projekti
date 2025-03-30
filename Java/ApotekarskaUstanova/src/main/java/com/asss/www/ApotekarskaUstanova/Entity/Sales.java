@@ -1,8 +1,13 @@
 package com.asss.www.ApotekarskaUstanova.Entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 
+import java.sql.Time;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Date;
 
 @Entity
 @Table(name = "sales")
@@ -18,11 +23,17 @@ public class Sales {
     private double change;
 
     @Column(name = "transaction_date", nullable = false)
-    private LocalDateTime transactionDate;
+    private LocalDate transactionDate;
+
+    @Column(name = "transaction_time", nullable = false)
+    private Time transactionTime;
 
     @ManyToOne
     @JoinColumn(name = "cashier_id", nullable = false)
     private Employees cashier;
+
+    @Column(name = "payment_type")
+    private String paymentType;
 
     public int getId() {
         return id;
@@ -48,12 +59,20 @@ public class Sales {
         this.change = change;
     }
 
-    public LocalDateTime getTransactionDate() {
+    public LocalDate getTransactionDate() {
         return transactionDate;
     }
 
-    public void setTransactionDate(LocalDateTime transactionDate) {
+    public void setTransactionDate(LocalDate transactionDate) {
         this.transactionDate = transactionDate;
+    }
+
+    public Time getTransactionTime() {
+        return transactionTime;
+    }
+
+    public void setTransactionTime(Time transactionTime) {
+        this.transactionTime = transactionTime;
     }
 
     public Employees getCashier() {
@@ -62,5 +81,13 @@ public class Sales {
 
     public void setCashier(Employees cashier) {
         this.cashier = cashier;
+    }
+
+    public String getPaymentType() {
+        return paymentType;
+    }
+
+    public void setPaymentType(String paymentType) {
+        this.paymentType = paymentType;
     }
 }

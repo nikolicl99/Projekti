@@ -1,0 +1,66 @@
+JFDML JFormDesigner: "8.2.4.0.393" Java: "21.0.4" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+			"$horizontalGroup": "par l {comp panel1::l::698:x}"
+			"$verticalGroup": "par l {comp panel1::l::469:x}"
+		} ) {
+			name: "this"
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
+				"$layoutConstraints": "fill,hidemode 3"
+				"$columnConstraints": "[100][100][100][100][100][100][100][100][100][100]"
+				"$rowConstraints": "[50][50][50][50][50][50][50][50][50][50]"
+			} ) {
+				name: "panel1"
+				"background": new java.awt.Color( 61, 141, 122, 255 )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "back"
+					"text": "Nazad"
+					"background": new java.awt.Color( 179, 216, 168, 255 )
+					"foreground": sfield java.awt.Color darkGray
+					addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "backMouseClicked", true ) )
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 1 1"
+				} )
+				add( new FormComponent( "javax.swing.JComboBox" ) {
+					name: "months"
+					"background": new java.awt.Color( 179, 216, 168, 255 )
+					"foreground": sfield java.awt.Color darkGray
+					addEvent( new FormEvent( "java.awt.event.ItemListener", "itemStateChanged", "monthsItemStateChanged", true ) )
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 3 1 4 1,growx"
+				} )
+				add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+					name: "scrollPane1"
+					"background": sfield java.awt.Color darkGray
+					"foreground": sfield java.awt.Color darkGray
+					add( new FormComponent( "javax.swing.JTable" ) {
+						name: "items"
+						"background": new java.awt.Color( 251, 255, 228, 255 )
+						"foreground": sfield java.awt.Color darkGray
+						"gridColor": sfield java.awt.Color darkGray
+						"selectionBackground": new java.awt.Color( 179, 216, 168, 255 )
+						"selectionForeground": sfield java.awt.Color darkGray
+						addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "itemsMouseClicked", true ) )
+					} )
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 2 2 6 8,grow"
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "add"
+					"text": "Dodaj"
+					"background": new java.awt.Color( 179, 216, 168, 255 )
+					"foreground": sfield java.awt.Color darkGray
+					addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "addMouseClicked", true ) )
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 8 5"
+				} )
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 700, 500 )
+		} )
+	}
+}

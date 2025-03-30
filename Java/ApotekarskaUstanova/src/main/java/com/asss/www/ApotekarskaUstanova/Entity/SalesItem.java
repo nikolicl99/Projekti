@@ -1,5 +1,6 @@
 package com.asss.www.ApotekarskaUstanova.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -13,9 +14,10 @@ public class SalesItem {
     @JoinColumn(name = "sales_id", nullable = false)
     private Sales sales;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
-    private Product product;
+    private ProductBatch product;
 
     @Column(name = "receipt_type")
     private String receiptType;
@@ -29,7 +31,7 @@ public class SalesItem {
     public SalesItem() {
     }
 
-    public SalesItem(Sales sales, Product product, String receiptType, int quantity, double totalPrice) {
+    public SalesItem(Sales sales, ProductBatch product, String receiptType, int quantity, double totalPrice) {
         this.sales = sales;
         this.product = product;
         this.receiptType = receiptType;
@@ -53,11 +55,11 @@ public class SalesItem {
         this.sales = sales;
     }
 
-    public Product getProduct() {
+    public ProductBatch getProduct() {
         return product;
     }
 
-    public void setProduct(Product product) {
+    public void setProduct(ProductBatch product) {
         this.product = product;
     }
 

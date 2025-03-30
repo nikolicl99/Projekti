@@ -1,0 +1,58 @@
+JFDML JFormDesigner: "8.2.4.0.393" Java: "21.0.4" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class javax.swing.BoxLayout ) ) {
+			name: "this"
+			"defaultCloseOperation": 3
+			"$sizePolicy": 1
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
+				"$layoutConstraints": "insets 0,hidemode 3,gap 5 5"
+				"$columnConstraints": "[50][50][50][50][50][50][50][50][50][50]"
+				"$rowConstraints": "[50][50][50][50][50][50][50][50][50][50]"
+			} ) {
+				name: "panel"
+				"preferredSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
+				"background": new java.awt.Color( 61, 141, 122, 255 )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "back"
+					"text": "Nazad"
+					"background": new java.awt.Color( 179, 216, 168, 255 )
+					"foreground": sfield java.awt.Color darkGray
+					addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "backMouseClicked", true ) )
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 1 0 2 1"
+				} )
+				add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+					name: "scrollPane1"
+					"background": sfield java.awt.Color darkGray
+					"foreground": sfield java.awt.Color darkGray
+					add( new FormComponent( "javax.swing.JTable" ) {
+						name: "employees"
+						"background": new java.awt.Color( 251, 255, 228, 255 )
+						"foreground": sfield java.awt.Color darkGray
+						"gridColor": sfield java.awt.Color darkGray
+						"selectionBackground": new java.awt.Color( 179, 216, 168, 255 )
+						"selectionForeground": sfield java.awt.Color darkGray
+						addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "ZaposleniMouseClicked", true ) )
+					} )
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 1 1 8 8"
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "rehire"
+					"text": "Ponovno zaposlenje"
+					"background": new java.awt.Color( 179, 216, 168, 255 )
+					"foreground": sfield java.awt.Color darkGray
+					addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "rehireMouseClicked", true ) )
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 3 9 4 1,alignx center,growx 0"
+				} )
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"size": new java.awt.Dimension( 490, 500 )
+			"location": new java.awt.Point( 0, 0 )
+		} )
+	}
+}

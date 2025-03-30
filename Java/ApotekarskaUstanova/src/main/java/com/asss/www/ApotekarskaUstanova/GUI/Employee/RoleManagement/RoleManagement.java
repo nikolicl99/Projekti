@@ -8,7 +8,7 @@ import java.awt.event.*;
 import com.asss.www.ApotekarskaUstanova.Security.JwtResponse;
 import com.asss.www.ApotekarskaUstanova.Entity.Employee_Type;
 import com.asss.www.ApotekarskaUstanova.GUI.Employee.AddRole.AddRole;
-import com.asss.www.ApotekarskaUstanova.GUI.Start.MainMenu.MainMenu;
+import com.asss.www.ApotekarskaUstanova.GUI.Start.MainMenuAdmin.MainMenuAdmin;
 import com.asss.www.ApotekarskaUstanova.GUI.Employee.RoleDetails.RoleDetails;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -167,7 +167,7 @@ public class RoleManagement extends JFrame {
 
     private void NazadMouseClicked(MouseEvent e) {
         dispose();
-        MainMenu.start();
+        MainMenuAdmin.start();
     }
 
 

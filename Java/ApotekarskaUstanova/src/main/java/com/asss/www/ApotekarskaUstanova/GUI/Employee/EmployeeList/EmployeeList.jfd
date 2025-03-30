@@ -6,51 +6,57 @@ new FormModel {
 		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class javax.swing.BoxLayout ) ) {
 			name: "this"
 			"defaultCloseOperation": 3
-			"resizable": false
 			"$sizePolicy": 1
 			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
 				"$layoutConstraints": "insets 0,hidemode 3,gap 5 5"
-				"$columnConstraints": "[fill][fill][fill][fill][fill][fill][fill]"
-				"$rowConstraints": "[][fill][]"
+				"$columnConstraints": "[50][50][50][50][50][50][50][50][50][50]"
+				"$rowConstraints": "[50][50][50][50][50][50][50][50][50][50]"
 			} ) {
 				name: "panel"
 				"preferredSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
+				"background": new java.awt.Color( 61, 141, 122, 255 )
 				add( new FormComponent( "javax.swing.JButton" ) {
 					name: "Nazad"
 					"text": "Nazad"
+					"background": new java.awt.Color( 179, 216, 168, 255 )
+					"foreground": sfield java.awt.Color darkGray
 					addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "NazadMouseClicked", true ) )
 				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-					"value": "cell 1 0"
+					"value": "cell 1 0 2 1"
 				} )
 				add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
 					name: "scrollPane1"
+					"background": sfield java.awt.Color darkGray
+					"foreground": sfield java.awt.Color darkGray
 					add( new FormComponent( "javax.swing.JTable" ) {
 						name: "Zaposleni"
+						"background": new java.awt.Color( 251, 255, 228, 255 )
+						"foreground": sfield java.awt.Color darkGray
+						"gridColor": sfield java.awt.Color darkGray
+						"selectionBackground": new java.awt.Color( 179, 216, 168, 255 )
+						"selectionForeground": sfield java.awt.Color darkGray
 						addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "ZaposleniMouseClicked", true ) )
 					} )
 				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-					"value": "cell 1 1 5 1"
+					"value": "cell 1 1 8 8"
 				} )
 				add( new FormComponent( "javax.swing.JButton" ) {
 					name: "Obrisi"
-					"text": "Obrisi"
+					"text": "Otpusti"
+					"background": new java.awt.Color( 179, 216, 168, 255 )
+					"foreground": sfield java.awt.Color darkGray
 					addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "ObrisiMouseClicked", true ) )
 				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-					"value": "cell 2 2"
+					"value": "cell 3 9 2 1"
 				} )
 				add( new FormComponent( "javax.swing.JButton" ) {
 					name: "Dodaj"
-					"text": "Dodaj"
+					"text": "Novi Zaposleni"
+					"background": new java.awt.Color( 179, 216, 168, 255 )
+					"foreground": sfield java.awt.Color darkGray
 					addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "DodajMouseClicked", true ) )
 				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-					"value": "cell 2 2"
-				} )
-				add( new FormComponent( "javax.swing.JButton" ) {
-					name: "Pregled"
-					"text": "Pregled"
-					addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "PregledMouseClicked", true ) )
-				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-					"value": "cell 2 2"
+					"value": "cell 5 9 3 1"
 				} )
 			} )
 		}, new FormLayoutConstraints( null ) {

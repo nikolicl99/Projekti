@@ -4,12 +4,16 @@
 
 package com.asss.www.ApotekarskaUstanova.GUI.Employee.EmployeeList;
 
+import java.awt.*;
 import java.awt.event.*;
 
+import com.asss.www.ApotekarskaUstanova.GUI.Finance.AddSalary.AddSalary;
+import com.asss.www.ApotekarskaUstanova.GUI.Finance.EmployeeMenu.EmployeeMenu;
+import com.asss.www.ApotekarskaUstanova.GUI.Finance.EverySalary.EverySalary;
 import com.asss.www.ApotekarskaUstanova.Security.JwtResponse;
 import com.asss.www.ApotekarskaUstanova.Entity.Employees;
 import com.asss.www.ApotekarskaUstanova.GUI.Employee.AddEmployee.AddEmployee;
-import com.asss.www.ApotekarskaUstanova.GUI.Start.MainMenu.MainMenu;
+import com.asss.www.ApotekarskaUstanova.GUI.Start.MainMenuAdmin.MainMenuAdmin;
 import com.asss.www.ApotekarskaUstanova.GUI.Employee.EmployeeView.EmployeeView;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -19,6 +23,8 @@ import java.net.URL;
 import java.util.Scanner;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableModel;
 
 import com.fasterxml.jackson.core.type.TypeReference;  // Ovaj import je potreban za TypeReference
 import net.miginfocom.swing.*;
@@ -27,18 +33,10 @@ import net.miginfocom.swing.*;
  */
 public class EmployeeList extends JFrame {
     public EmployeeList() {
-//            try {
-//                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-
             initComponents(); // Komponente se kreiraju nakon što je stil primenjen
-
             PrikaziZaposlene();
             setSelectedEmployeeId(0);
         }
-
 
         public static void start() {
         SwingUtilities.invokeLater(() -> {
@@ -46,12 +44,8 @@ public class EmployeeList extends JFrame {
             frame.setTitle("Zaposleni");
             frame.setSize(500, 500); // Adjusted size to match the preferred bounds
             frame.setLocationRelativeTo(null); // Center on screen
-//            frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-            frame.setUndecorated(true);
             frame.setVisible(true);
         });
-
-
     }
 
     private void ZaposleniMouseClicked(MouseEvent e) {
@@ -61,173 +55,55 @@ public class EmployeeList extends JFrame {
             int id = (int) Zaposleni.getValueAt(selectedRow, 0);
             System.out.println("Izabrani ID zaposlenog: " + id);
 
-            // Skladišti ID u promenljivu za kasniju upotrebu
             setSelectedEmployeeId(id);
+            // Skladišti ID u promenljivu za kasniju upotrebu
+            EmployeeView.setSelectedEmployeeId(id);
 
             // Primer: otvaranje novog prozora za izmenu podataka
             if (e.getClickCount() == 2) { // Ako je dvoklik
-//                EditZaposleni editWindow = new EditZaposleni(selectedEmployeeId);
-//                editWindow.setVisible(true);
-                JOptionPane.showMessageDialog(this, "Izabran je zaposleni: " + getSelectedEmployeeId());
+                dispose();
+                EmployeeView.setPreviousForm(1);
+                EmployeeView.start();
             }
         }
     }
 
     private void NazadMouseClicked(MouseEvent e) {
         dispose();
-        MainMenu.start();
+        EmployeeMenu.start();
     }
 
     private void ObrisiMouseClicked(MouseEvent e) {
-        if (getSelectedEmployeeId() == 0) {
-            JOptionPane.showMessageDialog(this, "Odaberite Zaposlenog", "Odabir Zaposlenog", JOptionPane.ERROR_MESSAGE);
-            return; // Ne pokušavaj brisanje ako ID nije izabran
-        }
+        if (getSelectedEmployeeId() != 0) {
 
-        int confirmation = JOptionPane.showConfirmDialog(
-                this,
-                "Da li ste sigurni da želite obrisati zaposlenog?",
-                "Potvrda brisanja",
-                JOptionPane.YES_NO_OPTION
-        );
+            int response = JOptionPane.showConfirmDialog(this, "Da li ste sigurni da želite da otpustite zaposlenog?", "Potvrda", JOptionPane.YES_NO_OPTION);
+            if (response != JOptionPane.YES_OPTION) return;
 
-        if (confirmation == JOptionPane.YES_OPTION) {
+            // Slanje HTTP zahteva na server
             try {
-                ObrisiZaposlenog(getSelectedEmployeeId());
+                int id = getSelectedEmployeeId();
+                URL url = new URL("http://localhost:8080/api/employees/fire/" + id);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("PUT");
+                connection.setRequestProperty("Authorization", "Bearer " + JwtResponse.getToken());
+                connection.setDoOutput(true);
+
+                // Provera odgovora servera
+                int responseCode = connection.getResponseCode();
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    JOptionPane.showMessageDialog(this, "Zaposleni uspešno otpušten.", "Obaveštenje", JOptionPane.INFORMATION_MESSAGE);
+                    PrikaziZaposlene(); // Osvežite tabelu nakon uspešnog zahteva
+                } else {
+                    JOptionPane.showMessageDialog(this, "Greška prilikom otpuštanja zaposlenog. Status: " + responseCode, "Greška", JOptionPane.ERROR_MESSAGE);
+                }
             } catch (Exception ex) {
                 ex.printStackTrace();
-                JOptionPane.showMessageDialog(this, "Došlo je do greške prilikom brisanja!", "Greška", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Greška pri komunikaciji sa serverom.", "Greška", JOptionPane.ERROR_MESSAGE);
             }
-        }
-    }
-
-
-    private void DodajMouseClicked(MouseEvent e) {
-        dispose();
-        AddEmployee.start();
-    }
-
-    private void PregledMouseClicked(MouseEvent e) {
-        if (getSelectedEmployeeId() == 0) {
-            JOptionPane.showMessageDialog(this, "Odaberite Zaposlenog", "Odabir Zaposlenog", JOptionPane.ERROR_MESSAGE);
         } else {
-            dispose();
-            EmployeeView.start();
+            JOptionPane.showMessageDialog(this, "Izaberite zaposlenog iz tabele.", "Greška", JOptionPane.ERROR_MESSAGE);
         }
     }
-
-
-    private void initComponents() {
-        // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
-        // Generated using JFormDesigner Evaluation license - Luka Nikolić
-        panel = new JPanel();
-        Nazad = new JButton();
-        scrollPane1 = new JScrollPane();
-        Zaposleni = new JTable();
-        Obrisi = new JButton();
-        Dodaj = new JButton();
-        Pregled = new JButton();
-
-        //======== this ========
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setResizable(false);
-        var contentPane = getContentPane();
-        contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.X_AXIS));
-
-        //======== panel ========
-        {
-            panel.setPreferredSize(null);
-            panel.setBorder (new javax. swing. border. CompoundBorder( new javax .swing .border .TitledBorder (new javax. swing. border. EmptyBorder(
-            0, 0, 0, 0) , "JFor\u006dDesi\u0067ner \u0045valu\u0061tion", javax. swing. border. TitledBorder. CENTER, javax. swing. border. TitledBorder
-            . BOTTOM, new java .awt .Font ("Dia\u006cog" ,java .awt .Font .BOLD ,12 ), java. awt. Color.
-            red) ,panel. getBorder( )) ); panel. addPropertyChangeListener (new java. beans. PropertyChangeListener( ){ @Override public void propertyChange (java .
-            beans .PropertyChangeEvent e) {if ("bord\u0065r" .equals (e .getPropertyName () )) throw new RuntimeException( ); }} );
-            panel.setLayout(new MigLayout(
-                "insets 0,hidemode 3,gap 5 5",
-                // columns
-                "[fill]" +
-                "[fill]" +
-                "[fill]" +
-                "[fill]" +
-                "[fill]" +
-                "[fill]" +
-                "[fill]",
-                // rows
-                "[]" +
-                "[fill]" +
-                "[]"));
-
-            //---- Nazad ----
-            Nazad.setText("Nazad");
-            Nazad.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    NazadMouseClicked(e);
-                }
-            });
-            panel.add(Nazad, "cell 1 0");
-
-            //======== scrollPane1 ========
-            {
-
-                //---- Zaposleni ----
-                Zaposleni.addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mouseClicked(MouseEvent e) {
-                        ZaposleniMouseClicked(e);
-                    }
-                });
-                scrollPane1.setViewportView(Zaposleni);
-            }
-            panel.add(scrollPane1, "cell 1 1 5 1");
-
-            //---- Obrisi ----
-            Obrisi.setText("Obrisi");
-            Obrisi.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    ObrisiMouseClicked(e);
-                }
-            });
-            panel.add(Obrisi, "cell 2 2");
-
-            //---- Dodaj ----
-            Dodaj.setText("Dodaj");
-            Dodaj.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    DodajMouseClicked(e);
-                }
-            });
-            panel.add(Dodaj, "cell 2 2");
-
-            //---- Pregled ----
-            Pregled.setText("Pregled");
-            Pregled.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    PregledMouseClicked(e);
-                }
-            });
-            panel.add(Pregled, "cell 2 2");
-        }
-        contentPane.add(panel);
-        setSize(490, 500);
-        setLocationRelativeTo(getOwner());
-        // JFormDesigner - End of component initialization  //GEN-END:initComponents  @formatter:on
-    }
-
-    // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables  @formatter:off
-    // Generated using JFormDesigner Evaluation license - Luka Nikolić
-    private JPanel panel;
-    private JButton Nazad;
-    private JScrollPane scrollPane1;
-    private JTable Zaposleni;
-    private JButton Obrisi;
-    private JButton Dodaj;
-    private JButton Pregled;
-    // JFormDesigner - End of variables declaration  //GEN-END:variables  @formatter:on
-    private static int selectedEmployeeId;
 
     private void PrikaziZaposlene() {
         DefaultTableModel model = new DefaultTableModel() {
@@ -267,12 +143,15 @@ public class EmployeeList extends JFrame {
                                 ? employees.getEmployeeType().getName()
                                 : "Nedefinisan tip";
 
-                        model.addRow(new Object[]{
-                                employees.getId(),
-                                employees.getName() + " " + employees.getSurname(),
-                                typeName
-                        });
+                        if (employees.getEmployed() == 1) {
+                            model.addRow(new Object[]{
+                                    employees.getId(),
+                                    employees.getName() + " " + employees.getSurname(),
+                                    typeName
+                            });
+                        }
                     }
+
                 }
             } else {
                 JOptionPane.showMessageDialog(this, "API greška: " + responseCode, "Greška", JOptionPane.ERROR_MESSAGE);
@@ -281,36 +160,157 @@ public class EmployeeList extends JFrame {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Greška prilikom učitavanja podataka iz baze!", "Greška", JOptionPane.ERROR_MESSAGE);
         }
-
         Zaposleni.setModel(model);
+        customizeTable(Zaposleni, model);
     }
 
+    public void customizeTable(JTable table, TableModel model) {
+        // Set background color for the table header
+        JTableHeader header = table.getTableHeader();
+        Color headerBackgroundColor = new Color(0xb3, 0xd8, 0xa8); // Hex code #b3d8a8
+        header.setBackground(headerBackgroundColor);
 
-    private void ObrisiZaposlenog(long ID) {
-        try {
-            // URL za API za brisanje zaposlenog
-            URL url = new URL("http://localhost:8080/api/employees/" + ID);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("DELETE");
+        // Optional: Set foreground (text) color for the header
+        Color headerForegroundColor = Color.DARK_GRAY; // Example: Dark gray text
+        header.setForeground(headerForegroundColor);
 
-            // Dodavanje Authorization header-a sa tokenom
-            connection.setRequestProperty("Authorization", "Bearer " + JwtResponse.getToken());
+        // Set font for the header
+        Font headerFont = new Font("Inter", Font.BOLD, 13);
+        header.setFont(headerFont);
 
-            // Provera odgovora API-ja
-            int responseCode = connection.getResponseCode();
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                JOptionPane.showMessageDialog(this, "Zaposleni je uspešno obrisan.", "Obaveštenje", JOptionPane.INFORMATION_MESSAGE);
-                PrikaziZaposlene(); // Osvežavanje prikaza nakon brisanja
-            } else {
-                JOptionPane.showMessageDialog(this, "Greška prilikom brisanja zaposlenog! Kod greške: " + responseCode, "Greška", JOptionPane.ERROR_MESSAGE);
+        // Set the model for the table
+        table.setModel(model);
+
+        // Set the background color for the viewport and scroll pane
+        Color backgroundColor = new Color(0xfb, 0xff, 0xe4); // Hex code #fbffe4
+        JViewport viewport = scrollPane1.getViewport();
+        viewport.setBackground(backgroundColor);
+        scrollPane1.setBackground(backgroundColor);
+    }
+
+    private void DodajMouseClicked(MouseEvent e) {
+        dispose();
+        AddEmployee.start();
+    }
+
+    private void initComponents() {
+        // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
+        // Generated using JFormDesigner Educational license - Luka Nikolic (office)
+        panel = new JPanel();
+        Nazad = new JButton();
+        scrollPane1 = new JScrollPane();
+        Zaposleni = new JTable();
+        Obrisi = new JButton();
+        Dodaj = new JButton();
+
+        //======== this ========
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        var contentPane = getContentPane();
+        contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.X_AXIS));
+
+        //======== panel ========
+        {
+            panel.setPreferredSize(null);
+            panel.setBackground(new Color(0x3d8d7a));
+            panel.setLayout(new MigLayout(
+                "insets 0,hidemode 3,gap 5 5",
+                // columns
+                "[50]" +
+                "[50]" +
+                "[50]" +
+                "[50]" +
+                "[50]" +
+                "[50]" +
+                "[50]" +
+                "[50]" +
+                "[50]" +
+                "[50]",
+                // rows
+                "[50]" +
+                "[50]" +
+                "[50]" +
+                "[50]" +
+                "[50]" +
+                "[50]" +
+                "[50]" +
+                "[50]" +
+                "[50]" +
+                "[50]"));
+
+            //---- Nazad ----
+            Nazad.setText("Nazad");
+            Nazad.setBackground(new Color(0xb3d8a8));
+            Nazad.setForeground(Color.darkGray);
+            Nazad.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    NazadMouseClicked(e);
+                }
+            });
+            panel.add(Nazad, "cell 1 0 2 1");
+
+            //======== scrollPane1 ========
+            {
+                scrollPane1.setBackground(Color.darkGray);
+                scrollPane1.setForeground(Color.darkGray);
+
+                //---- Zaposleni ----
+                Zaposleni.setBackground(new Color(0xfbffe4));
+                Zaposleni.setForeground(Color.darkGray);
+                Zaposleni.setGridColor(Color.darkGray);
+                Zaposleni.setSelectionBackground(new Color(0xb3d8a8));
+                Zaposleni.setSelectionForeground(Color.darkGray);
+                Zaposleni.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        ZaposleniMouseClicked(e);
+                    }
+                });
+                scrollPane1.setViewportView(Zaposleni);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Došlo je do greške prilikom brisanja zaposlenog!", "Greška", JOptionPane.ERROR_MESSAGE);
+            panel.add(scrollPane1, "cell 1 1 8 8");
+
+            //---- Obrisi ----
+            Obrisi.setText("Otpusti");
+            Obrisi.setBackground(new Color(0xb3d8a8));
+            Obrisi.setForeground(Color.darkGray);
+            Obrisi.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    ObrisiMouseClicked(e);
+                }
+            });
+            panel.add(Obrisi, "cell 3 9 2 1");
+
+            //---- Dodaj ----
+            Dodaj.setText("Novi Zaposleni");
+            Dodaj.setBackground(new Color(0xb3d8a8));
+            Dodaj.setForeground(Color.darkGray);
+            Dodaj.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    DodajMouseClicked(e);
+                }
+            });
+            panel.add(Dodaj, "cell 5 9 3 1");
         }
+        contentPane.add(panel);
+        setSize(490, 500);
+        setLocationRelativeTo(getOwner());
+        // JFormDesigner - End of component initialization  //GEN-END:initComponents  @formatter:on
     }
 
+    // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables  @formatter:off
+    // Generated using JFormDesigner Educational license - Luka Nikolic (office)
+    private JPanel panel;
+    private JButton Nazad;
+    private JScrollPane scrollPane1;
+    private JTable Zaposleni;
+    private JButton Obrisi;
+    private JButton Dodaj;
+    // JFormDesigner - End of variables declaration  //GEN-END:variables  @formatter:on
 
+    private static int selectedEmployeeId;
 
     public static int getSelectedEmployeeId() {
         return selectedEmployeeId;

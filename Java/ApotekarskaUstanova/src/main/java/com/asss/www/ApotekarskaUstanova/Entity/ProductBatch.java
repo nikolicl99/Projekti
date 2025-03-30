@@ -3,6 +3,7 @@ package com.asss.www.ApotekarskaUstanova.Entity;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -12,7 +13,7 @@ public class ProductBatch {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private int id;
 
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
@@ -25,7 +26,7 @@ public class ProductBatch {
     private String batchNumber;
 
     @Column(name = "expiration_date", nullable = false)
-    private Date expirationDate;
+    private LocalDate expirationDate;
 
     @Column(name = "quantity_received")
     private Integer quantityReceived;
@@ -37,13 +38,17 @@ public class ProductBatch {
     @JoinColumn(name = "shipment_id", nullable = false)
     private Shipment shipment;
 
+    @ManyToOne
+    @JoinColumn(name = "location")
+    private Location location;
+
     // Getters and Setters
 
-    public Long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -71,11 +76,11 @@ public class ProductBatch {
         this.batchNumber = batchNumber;
     }
 
-    public Date getExpirationDate() {
+    public LocalDate getExpirationDate() {
         return expirationDate;
     }
 
-    public void setExpirationDate(Date expirationDate) {
+    public void setExpirationDate(LocalDate expirationDate) {
         this.expirationDate = expirationDate;
     }
 
@@ -101,5 +106,13 @@ public class ProductBatch {
 
     public void setShipment(Shipment shipment) {
         this.shipment = shipment;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
     }
 }

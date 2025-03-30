@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import org.json.JSONPropertyIgnore;
 
+import java.sql.Time;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -14,35 +16,36 @@ public class Shipment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private int id;
 
     @ManyToOne(fetch = FetchType.LAZY)  // Povezivanje sa Supplier entitetom
     @JoinColumn(name = "supplier_id", nullable = false)  // Kolona koja se koristi za povezivanje
     private Supplier supplier;  // Supplier objekat koji je povezan sa shipment-om
 
-    @Column(name = "arrival_time", nullable = false)
-    private Date arrivalTime;
+    @Column(name = "arrival_date", nullable = false)
+    private LocalDate arrivalDate;
 
-    @OneToMany(mappedBy = "shipment")
-    private List<ProductBatch> productBatches;
+    @Column(name = "arrival_time", nullable = false)
+    private Time arrivalTime;
+
 
     public Shipment() {
     }
 
-    public Shipment(Long id, Supplier supplier, Date arrivalTime, List<ProductBatch> productBatches) {
+    public Shipment(int id, Supplier supplier, LocalDate arrivalDate, Time arrivalTime) {
         this.id = id;
         this.supplier = supplier;
+        this.arrivalDate = arrivalDate;
         this.arrivalTime = arrivalTime;
-        this.productBatches = productBatches;
     }
 
     // Getters and Setters
 
-    public Long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -54,19 +57,19 @@ public class Shipment {
         this.supplier = supplier;
     }
 
-    public Date getArrivalTime() {
+    public LocalDate getArrivalDate() {
+        return arrivalDate;
+    }
+
+    public void setArrivalDate(LocalDate arrivalDate) {
+        this.arrivalDate = arrivalDate;
+    }
+
+    public Time getArrivalTime() {
         return arrivalTime;
     }
 
-    public void setArrivalTime(Date arrivalTime) {
+    public void setArrivalTime(Time arrivalTime) {
         this.arrivalTime = arrivalTime;
-    }
-
-    public List<ProductBatch> getProductBatches() {
-        return productBatches;
-    }
-
-    public void setProductBatches(List<ProductBatch> productBatches) {
-        this.productBatches = productBatches;
     }
 }

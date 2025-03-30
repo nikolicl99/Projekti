@@ -1,35 +1,39 @@
 package com.asss.www.ApotekarskaUstanova.Dto;
 
+import com.asss.www.ApotekarskaUstanova.Entity.Address;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
 public class EmployeeDto {
 
-    @NotBlank(message = "Ime je obavezno")
+    private int id;
+
     private String name;
 
-    @NotBlank(message = "Prezime je obavezno")
     private String surname;
 
-    @Email(message = "Unesite ispravan email")
-    @NotBlank(message = "Email je obavezan")
     private String email;
 
-    @NotBlank(message = "Šifra je obavezna")
     private String password;
 
-    @NotBlank(message = "Telefon je obavezan")
     private String mobile;
 
-    private String type; // Ovo je String, jer ComboBox vraća string vrednosti
+    private int type;
 
-    private int address;
+    private Employee_TypeDto employeeType;
 
-    private static String profileImage;
+    private AddressDto address;
 
-    private String scaledProfileImage;
+    private int employed;
 
-    // Getteri i setteri
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;
@@ -71,35 +75,35 @@ public class EmployeeDto {
         this.mobile = mobile;
     }
 
-    public String getType() {
+    public int getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(int type) {
         this.type = type;
     }
 
-    public int getAddress() {
+    public Employee_TypeDto getEmployeeType() {
+        return employeeType;
+    }
+
+    public void setEmployeeType(Employee_TypeDto employeeType) {
+        this.employeeType = employeeType;
+    }
+
+    public AddressDto getAddress() {
         return address;
     }
 
-    public void setAddress(int address) {
+    public void setAddress(AddressDto address) {
         this.address = address;
     }
 
-    public static String getProfileImage() {
-        return profileImage;
+    public int getEmployed() {
+        return employed;
     }
 
-    public void setProfileImage(String profileImage) {
-        this.profileImage = profileImage;
-    }
-
-    public String getScaledProfileImage() {
-        return scaledProfileImage;
-    }
-
-    public void setScaledProfileImage(String scaledProfileImage) {
-        this.scaledProfileImage = scaledProfileImage;
+    public void setEmployed(int employed) {
+        this.employed = employed;
     }
 }

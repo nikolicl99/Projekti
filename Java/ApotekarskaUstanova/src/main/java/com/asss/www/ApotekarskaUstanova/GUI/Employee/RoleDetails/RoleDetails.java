@@ -64,12 +64,6 @@ public class RoleDetails extends JFrame {
                     // Popunjavanje podataka u UI komponentama
                     if (employeeType != null) {
                         SelectedRole.setText(employeeType.getName());
-                        AddEmployee.setText(String.valueOf(employeeType.isCanAddEmployee()));
-                        EditEmployee.setText(String.valueOf(employeeType.isCanEditEmployee()));
-                        InventoryManag.setText(String.valueOf(employeeType.isCanManageInventory()));
-                        ReportView.setText(String.valueOf(employeeType.isCanViewReports()));
-                        ReportGenerate.setText(String.valueOf(employeeType.isCanGenerateReports()));
-                        RoleManag.setText(String.valueOf(employeeType.isCanManageRoles()));
                     }
                 }
             } else if (responseCode == HttpURLConnection.HTTP_UNAUTHORIZED) {

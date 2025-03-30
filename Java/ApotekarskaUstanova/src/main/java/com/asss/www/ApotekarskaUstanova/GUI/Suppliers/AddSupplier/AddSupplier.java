@@ -4,6 +4,7 @@
 
 package com.asss.www.ApotekarskaUstanova.GUI.Suppliers.AddSupplier;
 
+import java.awt.*;
 import java.awt.event.*;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -364,6 +365,7 @@ public class AddSupplier extends JFrame {
 
         //======== panel1 ========
         {
+            panel1.setBackground(new Color(0x3d8d7a));
             panel1.setLayout(new MigLayout(
                 "insets 0,hidemode 3,gap 5 5",
                 // columns
@@ -390,6 +392,8 @@ public class AddSupplier extends JFrame {
 
             //---- Nazad ----
             Nazad.setText("Nazad");
+            Nazad.setBackground(new Color(0xb3d8a8));
+            Nazad.setForeground(Color.darkGray);
             Nazad.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
@@ -400,50 +404,91 @@ public class AddSupplier extends JFrame {
 
             //---- name_label ----
             name_label.setText("Naziv:");
+            name_label.setForeground(new Color(0xfbffe4));
             panel1.add(name_label, "cell 1 3");
+
+            //---- name_edit ----
+            name_edit.setBackground(new Color(0xb3d8a8));
+            name_edit.setForeground(Color.darkGray);
             panel1.add(name_edit, "cell 2 3 2 1");
 
             //---- email_label ----
             email_label.setText("Email:");
+            email_label.setForeground(new Color(0xfbffe4));
             panel1.add(email_label, "cell 1 4");
+
+            //---- email_edit ----
+            email_edit.setBackground(new Color(0xb3d8a8));
+            email_edit.setForeground(Color.darkGray);
             panel1.add(email_edit, "cell 2 4 2 1");
 
             //---- address_label ----
             address_label.setText("Adresa:");
+            address_label.setForeground(new Color(0xfbffe4));
             panel1.add(address_label, "cell 4 4");
+
+            //---- address_edit ----
+            address_edit.setBackground(new Color(0xb3d8a8));
+            address_edit.setForeground(Color.darkGray);
             panel1.add(address_edit, "cell 5 4 2 1");
 
             //---- telefon_label ----
             telefon_label.setText("Telefon:");
+            telefon_label.setForeground(new Color(0xfbffe4));
             panel1.add(telefon_label, "cell 1 5");
+
+            //---- telefon_edit ----
+            telefon_edit.setBackground(new Color(0xb3d8a8));
+            telefon_edit.setForeground(Color.darkGray);
             panel1.add(telefon_edit, "cell 2 5 2 1");
 
             //---- number_label ----
             number_label.setText("Broj:");
+            number_label.setForeground(new Color(0xfbffe4));
             panel1.add(number_label, "cell 4 5");
+
+            //---- number_edit ----
+            number_edit.setBackground(new Color(0xb3d8a8));
+            number_edit.setForeground(Color.darkGray);
             panel1.add(number_edit, "cell 5 5");
 
             //---- municipality_label ----
             municipality_label.setText("Opstina:");
+            municipality_label.setForeground(new Color(0xfbffe4));
             panel1.add(municipality_label, "cell 1 6");
 
             //---- municipality_combo ----
+            municipality_combo.setBackground(new Color(0xb3d8a8));
+            municipality_combo.setForeground(Color.darkGray);
             municipality_combo.addItemListener(e -> municipality_comboItemStateChanged(e));
             panel1.add(municipality_combo, "cell 2 6 2 1");
 
             //---- apt_cb ----
             apt_cb.setText("Stan");
+            apt_cb.setBackground(new Color(0x3d8d7a));
+            apt_cb.setForeground(new Color(0xfbffe4));
             apt_cb.addActionListener(e -> apt_cb(e));
             panel1.add(apt_cb, "cell 4 6");
+
+            //---- apt_edit ----
+            apt_edit.setBackground(new Color(0xb3d8a8));
+            apt_edit.setForeground(Color.darkGray);
             panel1.add(apt_edit, "cell 5 6");
 
             //---- town_label ----
             town_label.setText("Grad:");
+            town_label.setForeground(new Color(0xfbffe4));
             panel1.add(town_label, "cell 1 7");
+
+            //---- town_combo ----
+            town_combo.setBackground(new Color(0xb3d8a8));
+            town_combo.setForeground(Color.darkGray);
             panel1.add(town_combo, "cell 2 7 2 1");
 
             //---- Dodaj ----
             Dodaj.setText("Dodaj");
+            Dodaj.setBackground(new Color(0xb3d8a8));
+            Dodaj.setForeground(Color.darkGray);
             Dodaj.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
@@ -457,15 +502,11 @@ public class AddSupplier extends JFrame {
         contentPane.setLayout(contentPaneLayout);
         contentPaneLayout.setHorizontalGroup(
             contentPaneLayout.createParallelGroup()
-                .addGroup(GroupLayout.Alignment.TRAILING, contentPaneLayout.createSequentialGroup()
-                    .addGap(0, 0, Short.MAX_VALUE)
-                    .addComponent(panel1, GroupLayout.PREFERRED_SIZE, 800, GroupLayout.PREFERRED_SIZE))
+                .addComponent(panel1, GroupLayout.DEFAULT_SIZE, 798, Short.MAX_VALUE)
         );
         contentPaneLayout.setVerticalGroup(
             contentPaneLayout.createParallelGroup()
-                .addGroup(GroupLayout.Alignment.TRAILING, contentPaneLayout.createSequentialGroup()
-                    .addGap(0, 0, Short.MAX_VALUE)
-                    .addComponent(panel1, GroupLayout.PREFERRED_SIZE, 470, GroupLayout.PREFERRED_SIZE))
+                .addComponent(panel1, GroupLayout.DEFAULT_SIZE, 469, Short.MAX_VALUE)
         );
         pack();
         setLocationRelativeTo(getOwner());

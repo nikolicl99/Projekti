@@ -4,14 +4,17 @@
 
 package com.asss.www.ApotekarskaUstanova.GUI.Suppliers.SupplierList;
 
+import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.GroupLayout;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableModel;
 
+import com.asss.www.ApotekarskaUstanova.Dto.SupplierDto;
 import com.asss.www.ApotekarskaUstanova.Security.JwtResponse;
-import com.asss.www.ApotekarskaUstanova.Entity.Supplier;
-import com.asss.www.ApotekarskaUstanova.GUI.Start.MainMenu.MainMenu;
+import com.asss.www.ApotekarskaUstanova.GUI.Start.MainMenuAdmin.MainMenuAdmin;
 import com.asss.www.ApotekarskaUstanova.GUI.Suppliers.SupplierInfo.SupplierInfo;
 import com.asss.www.ApotekarskaUstanova.GUI.Suppliers.AddSupplier.AddSupplier;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -45,7 +48,7 @@ public class SupplierList extends JFrame {
 
     private void BackMouseClicked(MouseEvent e) {
         dispose();
-        MainMenu.start();
+        MainMenuAdmin.start();
     }
 
     private void suppliersMouseClicked(MouseEvent e) {
@@ -93,6 +96,7 @@ public class SupplierList extends JFrame {
 
         //======== panel1 ========
         {
+            panel1.setBackground(new Color(0x3d8d7a));
             panel1.setLayout(new MigLayout(
                 "hidemode 3",
                 // columns
@@ -121,6 +125,8 @@ public class SupplierList extends JFrame {
 
             //---- Back ----
             Back.setText("Nazad");
+            Back.setBackground(new Color(0xb3d8a8));
+            Back.setForeground(Color.darkGray);
             Back.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
@@ -131,8 +137,15 @@ public class SupplierList extends JFrame {
 
             //======== scrollPane1 ========
             {
+                scrollPane1.setBackground(Color.darkGray);
+                scrollPane1.setForeground(Color.darkGray);
 
                 //---- suppliers ----
+                suppliers.setBackground(new Color(0xfbffe4));
+                suppliers.setForeground(Color.darkGray);
+                suppliers.setGridColor(Color.darkGray);
+                suppliers.setSelectionBackground(new Color(0xb3d8a8));
+                suppliers.setSelectionForeground(Color.darkGray);
                 suppliers.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
@@ -145,6 +158,8 @@ public class SupplierList extends JFrame {
 
             //---- AddSupplier_btn ----
             AddSupplier_btn.setText("Dodaj");
+            AddSupplier_btn.setBackground(new Color(0xb3d8a8));
+            AddSupplier_btn.setForeground(Color.darkGray);
             AddSupplier_btn.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
@@ -187,7 +202,7 @@ public class SupplierList extends JFrame {
         model.addColumn("Email");
 
         try {
-            // URL za API zaposlenih
+            // URL za API dobavljača
             URL url = new URL("http://localhost:8080/api/suppliers");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
@@ -203,14 +218,15 @@ public class SupplierList extends JFrame {
 
                     // Parsiranje JSON odgovora
                     ObjectMapper objectMapper = new ObjectMapper();
-                    List<Supplier> supplierList = objectMapper.readValue(response, new TypeReference<List<Supplier>>() {
+                    List<SupplierDto> supplierList = objectMapper.readValue(response, new TypeReference<List<SupplierDto>>() {
                     });
-//
-                    for (Supplier supplier : supplierList) {
+
+                    for (SupplierDto supplier : supplierList) {
                         model.addRow(new Object[]{
+
                                 supplier.getId(),
                                 supplier.getName(),
-                                supplier.getAddress(),
+                                supplier.getAddress().getAddress() + " " + supplier.getAddress().getNumber() + " Apt: " + supplier.getAddress().getAptNumber(),
                                 supplier.getPhone(),
                                 supplier.getEmail()
                         });
@@ -225,6 +241,31 @@ public class SupplierList extends JFrame {
         }
 
         suppliers.setModel(model);
+        customizeTable(suppliers, model);
+    }
+
+    public void customizeTable(JTable table, TableModel model) {
+        // Set background color for the table header
+        JTableHeader header = table.getTableHeader();
+        Color headerBackgroundColor = new Color(0xb3, 0xd8, 0xa8); // Hex code #b3d8a8
+        header.setBackground(headerBackgroundColor);
+
+        // Optional: Set foreground (text) color for the header
+        Color headerForegroundColor = Color.DARK_GRAY; // Example: Dark gray text
+        header.setForeground(headerForegroundColor);
+
+        // Set font for the header
+        Font headerFont = new Font("Inter", Font.BOLD, 13);
+        header.setFont(headerFont);
+
+        // Set the model for the table
+        table.setModel(model);
+
+        // Set the background color for the viewport and scroll pane
+        Color backgroundColor = new Color(0xfb, 0xff, 0xe4); // Hex code #fbffe4
+        JViewport viewport = scrollPane1.getViewport();
+        viewport.setBackground(backgroundColor);
+        scrollPane1.setBackground(backgroundColor);
     }
 
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables  @formatter:off

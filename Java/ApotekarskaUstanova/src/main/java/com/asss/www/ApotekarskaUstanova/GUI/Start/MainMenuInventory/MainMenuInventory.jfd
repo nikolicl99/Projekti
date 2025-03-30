@@ -1,0 +1,72 @@
+JFDML JFormDesigner: "8.2.4.0.393" Java: "21.0.4" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class com.jformdesigner.runtime.NullLayout ) ) {
+			name: "this"
+			"defaultCloseOperation": 3
+			"resizable": false
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
+				"$layoutConstraints": "insets 0,hidemode 3,gap 5 5"
+				"$columnConstraints": "[100][100][100][100][100]"
+				"$rowConstraints": "[50][50][50][50][50][50][50][50][50][50]"
+			} ) {
+				name: "panel"
+				"background": new java.awt.Color( 61, 141, 122, 255 )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "order"
+					"text": "Nabavka"
+					"foreground": sfield java.awt.Color darkGray
+					"background": new java.awt.Color( 179, 216, 168, 255 )
+					addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "orderMouseClicked", true ) )
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 2 2 2 1"
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "Inventar"
+					"text": "Inventar"
+					"foreground": sfield java.awt.Color darkGray
+					"background": new java.awt.Color( 179, 216, 168, 255 )
+					addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "InventarMouseClicked", true ) )
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 2 3 2 1"
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "newDelivery"
+					"text": "Nova Dostava"
+					"foreground": sfield java.awt.Color darkGray
+					"background": new java.awt.Color( 179, 216, 168, 255 )
+					addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "newDeliveryMouseClicked", true ) )
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 2 4 2 1"
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "Suppliers"
+					"text": "Dobavljaci"
+					"foreground": sfield java.awt.Color darkGray
+					"background": new java.awt.Color( 179, 216, 168, 255 )
+					addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "SuppliersMouseClicked", true ) )
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 2 5 2 1"
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "logOut"
+					"text": "Odjavi Se"
+					"background": new java.awt.Color( 179, 216, 168, 255 )
+					"foreground": sfield java.awt.Color darkGray
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 3 7"
+				} )
+			}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+				"x": 0
+				"y": 0
+				"width": 500
+				"height": 470
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"size": new java.awt.Dimension( 500, 500 )
+			"location": new java.awt.Point( 0, 0 )
+		} )
+	}
+}

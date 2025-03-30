@@ -18,17 +18,27 @@ new FormModel {
 				"$rowConstraints": "[fill][fill][fill][fill]"
 			} ) {
 				name: "panel1"
+				"background": new java.awt.Color( 61, 141, 122, 255 )
 				add( new FormComponent( "javax.swing.JButton" ) {
 					name: "Back"
 					"text": "Nazad"
+					"background": new java.awt.Color( 179, 216, 168, 255 )
+					"foreground": sfield java.awt.Color darkGray
 					addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "BackMouseClicked", true ) )
 				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 					"value": "cell 0 0"
 				} )
 				add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
 					name: "scrollPane1"
+					"background": sfield java.awt.Color darkGray
+					"foreground": sfield java.awt.Color darkGray
 					add( new FormComponent( "javax.swing.JTable" ) {
 						name: "Batch"
+						"background": new java.awt.Color( 251, 255, 228, 255 )
+						"foreground": sfield java.awt.Color darkGray
+						"gridColor": sfield java.awt.Color darkGray
+						"selectionBackground": new java.awt.Color( 179, 216, 168, 255 )
+						"selectionForeground": sfield java.awt.Color darkGray
 						addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "BatchMouseClicked", true ) )
 					} )
 				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {

@@ -2,7 +2,7 @@ package com.asss.www.ApotekarskaUstanova.Service;
 
 import com.asss.www.ApotekarskaUstanova.Dto.CategoryDto;
 import com.asss.www.ApotekarskaUstanova.Entity.Category;
-import com.asss.www.ApotekarskaUstanova.Dao.CategoryRepository;
+import com.asss.www.ApotekarskaUstanova.Repository.CategoryRepository;
 import com.asss.www.ApotekarskaUstanova.Converter.DTOConverter;
 import org.springframework.stereotype.Service;
 
