@@ -9,8 +9,9 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.GroupLayout;
 
+import com.asss.www.ApotekarskaUstanova.GUI.CashRegister.SuppliesHistory.SuppliesHistory;
 import com.asss.www.ApotekarskaUstanova.GUI.InventoryGUI.Inventory.Inventory;
-import com.asss.www.ApotekarskaUstanova.GUI.Start.MainMenuAdmin.MainMenuAdmin;
+import com.asss.www.ApotekarskaUstanova.GUI.Start.StartPage.StartPage;
 import com.asss.www.ApotekarskaUstanova.GUI.Suppliers.NewShipment.NewShipment;
 import com.asss.www.ApotekarskaUstanova.GUI.Suppliers.OrderSupplies.OrderSupplies;
 import com.asss.www.ApotekarskaUstanova.GUI.Suppliers.SupplierList.SupplierList;
@@ -54,11 +55,22 @@ public class MainMenuInventory extends JFrame {
         OrderSupplies.start();
     }
 
+    private void oldOrdersMouseClicked(MouseEvent e) {
+        dispose();
+        SuppliesHistory.start();
+    }
+
+    private void logOutMouseClicked(MouseEvent e) {
+        dispose();
+        StartPage.start();
+    }
+
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
         // Generated using JFormDesigner Educational license - Luka Nikolic (office)
         panel = new JPanel();
         order = new JButton();
+        oldOrders = new JButton();
         Inventar = new JButton();
         newDelivery = new JButton();
         Suppliers = new JButton();
@@ -105,6 +117,18 @@ public class MainMenuInventory extends JFrame {
             });
             panel.add(order, "cell 2 2 2 1");
 
+            //---- oldOrders ----
+            oldOrders.setText("Biv\u0161e Nabavke");
+            oldOrders.setForeground(Color.darkGray);
+            oldOrders.setBackground(new Color(0xb3d8a8));
+            oldOrders.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    oldOrdersMouseClicked(e);
+                }
+            });
+            panel.add(oldOrders, "cell 2 3 2 1");
+
             //---- Inventar ----
             Inventar.setText("Inventar");
             Inventar.setForeground(Color.darkGray);
@@ -115,7 +139,7 @@ public class MainMenuInventory extends JFrame {
                     InventarMouseClicked(e);
                 }
             });
-            panel.add(Inventar, "cell 2 3 2 1");
+            panel.add(Inventar, "cell 2 4 2 1");
 
             //---- newDelivery ----
             newDelivery.setText("Nova Dostava");
@@ -127,7 +151,7 @@ public class MainMenuInventory extends JFrame {
                     newDeliveryMouseClicked(e);
                 }
             });
-            panel.add(newDelivery, "cell 2 4 2 1");
+            panel.add(newDelivery, "cell 2 5 2 1");
 
             //---- Suppliers ----
             Suppliers.setText("Dobavljaci");
@@ -139,13 +163,19 @@ public class MainMenuInventory extends JFrame {
                     SuppliersMouseClicked(e);
                 }
             });
-            panel.add(Suppliers, "cell 2 5 2 1");
+            panel.add(Suppliers, "cell 2 6 2 1");
 
             //---- logOut ----
             logOut.setText("Odjavi Se");
             logOut.setBackground(new Color(0xb3d8a8));
             logOut.setForeground(Color.darkGray);
-            panel.add(logOut, "cell 3 7");
+            logOut.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    logOutMouseClicked(e);
+                }
+            });
+            panel.add(logOut, "cell 3 8");
         }
         contentPane.add(panel);
         panel.setBounds(0, 0, 500, 470);
@@ -173,6 +203,7 @@ public class MainMenuInventory extends JFrame {
     // Generated using JFormDesigner Educational license - Luka Nikolic (office)
     private JPanel panel;
     private JButton order;
+    private JButton oldOrders;
     private JButton Inventar;
     private JButton newDelivery;
     private JButton Suppliers;

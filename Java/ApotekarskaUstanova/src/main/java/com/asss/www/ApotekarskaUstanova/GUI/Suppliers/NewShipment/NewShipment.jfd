@@ -31,6 +31,16 @@ new FormModel {
 					"value": "cell 2 1 2 1"
 				} )
 				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "orderedSupplies"
+					"selectedIcon": sfield com.jformdesigner.model.FormObject NULL_VALUE
+					"icon": new com.jformdesigner.model.SwingIcon( 2, "OptionPane.warningIcon" )
+					"background": new java.awt.Color( 179, 216, 168, 255 )
+					"foreground": sfield java.awt.Color darkGray
+					addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "orderedSuppliesMouseClicked", true ) )
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 6 1"
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
 					name: "back"
 					"text": "Nazad"
 					"background": new java.awt.Color( 179, 216, 168, 255 )
@@ -63,7 +73,6 @@ new FormModel {
 				} )
 				add( new FormComponent( "javax.swing.JTextField" ) {
 					name: "product"
-					"background": new java.awt.Color( 179, 216, 168, 255 )
 					"foreground": sfield java.awt.Color darkGray
 				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 					"value": "cell 6 3 2 1"
@@ -140,6 +149,139 @@ new FormModel {
 			"foreground": sfield java.awt.Color darkGray
 		}, new FormLayoutConstraints( null ) {
 			"location": new java.awt.Point( 385, 530 )
+		} )
+		add( new FormWindow( "javax.swing.JDialog", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+			"$horizontalGroup": "par l {comp panel2::t::453:x}"
+			"$verticalGroup": "par l {seq l {comp panel2:::p:505:p, space :0:0:x}}"
+		} ) {
+			name: "orderedSuppliesDialog"
+			"modal": true
+			addEvent( new FormEvent( "java.awt.event.ComponentListener", "componentShown", "orderedSuppliesDialogComponentShown", true ) )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
+				"$layoutConstraints": "fill,hidemode 3"
+				"$columnConstraints": "[fill][fill][fill][fill][fill][fill][fill][fill]"
+				"$rowConstraints": "[fill][fill][fill][fill][fill][fill][][fill][fill]"
+			} ) {
+				name: "panel2"
+				"background": &Color0 new java.awt.Color( 61, 141, 122, 255 )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "back2"
+					"text": "Nazad"
+					"background": &Color1 new java.awt.Color( 179, 216, 168, 255 )
+					"foreground": sfield java.awt.Color darkGray
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 0 0"
+				} )
+				add( new FormComponent( "javax.swing.JComboBox" ) {
+					name: "orderCB"
+					"background": &Color2 new java.awt.Color( 179, 216, 168, 255 )
+					"foreground": sfield java.awt.Color darkGray
+					addEvent( new FormEvent( "java.awt.event.ItemListener", "itemStateChanged", "orderCBItemStateChanged", true ) )
+					addEvent( new FormEvent( "java.beans.PropertyChangeListener", "propertyChange", "orderCBPropertyChange", true ) )
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "orderCB", true ) )
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 1 1 6 1"
+				} )
+				add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+					name: "scrollPane2"
+					"background": sfield java.awt.Color darkGray
+					"foreground": sfield java.awt.Color darkGray
+					add( new FormComponent( "javax.swing.JTable" ) {
+						name: "orderItems"
+						"background": new java.awt.Color( 251, 255, 228, 255 )
+						"foreground": sfield java.awt.Color darkGray
+						"gridColor": sfield java.awt.Color darkGray
+						"selectionBackground": new java.awt.Color( 179, 216, 168, 255 )
+						"selectionForeground": sfield java.awt.Color darkGray
+					} )
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 0 2 7 4,growy"
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "add2"
+					"text": "Dodaj"
+					"background": &Color3 new java.awt.Color( 179, 216, 168, 255 )
+					"foreground": sfield java.awt.Color darkGray
+					addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "add2MouseClicked", true ) )
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 1 6"
+				} )
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"size": &Dimension0 new java.awt.Dimension( 455, 535 )
+			"location": new java.awt.Point( 0, 581 )
+		} )
+		add( new FormWindow( "javax.swing.JDialog", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+			"$horizontalGroup": "par l {comp panel3::l::453:x}"
+			"$verticalGroup": "par l {comp panel3::l::504:x}"
+		} ) {
+			name: "orderedSuppliesDialog2"
+			"modal": true
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
+				"$layoutConstraints": "fill,hidemode 3"
+				"$columnConstraints": "[fill][fill][fill][fill][fill][fill][fill][fill]"
+				"$rowConstraints": "[fill][fill][fill][fill][fill][fill][fill][fill][fill][fill]"
+			} ) {
+				name: "panel3"
+				"background": #Color0
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "back3"
+					"text": "Nazad"
+					"background": #Color1
+					"foreground": sfield java.awt.Color darkGray
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 1 1,align center center,grow 0 0"
+				} )
+				add( new FormComponent( "javax.swing.JTextField" ) {
+					name: "productName"
+					"background": new java.awt.Color( 179, 216, 168, 255 )
+					"foreground": sfield java.awt.Color darkGray
+					"editable": false
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 1 2 4 1,aligny center,growy 0"
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "label6"
+					"text": "Lokacija:"
+					"foreground": new java.awt.Color( 251, 255, 228, 255 )
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 1 3 2 1"
+				} )
+				add( new FormComponent( "javax.swing.JComboBox" ) {
+					name: "locationCB2"
+					"background": #Color2
+					"foreground": sfield java.awt.Color darkGray
+					addEvent( new FormEvent( "java.awt.event.ItemListener", "itemStateChanged", "orderCBItemStateChanged", true ) )
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 1 4 6 1,aligny center,growy 0"
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "label7"
+					"text": "Rok trajanja:"
+					"foreground": new java.awt.Color( 251, 255, 228, 255 )
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 1 5 2 1"
+				} )
+				add( new FormComponent( "com.github.lgooddatepicker.components.DatePicker" ) {
+					name: "datePicker1"
+					"background": new java.awt.Color( 179, 216, 168, 255 )
+					"foreground": sfield java.awt.Color darkGray
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 1 6 6 1,aligny center,growy 0"
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "add3"
+					"text": "Dodaj"
+					"background": #Color3
+					"foreground": sfield java.awt.Color darkGray
+					addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "add3MouseClicked", true ) )
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 1 8,align center center,grow 0 0"
+				} )
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"size": #Dimension0
+			"location": new java.awt.Point( 0, 1132 )
 		} )
 	}
 }

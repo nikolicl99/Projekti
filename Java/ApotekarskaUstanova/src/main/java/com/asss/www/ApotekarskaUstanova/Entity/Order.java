@@ -20,6 +20,9 @@ public class Order {
     @Column(name = "selected_time", nullable = false)
     private LocalTime selectedTime;
 
+    @Column(name = "acquired", nullable = false)
+    private Integer acquired;
+
     // Getters and Setters
     public Integer getId() {
         return id;
@@ -51,5 +54,13 @@ public class Order {
 
     public void setSelectedTime(LocalTime selectedTime) {
         this.selectedTime = selectedTime;
+    }
+
+    public Integer getAcquired() {
+        return acquired;
+    }
+
+    public void setAcquired(Integer acquired) {
+        this.acquired = acquired;
     }
 }

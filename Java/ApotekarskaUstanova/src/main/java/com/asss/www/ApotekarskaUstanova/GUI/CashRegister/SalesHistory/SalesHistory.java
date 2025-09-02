@@ -23,6 +23,7 @@ import com.asss.www.ApotekarskaUstanova.Dto.EmployeeDto;
 import com.asss.www.ApotekarskaUstanova.Dto.SalesDto;
 import com.asss.www.ApotekarskaUstanova.GUI.CashRegister.CashRegister.CashRegister;
 import com.asss.www.ApotekarskaUstanova.GUI.CashRegister.SalesItems.SalesItems;
+import com.asss.www.ApotekarskaUstanova.GUI.Start.MainMenuAdmin.MainMenuAdmin;
 import com.asss.www.ApotekarskaUstanova.Security.JwtResponse;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -182,7 +183,12 @@ public class SalesHistory extends JFrame {
 
     private void BackMouseClicked(MouseEvent e) {
         dispose();
-        CashRegister.start();
+        if (JwtResponse.getTypeId() == 1) {
+            MainMenuAdmin.start();
+        }
+        if (JwtResponse.getTypeId() == 2) {
+            CashRegister.start();
+        }
     }
 
     private void ItemsMouseClicked(MouseEvent e) {

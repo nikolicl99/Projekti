@@ -9,6 +9,7 @@ import java.awt.event.*;
 
 import com.asss.www.ApotekarskaUstanova.Dto.ProductDto;
 import com.asss.www.ApotekarskaUstanova.GUI.Start.MainMenuAdmin.MainMenuAdmin;
+import com.asss.www.ApotekarskaUstanova.GUI.Start.MainMenuInventory.MainMenuInventory;
 import com.asss.www.ApotekarskaUstanova.Security.JwtResponse;
 import com.asss.www.ApotekarskaUstanova.GUI.InventoryGUI.InventoryBatch.InventoryBatch;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -162,7 +163,12 @@ public class Inventory extends JFrame {
 
     private void NazadMouseClicked(MouseEvent e) {
         dispose();
-        MainMenuAdmin.start();
+        if (JwtResponse.getTypeId() == 1) {
+            MainMenuAdmin.start();
+        }
+        if (JwtResponse.getTypeId() == 4) {
+            MainMenuInventory.start();
+        }
     }
 
     private void initComponents() {

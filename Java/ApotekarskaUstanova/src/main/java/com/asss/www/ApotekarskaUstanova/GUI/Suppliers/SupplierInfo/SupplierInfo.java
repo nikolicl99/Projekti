@@ -322,7 +322,7 @@ public class SupplierInfo extends JFrame {
             //---- nameSurname ----
             nameSurname.setBackground(new Color(0xb3d8a8));
             nameSurname.setForeground(Color.darkGray);
-            panel1.add(nameSurname, "cell 2 2 2 1");
+            panel1.add(nameSurname, "cell 2 2 4 1");
 
             //---- Email_Label ----
             Email_Label.setText("Email:");
@@ -332,7 +332,7 @@ public class SupplierInfo extends JFrame {
             //---- email ----
             email.setBackground(new Color(0xb3d8a8));
             email.setForeground(Color.darkGray);
-            panel1.add(email, "cell 2 3 2 1");
+            panel1.add(email, "cell 2 3 4 1");
 
             //---- telefon_Label ----
             telefon_Label.setText("Telefon:");
@@ -342,7 +342,7 @@ public class SupplierInfo extends JFrame {
             //---- phone ----
             phone.setBackground(new Color(0xb3d8a8));
             phone.setForeground(Color.darkGray);
-            panel1.add(phone, "cell 2 4 2 1");
+            panel1.add(phone, "cell 2 4 4 1");
 
             //---- adress_Label ----
             adress_Label.setText("Adresa:");
@@ -352,7 +352,7 @@ public class SupplierInfo extends JFrame {
             //---- adress ----
             adress.setBackground(new Color(0xb3d8a8));
             adress.setForeground(Color.darkGray);
-            panel1.add(adress, "cell 2 5 2 1");
+            panel1.add(adress, "cell 2 5 4 1");
 
             //======== scrollPane1 ========
             {
@@ -392,10 +392,7 @@ public class SupplierInfo extends JFrame {
         contentPane.setLayout(contentPaneLayout);
         contentPaneLayout.setHorizontalGroup(
             contentPaneLayout.createParallelGroup()
-                .addGroup(contentPaneLayout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(panel1, GroupLayout.DEFAULT_SIZE, 959, Short.MAX_VALUE)
-                    .addGap(33, 33, 33))
+                .addComponent(panel1, GroupLayout.DEFAULT_SIZE, 998, Short.MAX_VALUE)
         );
         contentPaneLayout.setVerticalGroup(
             contentPaneLayout.createParallelGroup()

@@ -80,7 +80,6 @@ public class ProductController {
         dto.setId(product.getId());
         dto.setName(product.getName());
         dto.setSellingPrice(product.getSellingPrice());
-        // Dodaj ostala polja prema potrebi
         return dto;
     }
 
@@ -150,10 +149,6 @@ public class ProductController {
 
             // Postavljanje ShipmentDto u ProductBatchDto
             productBatchDto.setShipmentDto(shipmentDto);
-
-
-            // Postavljanje datuma prijema iz Shipment entiteta
-//            productBatchDto.setReceivedDate(productBatch.getShipment().getArrivalDate());
         }
 
         return productBatchDto;

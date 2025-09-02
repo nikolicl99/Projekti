@@ -29,6 +29,7 @@ import javax.swing.table.TableModel;
 import com.asss.www.ApotekarskaUstanova.Dto.ProductDto;
 import com.asss.www.ApotekarskaUstanova.Dto.SupplierDto;
 import com.asss.www.ApotekarskaUstanova.GUI.Start.MainMenuAdmin.MainMenuAdmin;
+import com.asss.www.ApotekarskaUstanova.GUI.Start.MainMenuInventory.MainMenuInventory;
 import com.asss.www.ApotekarskaUstanova.Security.JwtResponse;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -266,6 +267,7 @@ public class OrderSupplies extends JFrame {
         json.put("supplierId", supplierId);
         json.put("selectedDate", selectedDate);
         json.put("selectedTime", selectedTime);
+        json.put("acquired", 0);
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + jwtToken);
@@ -606,7 +608,7 @@ public class OrderSupplies extends JFrame {
 
     private void backMouseClicked(MouseEvent e) {
         dispose();
-        MainMenuAdmin.start();
+        MainMenuInventory.start();
     }
 
     public void customizeTable(JTable table, TableModel model) {
@@ -848,7 +850,7 @@ public class OrderSupplies extends JFrame {
                     table1.setSelectionForeground(Color.darkGray);
                     scrollPane2.setViewportView(table1);
                 }
-                panel2.add(scrollPane2, "cell 0 1 2 1");
+                panel2.add(scrollPane2, "cell 0 1 4 1");
 
                 //---- add2 ----
                 add2.setText("Dodaj");
@@ -867,9 +869,7 @@ public class OrderSupplies extends JFrame {
             lowAmmountDialogContentPane.setLayout(lowAmmountDialogContentPaneLayout);
             lowAmmountDialogContentPaneLayout.setHorizontalGroup(
                 lowAmmountDialogContentPaneLayout.createParallelGroup()
-                    .addGroup(GroupLayout.Alignment.TRAILING, lowAmmountDialogContentPaneLayout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(panel2, GroupLayout.PREFERRED_SIZE, 455, GroupLayout.PREFERRED_SIZE))
+                    .addComponent(panel2, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 453, Short.MAX_VALUE)
             );
             lowAmmountDialogContentPaneLayout.setVerticalGroup(
                 lowAmmountDialogContentPaneLayout.createParallelGroup()

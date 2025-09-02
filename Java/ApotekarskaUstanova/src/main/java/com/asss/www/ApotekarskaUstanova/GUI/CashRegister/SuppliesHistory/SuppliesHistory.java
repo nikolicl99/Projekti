@@ -24,6 +24,7 @@ import com.asss.www.ApotekarskaUstanova.Dto.SupplierDto;
 import com.asss.www.ApotekarskaUstanova.GUI.CashRegister.SalesItems.SalesItems;
 import com.asss.www.ApotekarskaUstanova.GUI.CashRegister.SuppliesItems.SuppliesItems;
 import com.asss.www.ApotekarskaUstanova.GUI.Start.MainMenuAdmin.MainMenuAdmin;
+import com.asss.www.ApotekarskaUstanova.GUI.Start.MainMenuInventory.MainMenuInventory;
 import com.asss.www.ApotekarskaUstanova.Security.JwtResponse;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -66,7 +67,13 @@ public class SuppliesHistory extends JFrame {
 
     private void BackMouseClicked(MouseEvent e) {
         dispose();
-        MainMenuAdmin.start();
+        if (JwtResponse.getTypeId() == 1) {
+            MainMenuAdmin.start();
+        }
+        if (JwtResponse.getTypeId() == 4) {
+            MainMenuInventory.start();
+        }
+
     }
 
     private void datePickerPropertyChange(PropertyChangeEvent e) {

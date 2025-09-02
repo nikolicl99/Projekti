@@ -50,4 +50,5 @@ public class OrderItems {
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
     }
+
 }

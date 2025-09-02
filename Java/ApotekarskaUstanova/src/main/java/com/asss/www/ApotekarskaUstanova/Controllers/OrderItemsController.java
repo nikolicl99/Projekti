@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/order-items")
 public class OrderItemsController {
@@ -17,5 +19,11 @@ public class OrderItemsController {
     public ResponseEntity<Void> addOrderItem(@RequestBody OrderItemsDto orderItemsDto) {
         orderItemsService.addOrderItem(orderItemsDto);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/order/{orderId}")
+    public ResponseEntity<List<OrderItemsDto>> getItemsByOrderId(@PathVariable int orderId) {
+        List<OrderItemsDto> items = orderItemsService.getOrderItemsByOrderId(orderId);
+        return ResponseEntity.ok(items);
     }
 }

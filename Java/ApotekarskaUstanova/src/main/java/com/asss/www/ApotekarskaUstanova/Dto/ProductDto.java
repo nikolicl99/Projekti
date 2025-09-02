@@ -144,4 +144,5 @@ public class ProductDto {
     public void setMinQuantity(int minQuantity) {
         this.minQuantity = minQuantity;
     }
+
 }

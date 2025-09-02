@@ -33,6 +33,7 @@ import javax.swing.text.DocumentFilter;
 import com.asss.www.ApotekarskaUstanova.Dto.EmployeeDto;
 import com.asss.www.ApotekarskaUstanova.GUI.CashRegister.SalesHistory.SalesHistory;
 import com.asss.www.ApotekarskaUstanova.GUI.Start.MainMenuAdmin.MainMenuAdmin;
+import com.asss.www.ApotekarskaUstanova.GUI.Start.StartPage.StartPage;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import net.miginfocom.swing.MigLayout;
 
@@ -45,6 +46,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.json.JSONObject;
 import org.springframework.core.io.ClassPathResource;
@@ -1217,86 +1219,157 @@ public class CashRegister extends JFrame {
                                        String paymentType, double totalPrice, double receiptChange,
                                        List<Map<String, Object>> items, String employeeName) {
         try (PDDocument document = new PDDocument()) {
-            PDPage page = new PDPage();
+            // 1. Izračunavanje dimenzija koristeći metode
+            int maxLineLength = calculateMaxLineLength(salesId, transactionDate, transactionTime,
+                    paymentType, totalPrice, receiptChange, items, employeeName);
+            int totalLines = calculateTotalLines(items);
+
+            // 2. Dinamičko određivanje širina kolona
+            int maxNameLength = items.stream()
+                    .mapToInt(item -> ((String)item.get("Naziv proizvoda")).length())
+                    .max()
+                    .orElse(15);
+            maxNameLength = Math.min(Math.max(maxNameLength, 10), 25);
+
+            int col1Width = maxNameLength + 4;
+            int col2Width = 10;
+            int col3Width = 10;
+            int col4Width = 10;
+            int col5Width = 10;
+            int tableWidth = col1Width + col2Width + col3Width + col4Width + col5Width + 8;
+
+            // 3. Postavke stranice
+            int lineHeight = 15;
+            int margin = 15;
+            int pageWidth = Math.min(Math.max(maxLineLength + 2 * margin, 300), 595);
+            int pageHeight = Math.min(totalLines * lineHeight + 2 * margin, 842);
+
+            PDPage page = new PDPage(new PDRectangle(pageWidth, pageHeight));
             document.addPage(page);
 
             try (PDPageContentStream contentStream = new PDPageContentStream(document, page)) {
-                // Učitavanje fonta
-                PDType0Font font = null;
-                try (InputStream fontStream = new ClassPathResource("static/arial.ttf").getInputStream()) {
-                    font = PDType0Font.load(document, fontStream);
-                }
+                PDType0Font font = PDType0Font.load(document,
+                        new ClassPathResource("static/arial.ttf").getInputStream());
 
-                contentStream.setFont(font, 12);
+                contentStream.setFont(font, 10);
                 contentStream.beginText();
-                contentStream.newLineAtOffset(50, 750);
+                contentStream.newLineAtOffset(margin, pageHeight - margin - 10);
 
-                // Naslov računa
-                contentStream.showText("===== FISKALNI RAČUN =====");
-                contentStream.newLineAtOffset(0, -20);
-                contentStream.showText("ID: " + salesId);
-                contentStream.newLineAtOffset(0, -20);
-                contentStream.showText("Datum: " + transactionDate);
-                contentStream.newLineAtOffset(0, -20);
-                contentStream.showText("Vreme: " + transactionTime.format(DateTimeFormatter.ofPattern("HH:mm:ss")));
-                contentStream.newLineAtOffset(0, -20);
-                contentStream.showText("Blagajnik: " + employeeName);
-                contentStream.newLineAtOffset(0, -20);
-                if (paymentType.equals("Cash")) {
-                    paymentType = "Gotovina";
+                // 4. Zaglavlje
+                String[] headerLines = {
+                        "===== FISKALNI RAČUN =====",
+                        "ID: " + salesId,
+                        "Datum: " + transactionDate,
+                        "Vreme: " + transactionTime.format(DateTimeFormatter.ofPattern("HH:mm:ss")),
+                        "Blagajnik: " + employeeName,
+                        "Način plaćanja: " + (paymentType.equals("Cash") ? "Gotovina" : "Kreditna Kartica")
+                };
+
+                for (String line : headerLines) {
+                    contentStream.showText(line);
+                    contentStream.newLineAtOffset(0, -lineHeight);
                 }
-                if (paymentType.equals("Card")) {
-                    paymentType = "Kreditna Kartica";
-                }
-                contentStream.showText("Način plaćanja: " + paymentType);
-                contentStream.newLineAtOffset(0, -20);
-                contentStream.showText("==========================");
-                contentStream.newLineAtOffset(0, -30);
 
-                // Tabela proizvoda
-                contentStream.showText(String.format("%-20s %-10s %-10s %-10s %-10s", "Proizvod", "Količina", "Cena", "Popust", "Ukupno"));
-                contentStream.newLineAtOffset(0, -15);
-                contentStream.showText("------------------------------------------------");
-                contentStream.newLineAtOffset(0, -15);
+                // Linija ispod zaglavlja
+                String headerSeparator = new String(new char[headerLines[0].length()]).replace('\0', '=');
+                contentStream.showText(headerSeparator);
+                contentStream.newLineAtOffset(0, -lineHeight);
 
+                // 5. Tabela proizvoda
+                String headerFormat = "%-" + col1Width + "s %" + col2Width + "s %" + col3Width + "s %" + col4Width + "s %" + col5Width + "s";
+                contentStream.showText(String.format(headerFormat, "Proizvod", "Količina", "Cena", "Popust", "Ukupno"));
+                contentStream.newLineAtOffset(0, -lineHeight);
+
+                // Linija ispod naslova tabele
+                String tableSeparator = new String(new char[tableWidth]).replace('\0', '-');
+                contentStream.showText(tableSeparator);
+                contentStream.newLineAtOffset(0, -lineHeight);
+
+                // Stavke
+                String itemFormat = "%-" + col1Width + "s %" + col2Width + "s %" + col3Width + ".2f %" + col4Width + "s %" + col5Width + ".2f";
                 for (Map<String, Object> item : items) {
-                    String name = (String) item.get("Naziv proizvoda");
-                    int quantity = (int) item.get("Količina");
-                    double price = (double) item.get("Cena po jedinici");
-                    double totalItemPrice = (double) item.get("Ukupna cena");
-
-                    // Popust kao string sa %
-                    String discount = item.get("Popust") + "%";
-
-                    // Formatiran prikaz podataka
-                    contentStream.showText(String.format("%-20s %-10d %-10.2f %-10s %-10.2f",
-                            name, quantity, price, discount, totalItemPrice));
-                    contentStream.newLineAtOffset(0, -15);
+                    String productName = shorten(((String) item.get("Naziv proizvoda")), maxNameLength);
+                    contentStream.showText(String.format(itemFormat,
+                            productName,
+                            item.get("Količina").toString(),
+                            (double) item.get("Cena po jedinici"),
+                            item.get("Popust") + "%",
+                            (double) item.get("Ukupna cena")));
+                    contentStream.newLineAtOffset(0, -lineHeight);
                 }
 
-                contentStream.newLineAtOffset(0, -20);
-                contentStream.showText("==========================");
-                contentStream.newLineAtOffset(0, -20);
+                // Footer
+                contentStream.newLineAtOffset(0, -lineHeight);
+                contentStream.showText(new String(new char[tableWidth]).replace('\0', '='));
+                contentStream.newLineAtOffset(0, -lineHeight);
                 contentStream.showText(String.format("Ukupno: %.2f RSD", totalPrice));
-                contentStream.newLineAtOffset(0, -20);
+                contentStream.newLineAtOffset(0, -lineHeight);
                 contentStream.showText(String.format("Povraćaj: %.2f RSD", receiptChange));
-                contentStream.newLineAtOffset(0, -20);
-                contentStream.showText("==========================");
+                contentStream.newLineAtOffset(0, -lineHeight);
+                contentStream.showText(new String(new char[tableWidth]).replace('\0', '='));
 
                 contentStream.endText();
             }
 
-            // Kreiranje foldera za čuvanje računa
-            String folderPath = "receipts/" + transactionDate;
-            Files.createDirectories(Paths.get(folderPath));
-            String filePath = folderPath + "/Receipt_" + salesId + ".pdf";
-
             // Čuvanje dokumenta
-            document.save(new File(filePath));
-            System.out.println("Račun sačuvan: " + filePath);
+            String folderPath = "receipts/cashRegister/" + transactionDate;
+            Files.createDirectories(Paths.get(folderPath));
+            document.save(new File(folderPath + "/Receipt_" + salesId + ".pdf"));
+
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private static int calculateMaxLineLength(int salesId, LocalDate transactionDate, LocalTime transactionTime,
+                                              String paymentType, double totalPrice, double receiptChange,
+                                              List<Map<String, Object>> items, String employeeName) {
+        int maxLength = 0;
+        String[] headerLines = {
+                "===== FISKALNI RAČUN =====",
+                "ID: " + salesId,
+                "Datum: " + transactionDate,
+                "Vreme: " + transactionTime.format(DateTimeFormatter.ofPattern("HH:mm:ss")),
+                "Blagajnik: " + employeeName,
+                "Način plaćanja: " + (paymentType.equals("Cash") ? "Gotovina" : "Kreditna Kartica")
+        };
+
+        for (String line : headerLines) {
+            maxLength = Math.max(maxLength, line.length() * 6);
+        }
+
+        // Izračunaj širinu za tabelu
+        int maxNameLength = items.stream()
+                .mapToInt(item -> ((String)item.get("Naziv proizvoda")).length())
+                .max()
+                .orElse(15);
+        maxNameLength = Math.min(Math.max(maxNameLength, 10), 25);
+
+        int col1Width = maxNameLength + 4;
+        int col2Width = 10;
+        int col3Width = 10;
+        int col4Width = 10;
+        int col5Width = 10;
+        int tableWidth = col1Width + col2Width + col3Width + col4Width + col5Width + 8;
+
+        maxLength = Math.max(maxLength, tableWidth * 6);
+
+        // Footer linije
+        String footer1 = String.format("Ukupno: %.2f RSD", totalPrice);
+        String footer2 = String.format("Povraćaj: %.2f RSD", receiptChange);
+        return Math.max(maxLength, Math.max(footer1.length() * 6, footer2.length() * 6));
+    }
+
+    private static int calculateTotalLines(List<Map<String, Object>> items) {
+        // Zaglavlje: 7 linija (naslov + 5 podataka + linija razdvajanja)
+        // Tabela: 2 linije (header + separator)
+        // Stavke: items.size()
+        // Footer: 4 linije (razdvajanje + 2 podataka + razdvajanje)
+        return 7 + 2 + items.size() + 4;
+    }
+
+    private static String shorten(String text, int maxLength) {
+        return text.length() > maxLength ? text.substring(0, maxLength - 3) + "..." : text;
     }
 
     private String fetchEmployeeName(int employeeId) {
@@ -1329,7 +1402,7 @@ public class CashRegister extends JFrame {
 
     private void backMouseClicked(MouseEvent e) {
         dispose();
-        MainMenuAdmin.start();
+        StartPage.start();
     }
 
     public void customizeTable(JTable table, TableModel model) {
@@ -1362,6 +1435,11 @@ public class CashRegister extends JFrame {
         JViewport viewport3 = scrollPane3.getViewport();
         viewport3.setBackground(backgroundColor);
         scrollPane3.setBackground(backgroundColor);
+    }
+
+    private void back2MouseClicked(MouseEvent e) {
+        electronicPrescription.setVisible(false);
+        choosePrescription.setVisible(true);
     }
 
     private void initComponents() {
@@ -1697,6 +1775,12 @@ public class CashRegister extends JFrame {
                 back2.setText("Nazad");
                 back2.setBackground(new Color(0xb3d8a8));
                 back2.setForeground(Color.darkGray);
+                back2.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        back2MouseClicked(e);
+                    }
+                });
                 panel3.add(back2, "cell 0 0");
 
                 //---- question2 ----

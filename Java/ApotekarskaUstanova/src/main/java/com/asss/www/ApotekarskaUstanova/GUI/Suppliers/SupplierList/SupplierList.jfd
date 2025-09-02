@@ -4,7 +4,7 @@ new FormModel {
 	contentType: "form/swing"
 	root: new FormRoot {
 		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
-			"$horizontalGroup": "par l {seq l {space :::p, comp panel1::::986:x, space :::p}}"
+			"$horizontalGroup": "par l {comp panel1::l::998:x}"
 			"$verticalGroup": "par l {comp panel1::t::469:x}"
 		} ) {
 			name: "this"

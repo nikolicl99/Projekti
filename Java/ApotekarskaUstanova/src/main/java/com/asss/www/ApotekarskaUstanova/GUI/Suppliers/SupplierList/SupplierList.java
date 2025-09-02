@@ -13,6 +13,7 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableModel;
 
 import com.asss.www.ApotekarskaUstanova.Dto.SupplierDto;
+import com.asss.www.ApotekarskaUstanova.GUI.Start.MainMenuInventory.MainMenuInventory;
 import com.asss.www.ApotekarskaUstanova.Security.JwtResponse;
 import com.asss.www.ApotekarskaUstanova.GUI.Start.MainMenuAdmin.MainMenuAdmin;
 import com.asss.www.ApotekarskaUstanova.GUI.Suppliers.SupplierInfo.SupplierInfo;
@@ -48,7 +49,13 @@ public class SupplierList extends JFrame {
 
     private void BackMouseClicked(MouseEvent e) {
         dispose();
-        MainMenuAdmin.start();
+        if (JwtResponse.getTypeId() == 1) {
+            MainMenuAdmin.start();
+        }
+        if (JwtResponse.getTypeId() == 4) {
+            MainMenuInventory.start();
+        }
+
     }
 
     private void suppliersMouseClicked(MouseEvent e) {
@@ -173,10 +180,7 @@ public class SupplierList extends JFrame {
         contentPane.setLayout(contentPaneLayout);
         contentPaneLayout.setHorizontalGroup(
             contentPaneLayout.createParallelGroup()
-                .addGroup(contentPaneLayout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(panel1, GroupLayout.DEFAULT_SIZE, 986, Short.MAX_VALUE)
-                    .addContainerGap())
+                .addComponent(panel1, GroupLayout.DEFAULT_SIZE, 998, Short.MAX_VALUE)
         );
         contentPaneLayout.setVerticalGroup(
             contentPaneLayout.createParallelGroup()

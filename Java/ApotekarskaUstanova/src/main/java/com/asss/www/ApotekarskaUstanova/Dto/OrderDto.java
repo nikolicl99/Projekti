@@ -9,6 +9,7 @@ public class OrderDto {
     private SupplierDto supplier;
     private LocalDate selectedDate;
     private LocalTime selectedTime;
+    private int acquired;
 
     // Getters and Setters
 
@@ -51,5 +52,13 @@ public class OrderDto {
 
     public void setSelectedTime(LocalTime selectedTime) {
         this.selectedTime = selectedTime;
+    }
+
+    public int getAcquired() {
+        return acquired;
+    }
+
+    public void setAcquired(int acquired) {
+        this.acquired = acquired;
     }
 }

@@ -189,6 +189,7 @@ new FormModel {
 					"text": "Nazad"
 					"background": new java.awt.Color( 179, 216, 168, 255 )
 					"foreground": sfield java.awt.Color darkGray
+					addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "back2MouseClicked", true ) )
 				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 					"value": "cell 0 0"
 				} )

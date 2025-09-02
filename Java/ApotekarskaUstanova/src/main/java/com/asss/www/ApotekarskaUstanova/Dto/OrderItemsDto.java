@@ -10,6 +10,15 @@ public class OrderItemsDto {
     private ProductDto product;
     private Integer quantity;
 
+    public OrderItemsDto() {
+    }
+
+    public OrderItemsDto(String name, int quantity) {
+        this.product = new ProductDto();
+        this.product.setName(name);
+        this.quantity = quantity;
+    }
+
     // Getters and Setters
 
 

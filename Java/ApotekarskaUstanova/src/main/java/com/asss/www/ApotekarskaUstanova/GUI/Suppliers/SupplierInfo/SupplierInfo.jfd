@@ -4,7 +4,7 @@ new FormModel {
 	contentType: "form/swing"
 	root: new FormRoot {
 		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
-			"$horizontalGroup": "par l {seq {space :::p, comp panel1::::959:x, space :p:33:p}}"
+			"$horizontalGroup": "par l {comp panel1::l::998:x}"
 			"$verticalGroup": "par l {comp panel1::t::469:x}"
 		} ) {
 			name: "this"
@@ -41,7 +41,7 @@ new FormModel {
 					"background": new java.awt.Color( 179, 216, 168, 255 )
 					"foreground": sfield java.awt.Color darkGray
 				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-					"value": "cell 2 2 2 1"
+					"value": "cell 2 2 4 1"
 				} )
 				add( new FormComponent( "javax.swing.JLabel" ) {
 					name: "Email_Label"
@@ -55,7 +55,7 @@ new FormModel {
 					"background": new java.awt.Color( 179, 216, 168, 255 )
 					"foreground": sfield java.awt.Color darkGray
 				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-					"value": "cell 2 3 2 1"
+					"value": "cell 2 3 4 1"
 				} )
 				add( new FormComponent( "javax.swing.JLabel" ) {
 					name: "telefon_Label"
@@ -69,7 +69,7 @@ new FormModel {
 					"background": new java.awt.Color( 179, 216, 168, 255 )
 					"foreground": sfield java.awt.Color darkGray
 				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-					"value": "cell 2 4 2 1"
+					"value": "cell 2 4 4 1"
 				} )
 				add( new FormComponent( "javax.swing.JLabel" ) {
 					name: "adress_Label"
@@ -83,7 +83,7 @@ new FormModel {
 					"background": new java.awt.Color( 179, 216, 168, 255 )
 					"foreground": sfield java.awt.Color darkGray
 				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-					"value": "cell 2 5 2 1"
+					"value": "cell 2 5 4 1"
 				} )
 				add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
 					name: "scrollPane1"
