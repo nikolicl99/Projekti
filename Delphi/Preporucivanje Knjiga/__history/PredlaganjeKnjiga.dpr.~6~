@@ -1,0 +1,50 @@
+program PredlaganjeKnjiga;
+
+uses
+  System.StartUpCopy,
+  FMX.Forms,
+  PocetnaStrana in 'PocetnaStrana.pas' {frmPocetnaStrana},
+  Pitanje1 in 'Pitanje1.pas' {frmPitanje1},
+  Pitanje1Autor in 'Pitanje1Autor.pas' {frmPitanje1Autor},
+  Main in 'Main.pas' {frmMain},
+  Pitanje2 in 'Pitanje2.pas' {frmPitanje2},
+  Pitanje2Knjiga in 'Pitanje2Knjiga.pas' {frmPitanje2Knjiga},
+  Pitanje2Zanr in 'Pitanje2Zanr.pas' {frmPitanje2Zanr},
+  Pitanje2Podzanr in 'Pitanje2Podzanr.pas' {frmPitanje2Podzanr},
+  Pitanje2Tema in 'Pitanje2Tema.pas' {frmPitanje2Tema},
+  Pitanje3 in 'Pitanje3.pas' {frmPitanje3},
+  Pitanje4 in 'Pitanje4.pas' {frmPitanje4},
+  Pitanje5 in 'Pitanje5.pas' {frmPitanje5},
+  Pitanje6 in 'Pitanje6.pas' {frmPitanje6},
+  Pitanje7 in 'Pitanje7.pas' {frmPitanje7},
+  Pitanje8 in 'Pitanje8.pas' {frmPitanje8},
+  Pitanje8Lokacija in 'Pitanje8Lokacija.pas' {frmPitanje8Lokacija},
+  Pitanje9 in 'Pitanje9.pas' {frmPitanje9},
+  Pitanje9Vreme in 'Pitanje9Vreme.pas' {frmPitanje9Vreme},
+  Pitanje10 in 'Pitanje10.pas' {frmPitanje10};
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.CreateForm(TfrmPocetnaStrana, frmPocetnaStrana);
+  Application.CreateForm(TfrmPitanje1, frmPitanje1);
+  Application.CreateForm(TfrmPitanje1Autor, frmPitanje1Autor);
+  Application.CreateForm(TfrmMain, frmMain);
+  Application.CreateForm(TfrmPitanje2, frmPitanje2);
+  Application.CreateForm(TfrmPitanje2Knjiga, frmPitanje2Knjiga);
+  Application.CreateForm(TfrmPitanje2Zanr, frmPitanje2Zanr);
+  Application.CreateForm(TfrmPitanje2Podzanr, frmPitanje2Podzanr);
+  Application.CreateForm(TfrmPitanje2Tema, frmPitanje2Tema);
+  Application.CreateForm(TfrmPitanje3, frmPitanje3);
+  Application.CreateForm(TfrmPitanje4, frmPitanje4);
+  Application.CreateForm(TfrmPitanje5, frmPitanje5);
+  Application.CreateForm(TfrmPitanje6, frmPitanje6);
+  Application.CreateForm(TfrmPitanje7, frmPitanje7);
+  Application.CreateForm(TfrmPitanje8, frmPitanje8);
+  Application.CreateForm(TfrmPitanje8Lokacija, frmPitanje8Lokacija);
+  Application.CreateForm(TfrmPitanje9, frmPitanje9);
+  Application.CreateForm(TfrmPitanje9Vreme, frmPitanje9Vreme);
+  Application.CreateForm(TfrmPitanje10, frmPitanje10);
+  Application.Run;
+end.

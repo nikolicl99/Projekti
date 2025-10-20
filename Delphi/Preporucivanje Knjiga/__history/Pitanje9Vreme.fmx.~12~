@@ -1,0 +1,80 @@
+object frmPitanje9Vreme: TfrmPitanje9Vreme
+  Left = 0
+  Top = 0
+  BorderIcons = [biSystemMenu]
+  BorderStyle = Single
+  Caption = 'Pitanje 9'
+  ClientHeight = 480
+  ClientWidth = 480
+  Fill.Color = xFFF7D098
+  Fill.Kind = Solid
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  OnActivate = FormActivate
+  OnClose = FormClose
+  DesignerMasterStyle = 0
+  object Memo: TMemo
+    Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+    DataDetectorTypes = []
+    Lines.Strings = (
+      'Pitanje br. 9A:'
+      ''
+      'Molim Vas odaberite period.')
+    Position.X = 32.000000000000000000
+    Position.Y = 56.000000000000000000
+    Size.Width = 417.000000000000000000
+    Size.Height = 57.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    Viewport.Width = 413.000000000000000000
+    Viewport.Height = 53.000000000000000000
+  end
+  object Dalje: TButton
+    Position.X = 304.000000000000000000
+    Position.Y = 400.000000000000000000
+    Size.Width = 105.000000000000000000
+    Size.Height = 41.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    Text = 'Dalje'
+    OnClick = DaljeClick
+  end
+  object Nazad: TButton
+    Position.X = 8.000000000000000000
+    Position.Y = 18.000000000000000000
+    Size.Width = 80.000000000000000000
+    Size.Height = 30.000000000000000000
+    Size.PlatformDefault = False
+    StyleLookup = 'priortoolbutton'
+    TabOrder = 2
+    Text = 'Button1'
+    OnClick = NazadClick
+  end
+  object Period_Edit: TEdit
+    Touch.InteractiveGestures = [LongTap, DoubleTap]
+    TabOrder = 3
+    Position.X = 104.000000000000000000
+    Position.Y = 152.000000000000000000
+    Size.Width = 200.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    OnChangeTracking = Period_EditChangeTracking
+  end
+  object Period: TStringGrid
+    CanFocus = True
+    ClipChildren = True
+    Position.X = 104.000000000000000000
+    Position.Y = 200.000000000000000000
+    Size.Width = 200.000000000000000000
+    Size.Height = 169.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 4
+    Viewport.Width = 180.000000000000000000
+    Viewport.Height = 144.000000000000000000
+    object Period_col: TStringColumn
+      Header = 'Period'
+      Size.Width = 177.000000000000000000
+    end
+  end
+end

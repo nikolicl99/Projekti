@@ -1,0 +1,46 @@
+unit Dalje;
+
+interface
+
+uses
+  System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
+  FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs,
+  FMX.Controls.Presentation, FMX.StdCtrls, FMX.Memo.Types, FMX.ScrollBox,
+  FMX.Memo;
+
+type
+  TfrmDalje = class(TForm)
+    Forma: TPanel;
+    StyleBook: TStyleBook;
+    StyleBook1: TStyleBook;
+    Memo1: TMemo;
+    Biraj: TButton;
+    Izlaz: TButton;
+    procedure IzlazClick(Sender: TObject);
+    procedure BirajClick(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmDalje: TfrmDalje;
+
+implementation
+
+{$R *.fmx}
+uses PocetnaStrana;
+
+procedure TfrmDalje.BirajClick(Sender: TObject);
+begin
+frmPocetnaStrana.Show;
+Self.Hide;
+end;
+
+procedure TfrmDalje.IzlazClick(Sender: TObject);
+begin
+Application.Terminate;
+end;
+
+end.

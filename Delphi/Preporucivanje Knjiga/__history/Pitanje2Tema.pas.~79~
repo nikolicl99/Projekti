@@ -1,0 +1,307 @@
+﻿unit Pitanje2Tema;
+
+interface
+
+uses
+  System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
+  FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.Memo.Types,
+  FMX.StdCtrls, FMX.Controls.Presentation, FMX.ScrollBox, FMX.Memo, System.Rtti,
+  FMX.Grid.Style, FMX.Edit, FMX.Grid, FireDAC.Stan.Intf, FireDAC.Stan.Option,
+  FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,
+  FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Data.DB,
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client, System.Generics.Collections;
+
+type
+  TfrmPitanje2Tema = class(TForm)
+    Memo: TMemo;
+    Dalje: TButton;
+    Nazad: TButton;
+    Teme_Edit: TEdit;
+    Teme: TStringGrid;
+    Teme_col: TStringColumn;
+    StyleBook: TStyleBook;
+    Tema_Box: TCheckBox;
+    Forma: TPanel;
+    StyleBook1: TStyleBook;
+    procedure FormActivate(Sender: TObject);
+    procedure Teme_EditChangeTracking(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure NazadClick(Sender: TObject);
+    procedure TemeCellClick(const Column: TColumn; const Row: Integer);
+    procedure DaljeClick(Sender: TObject);
+  private
+    { Private declarations }
+    SelectedTema: Integer;
+    function ProveraNizaTema(const SelectedTema: Integer; const OriginalniNiz: TArray<Integer>): TArray<Integer>;
+    function JoinToString(const Arr: TArray<Integer>): string;
+    function GetIDTeme(const imeTeme: string): Integer;
+    function KnjigaIDInArray(const KnjigaID: Integer; const Arr: TArray<Integer>): Boolean;
+    procedure PopuniStringGridSaTemama;
+  public
+    { Public declarations }
+    NizPitanje2Tema : TArray<Integer>;
+  end;
+
+var
+  frmPitanje2Tema: TfrmPitanje2Tema;
+  Red : integer = 0;
+
+implementation
+
+{$R *.fmx}
+uses Main, Pitanje2Podzanr, Pitanje3;
+
+procedure TfrmPitanje2Tema.FormActivate(Sender: TObject);
+begin
+  Left := Round((Screen.Width - Width)/2);
+  Top := Round ((Screen.Height - Height)/2);
+
+  if Length(frmPitanje2Podzanr.NizPitanje2Podzanr) > 0 then
+    PopuniStringGridSaTemama;
+end;
+
+procedure TfrmPitanje2Tema.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  Application.Terminate;
+end;
+
+procedure TfrmPitanje2Tema.NazadClick(Sender: TObject);
+begin
+  frmPitanje2Podzanr.Show;
+  Self.Hide;
+end;
+
+procedure TfrmPitanje2Tema.TemeCellClick(const Column: TColumn; const Row: Integer);
+begin
+  SelectedTema := GetIDTeme(Teme.Cells[0, Row]);
+  Teme_Edit.Text := Teme.Cells[0, Row];
+end;
+
+procedure TfrmPitanje2Tema.Teme_EditChangeTracking(Sender: TObject);
+var
+  MyQuery: TFDQuery;
+  Row: Integer;
+begin
+  MyQuery := TFDQuery.Create(nil);
+  try
+    MyQuery.Connection := GlobalConnection;
+    MyQuery.SQL.Text := 'SELECT * FROM Teme WHERE Naziv_Teme LIKE :Tema ORDER BY Naziv_Teme';
+    MyQuery.ParamByName('Tema').AsWideString := Teme_Edit.Text + '%';
+    MyQuery.Open;
+
+    Teme.RowCount := 1;
+    Row := 0;
+    while not MyQuery.Eof do
+    begin
+      Teme.RowCount := Teme.RowCount + 1;
+      Teme.Cells[0, Row] := MyQuery.FieldByName('Naziv_Teme').AsString;
+      Inc(Row);
+      MyQuery.Next;
+    end;
+  finally
+    MyQuery.Free;
+  end;
+end;
+
+procedure TfrmPitanje2Tema.DaljeClick(Sender: TObject);
+var
+  Poruka: String;
+  i: integer;
+begin
+  if Tema_Box.IsChecked then
+  begin
+    frmMain.NizPitanje2Tema := frmPitanje2Podzanr.NizPitanje2Podzanr;
+    frmPitanje3.Show;
+    Self.Hide;
+  end
+  else
+  begin
+    if SelectedTema <> 0 then
+    begin
+      frmMain.NizPitanje2Tema := ProveraNizaTema(SelectedTema, frmPitanje2Podzanr.NizPitanje2Podzanr);
+      if Length(frmMain.NizPitanje2Tema) = 0 then
+        frmMain.NizPitanje2Tema := frmPitanje2Podzanr.NizPitanje2Podzanr;
+      showMessage('Broj elemenata u nizu: ' + Length(frmMain.NizPitanje2Tema).ToString);
+      if Length(frmMain.NizPitanje2Tema) > 0 then
+      begin
+        Poruka := '';
+        for i := Low(frmMain.NizPitanje2Tema) to High(frmMain.NizPitanje2Tema) do
+        begin
+          Poruka := Poruka + IntToStr(frmMain.NizPitanje2Tema[i]) + ', ';
+        end;
+        SetLength(Poruka, Length(Poruka) - 2);
+        ShowMessage('Vrednosti u nizu su: ' + Poruka);
+      end
+      else
+      begin
+        ShowMessage('Niz je prazan nakon provere.');
+      end;
+      frmPitanje3.Show;
+      Self.Hide;
+    end
+    else
+      showMessage('Odaberite temu');
+  end;
+end;
+
+procedure TfrmPitanje2Tema.PopuniStringGridSaTemama;
+var
+  Query: TFDQuery;
+  Row: Integer;
+  TemeInGrid: TArray<string>;
+  TemeCount: Integer;
+begin
+  Query := TFDQuery.Create(nil);
+  try
+    Query.Connection := GlobalConnection;
+    Query.SQL.Text :=
+      'SELECT DISTINCT Teme.Naziv_Teme ' +
+      'FROM Teme ' +
+      'JOIN Tema_Knjige ON Teme.IDTeme = Tema_Knjige.IDTeme ' +
+      'WHERE Tema_Knjige.IDKnjige IN (' + JoinToString(frmPitanje2Podzanr.NizPitanje2Podzanr) + ') ' +
+      'ORDER BY Teme.Naziv_Teme';
+
+    // Set FetchOptions to ensure all records are fetched
+    Query.FetchOptions.Mode := fmAll;
+    Query.FetchOptions.RecsMax := -1; // Make sure there's no limit
+    Query.Open;
+
+    TemeCount := Query.RecordCount;
+
+    SetLength(TemeInGrid, TemeCount);
+    Row := 0;
+
+    while not Query.Eof do
+    begin
+      TemeInGrid[Row] := Query.FieldByName('Naziv_Teme').AsString;
+      Inc(Row);
+      Query.Next;
+    end;
+
+    Teme.RowCount := TemeCount + 1;
+    for Row := 0 to TemeCount - 1 do
+    begin
+      Teme.Cells[0, Row] := TemeInGrid[Row];
+    end;
+  finally
+    Query.Free;
+    Teme.RowCount := Teme.RowCount - 1;
+  end;
+end;
+
+function TfrmPitanje2Tema.ProveraNizaTema(const SelectedTema: Integer; const OriginalniNiz: TArray<Integer>): TArray<Integer>;
+var
+  MyQuery: TFDQuery;
+  ResultArray: TArray<Integer>;
+  j, h: Integer;
+  SelectedTeme: TArray<Integer>;
+  Red: integer;
+  KnjigaID: Integer;
+  FoundMatch: Boolean;
+begin
+  SetLength(ResultArray, 0);
+  FoundMatch := False;
+
+  MyQuery := TFDQuery.Create(nil);
+  try
+    MyQuery.Connection := GlobalConnection;
+    MyQuery.SQL.Text := 'SELECT * FROM Tema_Knjige WHERE IDKnjige IN (' + JoinToString(OriginalniNiz) + ')';
+    MyQuery.FetchOptions.Mode := fmAll;
+    MyQuery.FetchOptions.RecsMax := -1;
+    MyQuery.Open;
+    showMessage('niz ucitan; broj clanova u kveriju: ' + IntToStr(MyQuery.RecordCount));
+
+    // Inicijalizacija SelectedTeme van petlje
+    SetLength(SelectedTeme, MyQuery.RecordCount);
+    Red := 0;
+    while not MyQuery.Eof do
+    begin
+      SelectedTeme[Red] := MyQuery.FieldByName('IDTeme').AsInteger;
+      Inc(Red);
+      MyQuery.Next;
+    end;
+
+    for j := Low(OriginalniNiz) to High(OriginalniNiz) do
+    begin
+      for h := Low(SelectedTeme) to High(SelectedTeme) do
+      begin
+        // Upoređivanje SelectedTema sa SelectedTeme[h]
+        if SelectedTema = SelectedTeme[h] then
+        begin
+          KnjigaID := OriginalniNiz[j];
+
+          // Pretraga ResultArray za duplikate
+          if not KnjigaIDInArray(KnjigaID, ResultArray) then
+          begin
+            SetLength(ResultArray, Length(ResultArray) + 1);
+            ResultArray[Length(ResultArray) - 1] := KnjigaID;
+            FoundMatch := True;
+          end;
+        end;
+      end;
+    end;
+  finally
+    MyQuery.Free;
+  end;
+
+//  if not FoundMatch then
+//  begin
+//    ShowMessage('Nije pronađeno poklapanje za temu ' + SelectedTema.ToString);
+//  end
+//  else
+//  begin
+//    ShowMessage('Pronađena su poklapanja za temu ' + SelectedTema.ToString);
+//  end;
+
+  Result := ResultArray;
+end;
+
+function TfrmPitanje2Tema.KnjigaIDInArray(const KnjigaID: Integer; const Arr: TArray<Integer>): Boolean;
+var
+  i: Integer;
+begin
+  Result := False;
+  for i := Low(Arr) to High(Arr) do
+  begin
+    if KnjigaID = Arr[i] then
+    begin
+      Result := True;
+      Exit;
+    end;
+  end;
+end;
+
+
+
+function TfrmPitanje2Tema.JoinToString(const Arr: TArray<Integer>): string;
+var
+  i: Integer;
+begin
+  Result := '';
+  for i := Low(Arr) to High(Arr) do
+  begin
+    Result := Result + IntToStr(Arr[i]);
+    if i <> High(Arr) then
+      Result := Result + ', ';
+  end;
+end;
+
+function TfrmPitanje2Tema.GetIDTeme(const imeTeme: string): Integer;
+var
+  MyQuery: TFDQuery;
+begin
+  Result := -1; // Postavljamo na -1 kao podrazumevanu vrednost ako ne pronađemo ID teme
+  MyQuery := TFDQuery.Create(nil);
+  try
+    MyQuery.Connection := GlobalConnection;
+    MyQuery.SQL.Text := 'SELECT IDTeme FROM Teme WHERE Naziv_Teme = :Tema';
+    MyQuery.ParamByName('Tema').AsString := imeTeme;
+    MyQuery.Open;
+    if not MyQuery.IsEmpty then
+      Result := MyQuery.FieldByName('IDTeme').AsInteger;
+  finally
+    MyQuery.Free;
+  end;
+end;
+
+end.

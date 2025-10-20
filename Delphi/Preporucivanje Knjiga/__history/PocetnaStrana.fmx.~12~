@@ -1,0 +1,37 @@
+object frmPocetnaStrana: TfrmPocetnaStrana
+  Left = 0
+  Top = 0
+  BorderIcons = [biSystemMenu]
+  BorderStyle = Single
+  Caption = 'Predlaganje Knjiga'
+  ClientHeight = 480
+  ClientWidth = 480
+  Fill.Color = xFFF7D098
+  Fill.Kind = Solid
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  OnActivate = FormActivate
+  OnClose = FormClose
+  DesignerMasterStyle = 0
+  object Forma: TPanel
+    Position.X = 16.000000000000000000
+    Position.Y = 16.000000000000000000
+    Size.Width = 449.000000000000000000
+    Size.Height = 449.000000000000000000
+    Size.PlatformDefault = False
+    StyleLookup = 'Panelstyle'
+    TabOrder = 13
+  end
+  object Pocetak: TButton
+    Position.X = 192.000000000000000000
+    Position.Y = 400.000000000000000000
+    Size.Width = 97.000000000000000000
+    Size.Height = 41.000000000000000000
+    Size.PlatformDefault = False
+    StyleLookup = 'buttonstyle'
+    TabOrder = 0
+    Text = 'Pocetak'
+    OnClick = PocetakClick
+  end
+end

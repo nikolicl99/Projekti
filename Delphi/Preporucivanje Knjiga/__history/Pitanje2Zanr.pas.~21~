@@ -1,0 +1,152 @@
+unit Pitanje2Zanr;
+
+interface
+
+uses
+  System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
+  FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.Memo.Types,
+  FMX.StdCtrls, FMX.Controls.Presentation, FMX.ScrollBox, FMX.Memo, System.Rtti,
+  FMX.Grid.Style, FMX.Edit, FMX.Grid, FireDAC.Stan.Intf, FireDAC.Stan.Option,
+  FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,
+  FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Data.DB,
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client;
+
+type
+  TfrmPitanje2Zanr = class(TForm)
+    Memo: TMemo;
+    Dalje: TButton;
+    Nazad: TButton;
+    Zanr_Edit: TEdit;
+    Zanr: TStringGrid;
+    Zanr_col: TStringColumn;
+    StyleBook: TStyleBook;
+    procedure FormActivate(Sender: TObject);
+    procedure Zanr_EditChangeTracking(Sender: TObject);
+    procedure NazadClick(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    function GetIDZanra(const imeZanra: string): Integer;
+    procedure ZanrCellClick(const Column: TColumn; const Row: Integer);
+    procedure DaljeClick(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+    ZanrID: integer;
+  end;
+
+var
+  frmPitanje2Zanr: TfrmPitanje2Zanr;
+
+implementation
+
+{$R *.fmx}
+uses Main, Pitanje2, Pitanje2Podzanr;
+
+procedure TfrmPitanje2Zanr.DaljeClick(Sender: TObject);
+begin
+if ZanrID <> 0 then
+begin
+frmPitanje2Podzanr.Show;
+self.Hide;
+end
+else
+showMessage('Odaberite neki zanr');
+end;
+
+procedure TfrmPitanje2Zanr.FormActivate(Sender: TObject);
+var
+MyQuery: TFDQuery;
+Row: Integer;
+begin
+Left := Round((Screen.Width - Width)/2);
+Top := Round ((Screen.Height - Height)/2);
+MyQuery := TFDQuery.Create(nil);
+try
+  MyQuery.Connection := GlobalConnection;
+  MyQuery.SQL.Text := 'SELECT * FROM Zanr ORDER BY NazivZanra';
+  MyQuery.Open;
+
+  Zanr.RowCount := 1;
+    Row := 0;
+    while not MyQuery.Eof do
+    begin
+      Zanr.RowCount := Zanr.RowCount + 1;
+      Zanr.Cells[0, Row] := MyQuery.FieldByName('NazivZanra').AsString;
+      Inc(Row);
+      MyQuery.Next;
+    end;
+finally
+  MyQuery.Free;
+  Zanr.RowCount := Zanr.RowCount - 1;
+end;
+
+end;
+
+procedure TfrmPitanje2Zanr.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+Application.Destroy;
+self.Hide;
+end;
+
+procedure TfrmPitanje2Zanr.NazadClick(Sender: TObject);
+begin
+frmPitanje2.Show;
+self.Hide;
+end;
+
+procedure TfrmPitanje2Zanr.ZanrCellClick(const Column: TColumn;
+  const Row: Integer);
+begin
+ZanrID := GetIDZanra(Zanr.Cells[0, Row]);
+Zanr_Edit.Text := Zanr.Cells[0, Row];
+end;
+
+procedure TfrmPitanje2Zanr.Zanr_EditChangeTracking(Sender: TObject);
+var
+MyQuery: TFDQuery;
+Row: Integer;
+begin
+Left := Round((Screen.Width - Width)/2);
+Top := Round ((Screen.Height - Height)/2);
+MyQuery := TFDQuery.Create(nil);
+try
+  MyQuery.Connection := GlobalConnection;
+  MyQuery.SQL.Text := 'SELECT * FROM Zanr WHERE NazivZanra LIKE :Zanr ORDER BY NazivZanra';
+  MyQuery.ParamByName('Zanr').AsWideString := Zanr_Edit.Text + '%';
+  MyQuery.Open;
+
+  Zanr.RowCount := 1;
+    Row := 0;
+    while not MyQuery.Eof do
+    begin
+      Zanr.RowCount := Zanr.RowCount + 1;
+      Zanr.Cells[0, Row] := MyQuery.FieldByName('NazivZanra').AsString;
+      Inc(Row);
+      MyQuery.Next;
+    end;
+finally
+  MyQuery.Free;
+end;
+
+end;
+
+function TfrmPitanje2Zanr.GetIDZanra(const imeZanra: string): Integer;
+var
+MyQuery : TFDQuery;
+begin
+Result := -1;
+MyQuery := TFDQuery.Create(nil);
+try
+  MyQuery.Connection := GlobalConnection;
+  MyQuery.SQL.Text := 'SELECT * FROM Zanr WHERE NazivZanra = :Zanr';
+  MyQuery.ParamByName('Zanr').AsWideString := imeZanra;
+  MyQuery.Open;
+
+  if not MyQuery.IsEmpty then
+  Result := MyQuery.FieldByName('IDZanra').AsInteger;
+finally
+       MyQuery.Free;
+end;
+end;
+
+end.

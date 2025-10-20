@@ -1,0 +1,16 @@
+program PredlaganjeKnjiga;
+
+uses
+  System.StartUpCopy,
+  FMX.Forms,
+  PocetnaStrana in 'PocetnaStrana.pas' {frmPocetnaStrana},
+  Pitanje1 in 'Pitanje1.pas' {frmPitanje1};
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.CreateForm(TfrmPocetnaStrana, frmPocetnaStrana);
+  Application.CreateForm(TfrmPitanje1, frmPitanje1);
+  Application.Run;
+end.

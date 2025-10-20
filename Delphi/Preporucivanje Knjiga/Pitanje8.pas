@@ -1,0 +1,73 @@
+unit Pitanje8;
+
+interface
+
+uses
+  System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
+  FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.Memo.Types,
+  FMX.StdCtrls, FMX.Controls.Presentation, FMX.ScrollBox, FMX.Memo;
+
+type
+  TfrmPitanje8 = class(TForm)
+    Memo: TMemo;
+    Da: TRadioButton;
+    Ne: TRadioButton;
+    Dalje: TButton;
+    Nazad: TButton;
+    Forma: TPanel;
+    StyleBook: TStyleBook;
+    procedure FormActivate(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure NazadClick(Sender: TObject);
+    procedure DaljeClick(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+    Pitanje8ID: integer;
+    NizPitanje8: TArray<Integer>;
+  end;
+
+var
+  frmPitanje8: TfrmPitanje8;
+
+implementation
+
+{$R *.fmx}
+uses Main, Pitanje7, Pitanje8Lokacija, Pitanje9;
+
+procedure TfrmPitanje8.DaljeClick(Sender: TObject);
+begin
+if Da.IsChecked then
+begin
+  Pitanje8ID := 1;
+  frmPitanje8Lokacija.Show;
+  self.Hide;
+end;
+if Ne.IsChecked then
+begin
+  Pitanje8ID := 2;
+  SetLength(frmMain.NizPitanje8, 0);
+  frmPitanje9.Show;
+  self.Hide;
+end;
+end;
+
+procedure TfrmPitanje8.FormActivate(Sender: TObject);
+begin
+Left := Round((Screen.Width - Width)/2);
+Top := Round ((Screen.Height - Height)/2);
+end;
+
+procedure TfrmPitanje8.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+Application.Terminate;
+end;
+
+procedure TfrmPitanje8.NazadClick(Sender: TObject);
+begin
+frmPitanje7.Show;
+self.Hide;
+end;
+
+end.

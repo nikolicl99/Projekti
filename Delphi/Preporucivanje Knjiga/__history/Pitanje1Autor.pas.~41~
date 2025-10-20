@@ -1,0 +1,219 @@
+unit Pitanje1Autor;
+
+interface
+
+uses
+  System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
+  FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.Memo.Types,
+  FMX.StdCtrls, FMX.Controls.Presentation, FMX.ScrollBox, FMX.Memo, System.Rtti,
+  FMX.Grid.Style, FMX.Edit, FMX.Grid, FireDAC.Stan.Intf, FireDAC.Stan.Option,
+  FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,
+  FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Data.DB,
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client;
+
+type
+  TfrmPitanje1Autor = class(TForm)
+    Memo: TMemo;
+    Dalje: TButton;
+    Nazad: TButton;
+    Autor_Edit: TEdit;
+    Autor: TStringGrid;
+    Autor_col: TStringColumn;
+    StyleBook: TStyleBook;
+    Forma: TPanel;
+    StyleBook1: TStyleBook;
+    procedure FormActivate(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure Autor_EditChangeTracking(Sender: TObject);
+    procedure NazadClick(Sender: TObject);
+    procedure DaljeClick(Sender: TObject);
+    function GetIDAutora(const imeAutora: string): Integer;
+    procedure AutorCellClick(const Column: TColumn; const Row: Integer);
+  private
+    { Private declarations }
+
+  public
+    { Public declarations }
+    Knjige: TArray<Integer>;
+    SelectedAutor: Integer;
+  end;
+
+var
+  frmPitanje1Autor: TfrmPitanje1Autor;
+
+implementation
+
+{$R *.fmx}
+uses Main, Pitanje1, Pitanje2, Pitanje2Knjiga;
+
+procedure TfrmPitanje1Autor.AutorCellClick(const Column: TColumn; const Row: Integer);
+begin
+  SelectedAutor := GetIDAutora(Autor.Cells[0, Row]);
+  Autor_Edit.Text := Autor.Cells[0, Row];
+end;
+
+procedure TfrmPitanje1Autor.Autor_EditChangeTracking(Sender: TObject);
+var
+  MyQuery: TFDQuery;
+  Row: Integer;
+begin
+  MyQuery := TFDQuery.Create(nil);
+  try
+    MyQuery.Connection := GlobalConnection;
+    MyQuery.SQL.Text := 'SELECT * FROM Autor WHERE Naziv LIKE :Autor ORDER BY Naziv';
+    MyQuery.ParamByName('Autor').AsWideString := Autor_Edit.Text + '%';
+
+    // Set FetchOptions to ensure all records are fetched
+    MyQuery.FetchOptions.Mode := fmAll;
+    MyQuery.FetchOptions.RecsMax := -1; // Ensure there's no limit
+
+    MyQuery.Open;
+
+    Autor.RowCount := 1;
+    Row := 0;
+    while not MyQuery.Eof do
+    begin
+      Autor.RowCount := Autor.RowCount + 1;
+      Autor.Cells[0, Row] := MyQuery.FieldByName('Naziv').AsString;
+      Inc(Row);
+      MyQuery.Next;
+    end;
+  finally
+    MyQuery.Free;
+    Autor.RowCount := Autor.RowCount - 1;
+  end;
+end;
+
+procedure TfrmPitanje1Autor.NazadClick(Sender: TObject);
+begin
+  frmPitanje1.Show;
+  Self.Hide;
+end;
+
+procedure TfrmPitanje1Autor.DaljeClick(Sender: TObject);
+var
+  Query: TFDQuery;
+  Red: Integer;
+  Poruka: string;
+  i: Integer;
+begin
+  if SelectedAutor = -1 then
+  begin
+    ShowMessage('Molimo izaberite autora.');
+    Exit;
+  end
+  else
+  begin
+
+//  Query := TFDQuery.Create(nil);
+//  try
+//    Query.Connection := GlobalConnection;
+//    Query.SQL.Text := 'SELECT IDKnjige FROM Knjige WHERE Autor = :Autor ORDER BY IDKnjige';
+//    Query.ParamByName('Autor').AsInteger := SelectedAutor;
+//
+//    // Set FetchOptions to ensure all records are fetched
+//    Query.FetchOptions.Mode := fmAll;
+//    Query.FetchOptions.RecsMax := -1; // Ensure there's no limit
+//
+//    Query.Open;
+//
+//    SetLength(Knjige, Query.RecordCount);
+//    Red := 0;
+//
+//    while not Query.Eof do
+//    begin
+//      Knjige[Red] := Query.FieldByName('IDKnjige').AsInteger;
+//      Inc(Red);
+//      Query.Next;
+//    end;
+//  finally
+//    Query.Free;
+//  end;
+//
+//  if Length(Knjige) > 0 then
+//  begin
+//    Poruka := '';
+//
+//    // Prolazimo kroz sve vrednosti u nizu i dodajemo ih u Poruka string
+//    for i := Low(Knjige) to High(Knjige) do
+//    begin
+//      Poruka := Poruka + IntToStr(Knjige[i]) + ', ';
+//    end;
+//
+//    // Uklanjamo poslednji zarez i razmak iz Poruka stringa
+//    SetLength(Poruka, Length(Poruka) - 2);
+//
+//    // Prikazujemo poruku sa vrednostima iz niza
+//    ShowMessage('ID-ovi knjiga: ' + Poruka);
+//  end;
+
+  frmPitanje2Knjiga.Show;
+  Self.Hide;
+  end;
+end;
+
+procedure TfrmPitanje1Autor.FormActivate(Sender: TObject);
+var
+  MyQuery: TFDQuery;
+  Row: Integer;
+begin
+  Left := Round((Screen.Width - Width) / 2);
+  Top := Round((Screen.Height - Height) / 2);
+
+  MyQuery := TFDQuery.Create(nil);
+  try
+    MyQuery.Connection := GlobalConnection;
+    MyQuery.SQL.Text := 'SELECT * FROM Autor ORDER BY Naziv';
+
+    // Set FetchOptions to ensure all records are fetched
+    MyQuery.FetchOptions.Mode := fmAll;
+    MyQuery.FetchOptions.RecsMax := -1; // Ensure there's no limit
+
+    MyQuery.Open;
+
+    Autor.RowCount := 1;
+    Row := 0;
+    while not MyQuery.Eof do
+    begin
+      Autor.RowCount := Autor.RowCount + 1;
+      Autor.Cells[0, Row] := MyQuery.FieldByName('Naziv').AsString;
+      Inc(Row);
+      MyQuery.Next;
+    end;
+  finally
+    MyQuery.Free;
+    Autor.RowCount := Autor.RowCount - 1;
+  end;
+end;
+
+procedure TfrmPitanje1Autor.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  Application.Terminate;
+end;
+
+function TfrmPitanje1Autor.GetIDAutora(const imeAutora: string): Integer;
+var
+  MyQuery: TFDQuery;
+begin
+  Result := -1;
+  MyQuery := TFDQuery.Create(nil);
+  try
+    MyQuery.Connection := GlobalConnection;
+    MyQuery.SQL.Text := 'SELECT IDAutora FROM Autor WHERE Naziv = :Autor';
+    MyQuery.ParamByName('Autor').AsWideString := imeAutora;
+
+    // Set FetchOptions to ensure all records are fetched
+    MyQuery.FetchOptions.Mode := fmAll;
+    MyQuery.FetchOptions.RecsMax := -1; // Ensure there's no limit
+
+    MyQuery.Open;
+
+    if not MyQuery.IsEmpty then
+      Result := MyQuery.FieldByName('IDAutora').AsInteger;
+  finally
+    MyQuery.Free;
+  end;
+end;
+
+end.
+

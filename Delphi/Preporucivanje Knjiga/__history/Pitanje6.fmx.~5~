@@ -1,0 +1,61 @@
+object frmPitanje6: TfrmPitanje6
+  Left = 0
+  Top = 0
+  Caption = 'Pitanje 6'
+  ClientHeight = 480
+  ClientWidth = 480
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  OnActivate = FormActivate
+  OnClose = FormClose
+  DesignerMasterStyle = 0
+  object Memo: TMemo
+    Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+    DataDetectorTypes = []
+    Lines.Strings = (
+      'Pitanje br. 6:'
+      '      '
+      'Da li Vam je bitno da Va'#353'a knjiga bude dobro ocenjenja?')
+    Position.X = 24.000000000000000000
+    Position.Y = 56.000000000000000000
+    Size.Width = 425.000000000000000000
+    Size.Height = 57.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    Viewport.Width = 421.000000000000000000
+    Viewport.Height = 53.000000000000000000
+  end
+  object Da: TRadioButton
+    IsChecked = True
+    Position.X = 80.000000000000000000
+    Position.Y = 184.000000000000000000
+    TabOrder = 9
+    Text = 'Da'
+  end
+  object Ne: TRadioButton
+    Position.X = 80.000000000000000000
+    Position.Y = 211.000000000000000000
+    TabOrder = 1
+    Text = 'Ne'
+  end
+  object Dalje: TButton
+    Position.X = 304.000000000000000000
+    Position.Y = 312.000000000000000000
+    Size.Width = 105.000000000000000000
+    Size.Height = 41.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 2
+    Text = 'Dalje'
+  end
+  object Nazad: TButton
+    Position.X = 8.000000000000000000
+    Position.Y = 18.000000000000000000
+    Size.Width = 80.000000000000000000
+    Size.Height = 30.000000000000000000
+    Size.PlatformDefault = False
+    StyleLookup = 'priortoolbutton'
+    TabOrder = 3
+    Text = 'Button1'
+  end
+end

@@ -1,0 +1,398 @@
+﻿unit Main;
+
+interface
+
+uses
+  System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
+  FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs,
+  FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Error, FireDAC.UI.Intf,
+  FireDAC.Phys.Intf, FireDAC.Stan.Def, FireDAC.Stan.Pool, FireDAC.Stan.Async,
+  FireDAC.Phys, FireDAC.FMXUI.Wait, Data.DB, FireDAC.Comp.Client,
+  FireDAC.Phys.SQLite, FireDAC.Phys.SQLiteDef, FireDAC.Stan.ExprFuncs,
+  FireDAC.Phys.SQLiteWrapper.Stat, System.Generics.Collections,
+  FireDAC.Stan.Param, FireDAC.DatS, FireDAC.DApt.Intf, FireDAC.DApt,
+  FireDAC.Comp.DataSet;
+
+type
+  TBookInfo = record
+    Naziv: string;
+    Autor: string;
+    Podzanr: string;
+  end;
+
+  TfrmMain = class(TForm)
+    FDConnection: TFDConnection;
+    procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+  private
+    procedure AddBooksToResultList(Niz: TArray<Integer>; Ponder: Integer; var ResultList: TDictionary<Integer, Integer>);
+    function BookExistsInArray(BookID: Integer; const Arr: TArray<Integer>): Boolean;
+    function GetBookInfoByID(BookID: Integer): TBookInfo;
+    function GetImeAutora(const idAutora: Integer): String;
+    function GetImePodzanra(const idPodzanra: Integer): String;
+  public
+    CurrentBookID: Integer;
+    NizKnjige: TArray<Integer>;
+    NizPitanje2Tema: TArray<Integer>;
+    NizPitanje2Knjiga: TArray<Integer>;
+    NizPitanje3: TArray<Integer>;
+    NizPitanje4: TArray<Integer>;
+    NizPitanje6: TArray<Integer>;
+    NizPitanje7: TArray<Integer>;
+    NizPitanje8: TArray<Integer>;
+    NizPitanje9: TArray<Integer>;
+    NizPitanje10: TArray<Integer>;
+    procedure CalculateResults;
+    function GetIDKnjige(const imeKnjige: string): Integer;
+    function ProveraNizaPodzanr(const idPodzanra: Integer; const OriginalniNiz: TArray<Integer>): TArray<Integer>;
+    function ProveraNizaTema(const NizTema: TArray<Integer>; const OriginalniNiz: TArray<Integer>): TArray<Integer>;
+    function RemoveFromArray(const AArray: TArray<Integer>; const Value: Integer): TArray<Integer>;
+  end;
+
+var
+  frmMain: TfrmMain;
+  GlobalConnection: TFDConnection;
+
+implementation
+
+{$R *.fmx}
+
+procedure TfrmMain.FormCreate(Sender: TObject);
+begin
+  GlobalConnection := TFDConnection.Create(nil);
+  GlobalConnection.Params.DriverID := 'SQLite';
+  GlobalConnection.Params.Database := 'Baza.db';
+  GlobalConnection.Connected := True;
+end;
+
+procedure TfrmMain.FormDestroy(Sender: TObject);
+begin
+  GlobalConnection.Free;
+end;
+
+procedure TfrmMain.CalculateResults;
+var
+  ResultList: TDictionary<Integer, Integer>;
+  BookID, MaxCount, MaxNizCount: Integer;
+  CurrentCount, CurrentNizCount: Integer;
+  MostFrequentBooks: TList<Integer>;
+  Ponderi: array[1..9] of Integer;
+  NizImena: array[1..9] of string;
+  Nizovi: array[1..9] of TArray<Integer>;
+  Poruka: string;
+  i: Integer;
+  KeyBooks: TDictionary<Integer, Integer>;
+begin
+  Ponderi[1] := 8;  // Pitanje2Tema
+  Ponderi[2] := 9;  // Pitanje2Knjiga
+  Ponderi[3] := 2;  // Pitanje3 - Strane
+  Ponderi[4] := 6;  // Pitanje4 - Serijal
+  Ponderi[5] := 7;  // Pitanje6 - Dobro Ocenjena
+  Ponderi[6] := 3;  // Pitanje7 - Godina Izdavanja
+  Ponderi[7] := 4;  // Pitanje8 - Lokacija
+  Ponderi[8] := 5;  // Pitanje9 - Period
+  Ponderi[9] := 1;  // Pitanje10 - Jezici
+
+  NizImena[1] := 'Pitanje2Tema';
+  NizImena[2] := 'Pitanje2Knjiga';
+  NizImena[3] := 'Pitanje3';
+  NizImena[4] := 'Pitanje4';
+  NizImena[5] := 'Pitanje6';
+  NizImena[6] := 'Pitanje7';
+  NizImena[7] := 'Pitanje8';
+  NizImena[8] := 'Pitanje9';
+  NizImena[9] := 'Pitanje10';
+
+  Nizovi[1] := NizPitanje2Tema;
+  Nizovi[2] := NizPitanje2Knjiga;
+  Nizovi[3] := NizPitanje3;
+  Nizovi[4] := NizPitanje4;
+  Nizovi[5] := NizPitanje6;
+  Nizovi[6] := NizPitanje7;
+  Nizovi[7] := NizPitanje8;
+  Nizovi[8] := NizPitanje9;
+  Nizovi[9] := NizPitanje10;
+
+  ResultList := TDictionary<Integer, Integer>.Create;
+  try
+    for i := 1 to Length(Ponderi) do
+    begin
+      AddBooksToResultList(Nizovi[i], Ponderi[i], ResultList);
+    end;
+
+    MaxCount := 0;
+    MostFrequentBooks := TList<Integer>.Create;
+    try
+      for BookID in ResultList.Keys do
+      begin
+        CurrentCount := ResultList[BookID];
+        if CurrentCount > MaxCount then
+        begin
+          MaxCount := CurrentCount;
+          MostFrequentBooks.Clear;
+          MostFrequentBooks.Add(BookID);
+        end
+        else if CurrentCount = MaxCount then
+        begin
+          MostFrequentBooks.Add(BookID);
+        end;
+      end;
+
+      KeyBooks := TDictionary<Integer, Integer>.Create;
+      try
+        for BookID in MostFrequentBooks do
+        begin
+          CurrentNizCount := 0;
+          for i := 1 to Length(NizImena) do
+          begin
+            if BookExistsInArray(BookID, Nizovi[i]) then
+              Inc(CurrentNizCount);
+          end;
+          KeyBooks.Add(BookID, CurrentNizCount);
+        end;
+
+        MaxNizCount := 0;
+        MostFrequentBooks.Clear;
+        for BookID in KeyBooks.Keys do
+        begin
+          CurrentNizCount := KeyBooks[BookID];
+          if CurrentNizCount > MaxNizCount then
+          begin
+            MaxNizCount := CurrentNizCount;
+            MostFrequentBooks.Clear;
+            MostFrequentBooks.Add(BookID);
+          end
+          else if CurrentNizCount = MaxNizCount then
+          begin
+            MostFrequentBooks.Add(BookID);
+          end;
+        end;
+
+        if MostFrequentBooks.Count > 0 then
+        begin
+          BookID := MostFrequentBooks[0];
+          CurrentBookID := BookID;
+
+//          var KnjigaInfo := GetBookInfoByID(BookID);
+
+//          Poruka := 'Knjiga: ' + KnjigaInfo.Naziv + ' | Autor: ' + KnjigaInfo.Autor +
+//                    ' | Podžanr: ' + KnjigaInfo.Podzanr + ' | Se poklapa u sledećim nizovima: ';
+//
+//          for i := 1 to Length(NizImena) do
+//          begin
+//            if BookExistsInArray(BookID, Nizovi[i]) then
+//              Poruka := Poruka + NizImena[i] + ' ';
+//          end;
+        end
+        else
+        begin
+          Poruka := 'Nema dovoljno podataka za pronalazak knjige.';
+        end;
+
+      finally
+        KeyBooks.Free;
+      end;
+
+    finally
+      MostFrequentBooks.Free;
+    end;
+
+  finally
+    ResultList.Free;
+  end;
+end;
+
+procedure TfrmMain.AddBooksToResultList(Niz: TArray<Integer>; Ponder: Integer; var ResultList: TDictionary<Integer, Integer>);
+var
+  BookID: Integer;
+begin
+  for BookID in Niz do
+  begin
+    if ResultList.ContainsKey(BookID) then
+      ResultList[BookID] := ResultList[BookID] + Ponder
+    else
+      ResultList.Add(BookID, Ponder);
+  end;
+end;
+
+function TfrmMain.BookExistsInArray(BookID: Integer; const Arr: TArray<Integer>): Boolean;
+var
+  ID: Integer;
+begin
+  Result := False;
+  for ID in Arr do
+  begin
+    if ID = BookID then
+      Exit(True);
+  end;
+end;
+
+function TfrmMain.GetBookInfoByID(BookID: Integer): TBookInfo;
+var
+  Query: TFDQuery;
+  BookInfo: TBookInfo;
+begin
+  Query := TFDQuery.Create(nil);
+  try
+    Query.Connection := GlobalConnection;
+    Query.SQL.Text := 'SELECT Knjige.Naziv, Autori.Ime AS Autor, Podzanrovi.Ime AS Podzanr ' +
+                      'FROM Knjige ' +
+                      'JOIN Autori ON Knjige.Autor_ID = Autori.ID ' +
+                      'JOIN Podzanrovi ON Knjige.Podzanr_ID = Podzanrovi.ID ' +
+                      'WHERE Knjige.ID = :BookID';
+    Query.ParamByName('BookID').AsInteger := BookID;
+    Query.Open;
+    if not Query.IsEmpty then
+    begin
+      BookInfo.Naziv := Query.FieldByName('Naziv').AsString;
+      BookInfo.Autor := Query.FieldByName('Autor').AsString;
+      BookInfo.Podzanr := Query.FieldByName('Podzanr').AsString;
+    end;
+  finally
+    Query.Free;
+  end;
+  Result := BookInfo;
+end;
+
+function TfrmMain.GetIDKnjige(const imeKnjige: string): Integer;
+var
+  Query: TFDQuery;
+begin
+  Query := TFDQuery.Create(nil);
+  try
+    Query.Connection := GlobalConnection;
+    Query.SQL.Text := 'SELECT IDKnjige FROM Knjige WHERE Naziv = :imeKnjige';
+    Query.ParamByName('imeKnjige').AsString := imeKnjige;
+    Query.Open;
+    if not Query.IsEmpty then
+      Result := Query.FieldByName('IDKnjige').AsInteger
+    else
+      Result := -1;
+  finally
+    Query.Free;
+  end;
+end;
+
+function TfrmMain.ProveraNizaPodzanr(const idPodzanra: Integer; const OriginalniNiz: TArray<Integer>): TArray<Integer>;
+var
+  Query: TFDQuery;
+  TempList: TList<Integer>;
+  BookID: Integer;
+begin
+  TempList := TList<Integer>.Create;
+  try
+    Query := TFDQuery.Create(nil);
+    try
+      Query.Connection := GlobalConnection;
+      Query.SQL.Text := 'SELECT IDKnjige FROM Knjige WHERE Podzanr = :idPodzanra';
+      Query.ParamByName('idPodzanra').AsInteger := idPodzanra;
+      Query.Open;
+      while not Query.Eof do
+      begin
+        BookID := Query.FieldByName('IDKnjige').AsInteger;
+        if BookExistsInArray(BookID, OriginalniNiz) then
+          TempList.Add(BookID);
+        Query.Next;
+      end;
+    finally
+      Query.Free;
+    end;
+    Result := TempList.ToArray;
+  finally
+    TempList.Free;
+  end;
+end;
+
+function TfrmMain.ProveraNizaTema(const NizTema: TArray<Integer>; const OriginalniNiz: TArray<Integer>): TArray<Integer>;
+var
+  Query: TFDQuery;
+  TempList: TList<Integer>;
+  BookID: Integer;
+  i: Integer;
+begin
+  TempList := TList<Integer>.Create;
+  try
+    Query := TFDQuery.Create(nil);
+    try
+      Query.Connection := GlobalConnection;
+      for i := 0 to Length(NizTema) - 1 do
+      begin
+        Query.SQL.Text := 'SELECT IDKnjige FROM Tema_Knjige WHERE IDTeme = :idTeme';
+        Query.ParamByName('idTeme').AsInteger := NizTema[i];
+        Query.Open;
+        while not Query.Eof do
+        begin
+          BookID := Query.FieldByName('IDKnjige').AsInteger;
+          if BookExistsInArray(BookID, OriginalniNiz) then
+            TempList.Add(BookID);
+          Query.Next;
+        end;
+        Query.Close;
+      end;
+    finally
+      Query.Free;
+    end;
+    Result := TempList.ToArray;
+  finally
+    TempList.Free;
+  end;
+end;
+
+function TfrmMain.RemoveFromArray(const AArray: TArray<Integer>; const Value: Integer): TArray<Integer>;
+var
+  TempList: TList<Integer>;
+  i: Integer;
+begin
+  TempList := TList<Integer>.Create;
+  try
+    for i := 0 to Length(AArray) - 1 do
+    begin
+      if AArray[i] <> Value then
+        TempList.Add(AArray[i]);
+    end;
+    Result := TempList.ToArray;
+  finally
+    TempList.Free;
+  end;
+end;
+
+function TfrmMain.GetImeAutora(const idAutora: Integer): String;
+var
+  Query: TFDQuery;
+begin
+  Query := TFDQuery.Create(nil);
+  try
+    Query.Connection := GlobalConnection;
+    Query.SQL.Text := 'SELECT Naziv FROM Autori WHERE IDAutora = :idAutora';
+    Query.ParamByName('idAutora').AsInteger := idAutora;
+    Query.Open;
+    if not Query.IsEmpty then
+      Result := Query.FieldByName('Naziv').AsString
+    else
+      Result := '';
+  finally
+    Query.Free;
+  end;
+end;
+
+function TfrmMain.GetImePodzanra(const idPodzanra: Integer): String;
+var
+  Query: TFDQuery;
+begin
+  Query := TFDQuery.Create(nil);
+  try
+    Query.Connection := GlobalConnection;
+    Query.SQL.Text := 'SELECT NazivPodzanra FROM Podzanr WHERE IDPodzanra = :idPodzanra';
+    Query.ParamByName('idPodzanra').AsInteger := idPodzanra;
+    Query.Open;
+    if not Query.IsEmpty then
+      Result := Query.FieldByName('NazivPodzanra').AsString
+    else
+      Result := '';
+  finally
+    Query.Free;
+  end;
+end;
+
+end.
+

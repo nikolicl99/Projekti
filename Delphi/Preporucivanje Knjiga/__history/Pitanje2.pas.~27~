@@ -1,0 +1,110 @@
+unit Pitanje2;
+
+interface
+
+uses
+  System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
+  FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.Memo.Types,
+  FMX.StdCtrls, FMX.Controls.Presentation, FMX.ScrollBox, FMX.Memo,
+  FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
+  FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
+  FireDAC.Stan.Async, FireDAC.DApt, Data.DB, FireDAC.Comp.DataSet,
+  FireDAC.Comp.Client;
+
+type
+  TfrmPitanje2 = class(TForm)
+    Memo: TMemo;
+    Da: TRadioButton;
+    Ne: TRadioButton;
+    Dalje: TButton;
+    Nazad: TButton;
+    Forma: TPanel;
+    StyleBook: TStyleBook;
+    procedure DaljeClick(Sender: TObject);
+    procedure NazadClick(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure FormActivate(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+    Pitanje2ID: integer;
+//    Knjige: TArray<Integer>;
+  end;
+
+var
+  frmPitanje2: TfrmPitanje2;
+
+implementation
+
+{$R *.fmx}
+uses Main, Pitanje2Knjiga, Pitanje1, Pitanje1Autor, Pitanje2Zanr, PocetnaStrana;
+
+procedure TfrmPitanje2.NazadClick(Sender: TObject);
+begin
+  frmPocetnaStrana.Show;
+  self.Hide;
+
+end;
+
+procedure TfrmPitanje2.DaljeClick(Sender: TObject);
+var
+  Query: TFDQuery;
+  Red: Integer;
+begin
+SetLength(frmMain.NizKnjige, 0);
+
+    Query := TFDQuery.Create(nil);
+    try
+      Query.Connection := GlobalConnection;
+      Query.SQL.Text := 'SELECT * FROM Knjige ORDER BY IDKnjige';
+
+      Query.FetchOptions.Mode := fmAll;
+      Query.FetchOptions.RecsMax := -1;
+      Query.Open;
+
+//      ShowMessage('Broj redova: ' + IntToStr(Query.RecordCount));
+
+      SetLength(frmMain.NizKnjige, Query.RecordCount);
+
+      Red := 0;
+
+      while not Query.Eof do
+      begin
+        frmMain.NizKnjige[Red] := Query.FieldByName('IDKnjige').AsInteger;
+//        ShowMessage('Unos reda: ' + IntToStr(Red));
+        Inc(Red);
+        Query.Next;
+      end;
+
+      // Prikaz dužine niza
+//      ShowMessage('Ukupan broj knjiga: ' + IntToStr(Length(frmMain.NizKnjige)));
+    finally
+if Da.IsChecked then
+begin
+Pitanje2ID := 1;
+frmPitanje1.Show;
+self.Hide;
+end
+else
+begin
+  Pitanje2ID := 2;
+  frmPitanje2Zanr.Show;
+  self.Hide;
+end;
+end;
+end;
+
+procedure TfrmPitanje2.FormActivate(Sender: TObject);
+begin
+
+Left := Round((Screen.Width - Width)/2);
+Top := Round ((Screen.Height - Height)/2);
+end;
+
+procedure TfrmPitanje2.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+Application.Terminate;
+end;
+
+end.

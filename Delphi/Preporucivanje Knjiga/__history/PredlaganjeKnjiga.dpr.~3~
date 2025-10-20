@@ -1,0 +1,30 @@
+program PredlaganjeKnjiga;
+
+uses
+  System.StartUpCopy,
+  FMX.Forms,
+  PocetnaStrana in 'PocetnaStrana.pas' {frmPocetnaStrana},
+  Pitanje1 in 'Pitanje1.pas' {frmPitanje1},
+  Pitanje1Autor in 'Pitanje1Autor.pas' {frmPitanje1Autor},
+  Main in 'Main.pas' {frmMain},
+  Pitanje2 in 'Pitanje2.pas' {frmPitanje2},
+  Pitanje2Knjiga in 'Pitanje2Knjiga.pas' {frmPitanje2Knjiga},
+  Pitanje2Zanr in 'Pitanje2Zanr.pas' {frmPitanje2Zanr},
+  Pitanje2Podzanr in 'Pitanje2Podzanr.pas' {frmPitanje2Podzanr},
+  Pitanje2Tema in 'Pitanje2Tema.pas' {frmPitanje2Tema};
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.CreateForm(TfrmPocetnaStrana, frmPocetnaStrana);
+  Application.CreateForm(TfrmPitanje1, frmPitanje1);
+  Application.CreateForm(TfrmPitanje1Autor, frmPitanje1Autor);
+  Application.CreateForm(TfrmMain, frmMain);
+  Application.CreateForm(TfrmPitanje2, frmPitanje2);
+  Application.CreateForm(TfrmPitanje2Knjiga, frmPitanje2Knjiga);
+  Application.CreateForm(TfrmPitanje2Zanr, frmPitanje2Zanr);
+  Application.CreateForm(TfrmPitanje2Podzanr, frmPitanje2Podzanr);
+  Application.CreateForm(TfrmPitanje2Tema, frmPitanje2Tema);
+  Application.Run;
+end.

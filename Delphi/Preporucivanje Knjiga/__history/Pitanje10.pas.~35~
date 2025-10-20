@@ -1,0 +1,184 @@
+﻿unit Pitanje10;
+
+interface
+
+uses
+  System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
+  FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.Memo.Types,
+  FMX.StdCtrls, FMX.Controls.Presentation, FMX.ScrollBox, FMX.Memo, FMX.ListBox,
+  FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
+  FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
+  FireDAC.Stan.Async, FireDAC.DApt, Data.DB, FireDAC.Comp.DataSet,
+  FireDAC.Comp.Client;
+
+type
+  TfrmPitanje10 = class(TForm)
+    Memo: TMemo;
+    Da: TRadioButton;
+    Ne: TRadioButton;
+    Dalje: TButton;
+    Nazad: TButton;
+    StyleBook: TStyleBook;
+    Jezik: TComboBox;
+    Forma: TPanel;
+    StyleBook1: TStyleBook;
+    procedure FormActivate(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure DaClick(Sender: TObject);
+    procedure NeClick(Sender: TObject);
+    procedure DaljeClick(Sender: TObject);
+    procedure NazadClick(Sender: TObject);
+  private
+    { Private declarations }
+    function ProveraNizaJezici(const idJezika: integer; const OriginalniNiz: TArray<Integer>): TArray<Integer>;
+    function GetIDJezika(const imeJezika: string): Integer;
+    procedure PopuniListuJezika;
+  public
+    { Public declarations }
+    NizPitanje10Jezik: TArray<Integer>;
+  end;
+
+var
+  frmPitanje10: TfrmPitanje10;
+
+implementation
+
+{$R *.fmx}
+uses main, Pitanje9, Pitanje9Vreme;
+
+procedure TfrmPitanje10.DaClick(Sender: TObject);
+begin
+  Jezik.Visible := True;
+end;
+
+procedure TfrmPitanje10.FormActivate(Sender: TObject);
+begin
+  Left := Round((Screen.Width - Width) / 2);
+  Top := Round((Screen.Height - Height) / 2);
+  PopuniListuJezika;
+end;
+
+procedure TfrmPitanje10.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  Application.Terminate;
+end;
+
+procedure TfrmPitanje10.NazadClick(Sender: TObject);
+begin
+  if frmPitanje9.Pitanje9ID = 1 then
+  begin
+    frmPitanje9Vreme.Show;
+    Self.Hide;
+  end
+  else
+  begin
+    frmPitanje9.Show;
+    Self.Hide;
+  end;
+end;
+
+procedure TfrmPitanje10.NeClick(Sender: TObject);
+begin
+  Jezik.Visible := False;
+end;
+
+procedure TfrmPitanje10.DaljeClick(Sender: TObject);
+begin
+  // Provera da li je Jezik izabran
+  if Da.IsChecked then
+  begin
+    if Jezik.ItemIndex = -1 then
+    begin
+      ShowMessage('Izaberite jezik.');
+      Exit;
+    end
+    else
+    begin
+      frmMain.NizPitanje10 := ProveraNizaJezici(GetIDJezika(Jezik.Selected.Text), frmMain.NizKnjige);
+      ShowMessage('Broj elemenata u nizu: ' + Length(frmMain.NizPitanje10).ToString);
+      frmMain.CalculateResults;
+    end;
+  end
+  else if Ne.IsChecked then
+  begin
+    SetLength(frmMain.NizPitanje10, 0);
+    frmMain.CalculateResults;
+  end;
+end;
+
+procedure TfrmPitanje10.PopuniListuJezika;
+var
+  MyQuery: TFDQuery;
+begin
+  MyQuery := TFDQuery.Create(nil);
+  try
+    MyQuery.Connection := GlobalConnection;
+    MyQuery.SQL.Text := 'SELECT * FROM Jezici ORDER BY Jezik';
+    MyQuery.FetchOptions.Mode := fmAll;
+    MyQuery.FetchOptions.Items := [fiBlobs];
+    MyQuery.Open;
+    Jezik.Items.Clear;
+    while not MyQuery.Eof do
+    begin
+      Jezik.Items.Add(MyQuery.FieldByName('Jezik').AsString);
+      MyQuery.Next;
+    end;
+  finally
+    MyQuery.Free;
+  end;
+end;
+
+function TfrmPitanje10.ProveraNizaJezici(const idJezika: integer; const OriginalniNiz: TArray<Integer>): TArray<Integer>;
+var
+  MyQuery: TFDQuery;
+  ResultArray: TArray<Integer>;
+  KnjigaID: Integer;
+begin
+  SetLength(ResultArray, 0);
+  MyQuery := TFDQuery.Create(nil);
+  try
+    MyQuery.Connection := GlobalConnection;
+    MyQuery.SQL.Text := 'SELECT IDKnjige FROM Knjige WHERE Jezik = :Jezik';
+    MyQuery.ParamByName('Jezik').AsInteger := idJezika;
+    MyQuery.FetchOptions.Mode := fmAll;
+    MyQuery.FetchOptions.RecsMax := -1;
+
+    MyQuery.Open;
+
+    while not MyQuery.Eof do
+    begin
+      KnjigaID := MyQuery.FieldByName('IDKnjige').AsInteger;
+      if TArray.BinarySearch<Integer>(OriginalniNiz, KnjigaID) then
+      begin
+        SetLength(ResultArray, Length(ResultArray) + 1);
+        ResultArray[High(ResultArray)] := KnjigaID;
+      end;
+      MyQuery.Next;
+    end;
+  finally
+    MyQuery.Free;
+  end;
+  Result := ResultArray;
+end;
+
+function TfrmPitanje10.GetIDJezika(const imeJezika: string): Integer;
+var
+  MyQuery: TFDQuery;
+begin
+  Result := -1;
+  MyQuery := TFDQuery.Create(nil);
+  try
+    MyQuery.Connection := GlobalConnection;
+    MyQuery.SQL.Text := 'SELECT IDJezika FROM Jezici WHERE Jezik = :Naziv';
+    MyQuery.ParamByName('Naziv').AsWideString := imeJezika;
+    MyQuery.Open;
+
+    if not MyQuery.IsEmpty then
+      Result := MyQuery.FieldByName('IDJezika').AsInteger;
+  finally
+    MyQuery.Free;
+  end;
+end;
+
+end.
+

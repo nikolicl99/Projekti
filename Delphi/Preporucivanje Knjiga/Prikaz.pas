@@ -1,0 +1,303 @@
+﻿unit Prikaz;
+
+interface
+
+uses
+  System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
+  FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs,
+  FMX.Controls.Presentation, FMX.StdCtrls, FMX.Objects, System.Net.HttpClient, System.Net.URLClient, System.Net.Mime,
+  FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
+  FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
+  FireDAC.Stan.Async, FireDAC.DApt, Data.DB, FireDAC.Comp.DataSet,
+  FireDAC.Comp.Client, System.Net.HttpClientComponent, FMX.Edit, FMX.WebBrowser,
+  Web.HTTPApp, FMX.Platform;
+
+type
+  TfrmPrikaz = class(TForm)
+    Forma: TPanel;
+    StyleBook: TStyleBook;
+    StyleBook1: TStyleBook;
+    Image1: TImage;
+    Knjiga_Edit: TEdit;
+    Autor_Edit: TEdit;
+    Izdavac_Edit: TEdit;
+    Vise: TButton;
+    Knjiga_Label: TLabel;
+    Autor_Label: TLabel;
+    Izdavac_Label: TLabel;
+    Izlaz: TButton;
+    procedure FormActivate(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+//    procedure LinkClick(Sender: TObject);
+    procedure ViseClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure IzlazClick(Sender: TObject);
+  private
+    { Private declarations }
+    Vise_Visible: Integer;
+    function GetLinkSlike(const idKnjige: Integer): String;
+    function GetNazivKnjige(const idKnjige: Integer): String;
+    function GetIDAutora(const idKnjige: Integer): Integer;
+    function GetAutorKnjige(const idAutora: Integer): String;
+    function GetIzdavacKnjige(const idKnjige: Integer): String;
+    function GetLinkKnjige(const idKnjige: Integer): String;
+    procedure PrikaziSliku(URL: string);
+//    procedure GotoWebsite(URL: string);
+  public
+    { Public declarations }
+  end;
+
+var
+  frmPrikaz: TfrmPrikaz;
+
+
+implementation
+
+{$R *.fmx}
+
+uses Main, Vise, Dalje;
+
+procedure TfrmPrikaz.IzlazClick(Sender: TObject);
+begin
+frmDalje.Show;
+end;
+
+procedure TfrmPrikaz.FormActivate(Sender: TObject);
+begin
+  Left := Round((Screen.Width - Width) / 2);
+  Top := Round((Screen.Height - Height) / 2);
+
+//  ShowMessage(IntToStr(frmMain.CurrentBookID));
+  PrikaziSliku(GetLinkSlike(frmMain.CurrentBookID));
+  Knjiga_Edit.Text := GetNazivKnjige(frmMain.CurrentBookID);
+  Autor_Edit.Text := GetAutorKnjige(getIDAutora(frmMain.CurrentBookID));
+  Izdavac_Edit.Text := GetIzdavacKnjige(frmMain.CurrentBookID);
+end;
+
+procedure TfrmPrikaz.PrikaziSliku(URL: string);
+var
+  Bitmap: TBitmap;
+  HTTPClient: TNetHTTPClient;
+  Response: IHTTPResponse;
+  MemoryStream: TMemoryStream;
+begin
+  Bitmap := TBitmap.Create;
+  HTTPClient := TNetHTTPClient.Create(nil);
+  MemoryStream := TMemoryStream.Create;
+  try
+    HTTPClient.UserAgent := 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3';
+    Response := HTTPClient.Get(URL, MemoryStream);
+    if Response.StatusCode = 200 then
+    begin
+      MemoryStream.Position := 0; // Postavite poziciju na početak memorije
+      Bitmap.LoadFromStream(MemoryStream); // Učitajte sliku iz memorije u bitmapu
+      if not Bitmap.IsEmpty then
+      begin
+        Image1.Bitmap.Assign(Bitmap); // Prikaz slike u komponenti TImage
+      end
+      else
+      begin
+        ShowMessage('Slika nije uspešno učitana u bitmapu.');
+      end;
+    end
+    else
+    begin
+      ShowMessage('Greška pri preuzimanju slike: ' + Response.StatusText);
+    end;
+  finally
+    Bitmap.Free;
+    HTTPClient.Free;
+    MemoryStream.Free;
+  end;
+end;
+
+procedure TfrmPrikaz.ViseClick(Sender: TObject);
+begin
+if Vise_Visible = 0 then
+begin
+ frmVise.Show;
+ Vise_Visible := 1;
+end
+else
+begin
+  frmVise.Hide;
+  Vise_Visible := 0;
+end;
+
+end;
+
+//procedure TfrmPrikaz.GotoWebsite(URL: string);
+//begin
+//  // Open the URL in the default browser using ShellExecute
+//  ShellExecute(0, nil, PChar(URL), nil, nil, SW_SHOWNORMAL);
+//end;
+
+procedure TfrmPrikaz.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+Application.Terminate;
+end;
+
+procedure TfrmPrikaz.FormCreate(Sender: TObject);
+begin
+Vise_Visible := 0;
+end;
+
+function TfrmPrikaz.GetLinkSlike(const idKnjige: Integer): String;
+var
+  MyQuery: TFDQuery;
+begin
+  Result := '';
+  MyQuery := TFDQuery.Create(nil);
+  try
+    MyQuery.Connection := GlobalConnection;
+    MyQuery.SQL.Text := 'SELECT Image_URL_L FROM Knjige WHERE IDKnjige = :Knjiga';
+    MyQuery.ParamByName('Knjiga').AsInteger := idKnjige;
+    MyQuery.Open;
+
+    if not MyQuery.IsEmpty then
+      Result := MyQuery.FieldByName('Image_URL_L').AsString;
+  finally
+    MyQuery.Free;
+  end;
+end;
+
+function TfrmPrikaz.GetNazivKnjige(const idKnjige: Integer): String;
+var
+  MyQuery: TFDQuery;
+begin
+  Result := '';
+  MyQuery := TFDQuery.Create(nil);
+  try
+    MyQuery.Connection := GlobalConnection;
+    MyQuery.SQL.Text := 'SELECT Naziv FROM Knjige WHERE IDKnjige = :Knjiga';
+    MyQuery.ParamByName('Knjiga').AsInteger := idKnjige;
+    MyQuery.Open;
+
+    if not MyQuery.IsEmpty then
+      Result := MyQuery.FieldByName('Naziv').AsString;
+  finally
+    MyQuery.Free;
+  end;
+end;
+
+//procedure TfrmPrikaz.LinkClick(Sender: TObject);
+//var
+//  URL: String;
+//begin
+//  Self.Width := 960;
+//  Forma.Width := 928;
+//  // Get the URL of the book
+//  URL := GetLinkKnjige(frmMain.CurrentBookID);
+//
+//  // Check if the URL is not empty
+//  if URL <> '' then
+//    // Navigate to the URL
+//    WebBrowser1.URL := URL;
+//end;
+
+
+
+//procedure TfrmPrikaz.LinkClick(Sender: TObject);
+//var
+//  URL: String;
+//begin
+//  Self.Width := 960;
+//  Forma.Width := 928;
+//  // Get the URL of the book
+//  URL := GetLinkKnjige(frmMain.CurrentBookID);
+//
+//  // Check if the URL is not empty
+//  if URL <> '' then
+//  begin
+//    {$IFDEF MSWindows}
+//    // Open the URL in the default web browser using ShellExecute
+//    ShellExecute(0, 'open', PChar(URL), nil, nil, SW_SHOWNORMAL);
+//    {$ELSE}
+//    // For other platforms, use OpenURL
+//    OpenURL(URL);
+//    {$ENDIF}
+//  end;
+//end;
+
+
+
+
+
+
+
+function TfrmPrikaz.GetIDAutora(const idKnjige: Integer): Integer;
+var
+  MyQuery: TFDQuery;
+begin
+  Result := -1;
+  MyQuery := TFDQuery.Create(nil);
+  try
+    MyQuery.Connection := GlobalConnection;
+    MyQuery.SQL.Text := 'SELECT Autor FROM Knjige WHERE IDKnjige = :Knjiga';
+    MyQuery.ParamByName('Knjiga').AsInteger := idKnjige;
+    MyQuery.Open;
+
+    if not MyQuery.IsEmpty then
+      Result := MyQuery.FieldByName('Autor').AsInteger;
+  finally
+    MyQuery.Free;
+  end;
+end;
+
+function TfrmPrikaz.GetAutorKnjige(const idAutora: Integer): String;
+var
+  MyQuery: TFDQuery;
+begin
+  Result := '';
+  MyQuery := TFDQuery.Create(nil);
+  try
+    MyQuery.Connection := GlobalConnection;
+    MyQuery.SQL.Text := 'SELECT Naziv FROM Autor WHERE IDAutora = :Autor';
+    MyQuery.ParamByName('Autor').AsInteger := idAutora;
+    MyQuery.Open;
+
+    if not MyQuery.IsEmpty then
+      Result := MyQuery.FieldByName('Naziv').AsString;
+  finally
+    MyQuery.Free;
+  end;
+end;
+
+function TfrmPrikaz.GetIzdavacKnjige(const idKnjige: Integer): String;
+var
+  MyQuery: TFDQuery;
+begin
+  Result := '';
+  MyQuery := TFDQuery.Create(nil);
+  try
+    MyQuery.Connection := GlobalConnection;
+    MyQuery.SQL.Text := 'SELECT Izdavac FROM Knjige WHERE IDKnjige = :Knjiga';
+    MyQuery.ParamByName('Knjiga').AsInteger := idKnjige;
+    MyQuery.Open;
+
+    if not MyQuery.IsEmpty then
+      Result := MyQuery.FieldByName('Izdavac').AsString;
+  finally
+    MyQuery.Free;
+  end;
+end;
+
+function TfrmPrikaz.GetLinkKnjige(const idKnjige: Integer): String;
+var
+  MyQuery: TFDQuery;
+begin
+  Result := '';
+  MyQuery := TFDQuery.Create(nil);
+  try
+    MyQuery.Connection := GlobalConnection;
+    MyQuery.SQL.Text := 'SELECT Site_URL FROM Knjige WHERE IDKnjige = :Knjiga';
+    MyQuery.ParamByName('Knjiga').AsInteger := idKnjige;
+    MyQuery.Open;
+
+    if not MyQuery.IsEmpty then
+      Result := MyQuery.FieldByName('Site_URL').AsString;
+  finally
+    MyQuery.Free;
+  end;
+end;
+end.

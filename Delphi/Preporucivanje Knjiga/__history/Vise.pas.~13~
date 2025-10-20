@@ -1,0 +1,216 @@
+unit Vise;
+
+interface
+
+uses
+  System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
+  FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs,
+  FMX.Controls.Presentation, FMX.StdCtrls, System.Rtti, FMX.Grid.Style,
+  FMX.Grid, FMX.ScrollBox, FMX.Edit, FireDAC.Stan.Intf, FireDAC.Stan.Option,
+  FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,
+  FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Data.DB,
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client;
+
+type
+  TFrmVise = class(TForm)
+    Forma: TPanel;
+    StyleBook: TStyleBook;
+    StyleBook1: TStyleBook;
+    Podzanr_Edit: TEdit;
+    Strane_Edit: TEdit;
+    Teme: TStringGrid;
+    Teme_col: TStringColumn;
+    Ocene_Edit: TEdit;
+    Link: TButton;
+    procedure FormActivate(Sender: TObject);
+    procedure LinkClick(Sender: TObject);
+  private
+    { Private declarations }
+    Row: Integer;
+    function GetPodzanrKnjige(const idKnjige: Integer): Integer;
+    function GetPodzanrNaziv(const idPodzanra: Integer): String;
+    function GetStraneKnjige(const idKnjige: Integer): String;
+    function GetTemaNaziv(const idTeme: Integer): String;
+    function GetOceneKnjige(const idKnjige: Integer): String;
+    function GetLinkKnjige(const idKnjige: Integer): String;
+  public
+    { Public declarations }
+  end;
+
+var
+  FrmVise: TFrmVise;
+
+implementation
+
+{$R *.fmx}
+uses Main, {$IFDEF MSWindows}
+  Winapi.ShellAPI,
+  Winapi.Windows;
+  {$ENDIF}
+
+procedure TFrmVise.FormActivate(Sender: TObject);
+var
+MyQuery: TFDQuery;
+begin
+Left := Round(((Screen.Width - Width) / 2) - 480);
+Top := Round((Screen.Height - Height) / 2);
+Podzanr_Edit.Text := GetPodzanrNaziv(GetPodzanrKnjige(frmMain.CurrentBookID));
+Strane_Edit.Text := GetStraneKnjige(frmMain.CurrentBookID);
+Ocene_Edit.Text := GetOceneKnjige(frmMain.CurrentBookID);
+MyQuery := TFDQuery.Create(nil);
+try
+  MyQuery.Connection := GlobalConnection;
+  MyQuery.SQL.Text := 'SELECT * FROM Tema_Knjige WHERE IDKnjige = :Knjiga';
+  MyQuery.ParamByName('Knjiga').AsInteger := frmMain.CurrentBookID;
+  MyQuery.Open;
+  Teme.RowCount := 1;
+    Row := 0;
+    while not MyQuery.Eof do
+    begin
+      Teme.RowCount := Teme.RowCount + 1;
+      Teme.Cells[0, Row] := GetTemaNaziv(MyQuery.FieldByName('IDTeme').AsInteger);
+      Inc(Row);
+      MyQuery.Next;
+    end;
+finally
+  MyQuery.Free;
+  Teme.RowCount := Teme.RowCount - 1;
+end;
+end;
+
+function TfrmVise.GetPodzanrKnjige(const idKnjige: Integer): Integer;
+var
+  MyQuery: TFDQuery;
+begin
+  Result := -1;
+  MyQuery := TFDQuery.Create(nil);
+  try
+    MyQuery.Connection := GlobalConnection;
+    MyQuery.SQL.Text := 'SELECT Podzanr FROM Knjige WHERE IDKnjige = :Knjiga';
+    MyQuery.ParamByName('Knjiga').AsInteger := idKnjige;
+    MyQuery.Open;
+
+    if not MyQuery.IsEmpty then
+      Result := MyQuery.FieldByName('Podzanr').AsInteger;
+  finally
+    MyQuery.Free;
+  end;
+end;
+
+function TfrmVise.GetPodzanrNaziv(const idPodzanra: Integer): String;
+var
+  MyQuery: TFDQuery;
+begin
+  Result := '';
+  MyQuery := TFDQuery.Create(nil);
+  try
+    MyQuery.Connection := GlobalConnection;
+    MyQuery.SQL.Text := 'SELECT NazivPodzanra FROM Podzanr WHERE IDPodzanra = :Podzanr';
+    MyQuery.ParamByName('Podzanr').AsInteger := idPodzanra;
+    MyQuery.Open;
+
+    if not MyQuery.IsEmpty then
+      Result := MyQuery.FieldByName('NazivPodzanra').AsString;
+  finally
+    MyQuery.Free;
+  end;
+end;
+
+function TfrmVise.GetTemaNaziv(const idTeme: Integer): String;
+var
+  MyQuery: TFDQuery;
+begin
+  Result := '';
+  MyQuery := TFDQuery.Create(nil);
+  try
+    MyQuery.Connection := GlobalConnection;
+    MyQuery.SQL.Text := 'SELECT Naziv_Teme FROM Teme WHERE IDTeme = :Tema';
+    MyQuery.ParamByName('Tema').AsInteger := idTeme;
+    MyQuery.Open;
+
+    if not MyQuery.IsEmpty then
+      Result := MyQuery.FieldByName('Naziv_Teme').AsString;
+  finally
+    MyQuery.Free;
+  end;
+end;
+
+procedure TfrmVise.LinkClick(Sender: TObject);
+var
+  URL: String;
+begin
+//  Self.Width := 960;
+//  Forma.Width := 928;
+  // Get the URL of the book
+  URL := GetLinkKnjige(frmMain.CurrentBookID);
+
+  // Check if the URL is not empty
+  if URL <> '' then
+  begin
+    {$IFDEF MSWindows}
+    // Open the URL in the default web browser using ShellExecute
+    ShellExecute(0, 'open', PChar(URL), nil, nil, SW_SHOWNORMAL);
+    {$ELSE}
+    // For other platforms, use OpenURL
+    OpenURL(URL);
+    {$ENDIF}
+  end;
+end;
+function TfrmVise.GetStraneKnjige(const idKnjige: Integer): String;
+var
+  MyQuery: TFDQuery;
+begin
+  Result := '';
+  MyQuery := TFDQuery.Create(nil);
+  try
+    MyQuery.Connection := GlobalConnection;
+    MyQuery.SQL.Text := 'SELECT Broj_Strana FROM Knjige WHERE IDKnjige = :Knjiga';
+    MyQuery.ParamByName('Knjiga').AsInteger := idKnjige;
+    MyQuery.Open;
+
+    if not MyQuery.IsEmpty then
+      Result := MyQuery.FieldByName('Broj_Strana').AsString;
+  finally
+    MyQuery.Free;
+  end;
+end;
+
+function TfrmVise.GetOceneKnjige(const idKnjige: Integer): String;
+var
+  MyQuery: TFDQuery;
+begin
+  Result := '';
+  MyQuery := TFDQuery.Create(nil);
+  try
+    MyQuery.Connection := GlobalConnection;
+    MyQuery.SQL.Text := 'SELECT Ocena FROM Knjige WHERE IDKnjige = :Knjiga';
+    MyQuery.ParamByName('Knjiga').AsInteger := idKnjige;
+    MyQuery.Open;
+
+    if not MyQuery.IsEmpty then
+      Result := MyQuery.FieldByName('Ocena').AsString;
+  finally
+    MyQuery.Free;
+  end;
+end;
+
+function TfrmVise.GetLinkKnjige(const idKnjige: Integer): String;
+var
+  MyQuery: TFDQuery;
+begin
+  Result := '';
+  MyQuery := TFDQuery.Create(nil);
+  try
+    MyQuery.Connection := GlobalConnection;
+    MyQuery.SQL.Text := 'SELECT Site_URL FROM Knjige WHERE IDKnjige = :Knjiga';
+    MyQuery.ParamByName('Knjiga').AsInteger := idKnjige;
+    MyQuery.Open;
+
+    if not MyQuery.IsEmpty then
+      Result := MyQuery.FieldByName('Site_URL').AsString;
+  finally
+    MyQuery.Free;
+  end;
+end;
+
+end.

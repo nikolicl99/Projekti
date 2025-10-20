@@ -1,0 +1,141 @@
+﻿unit Pitanje7;
+
+interface
+
+uses
+  System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
+  FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.Memo.Types,
+  FMX.StdCtrls, FMX.Controls.Presentation, FMX.ScrollBox, FMX.Memo,
+  FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
+  FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
+  FireDAC.Stan.Async, FireDAC.DApt, Data.DB, FireDAC.Comp.DataSet,
+  FireDAC.Comp.Client, FMX.ListBox;
+
+type
+  TfrmPitanje7 = class(TForm)
+    Memo: TMemo;
+    Dalje: TButton;
+    Nazad: TButton;
+    Forma: TPanel;
+    StyleBook: TStyleBook;
+    Godine: TComboBox;
+    procedure FormActivate(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure NazadClick(Sender: TObject);
+    procedure DaljeClick(Sender: TObject);
+    function ProveraNizaGodineOpseg(const OriginalniNiz: TArray<Integer>; const StartYear, EndYear: Integer): TArray<Integer>;
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+    NizPitanje7: TArray<Integer>;
+  end;
+
+var
+  frmPitanje7: TfrmPitanje7;
+
+implementation
+
+{$R *.fmx}
+uses Main, Pitanje6, Pitanje8;
+
+procedure TfrmPitanje7.DaljeClick(Sender: TObject);
+var
+  Poruka: String;
+  i, StartYear, EndYear: Integer;
+  SelectedRange: String;
+begin
+  if Godine.ItemIndex <> -1 then
+  begin
+    SelectedRange := Godine.Items[Godine.ItemIndex];
+    StartYear := StrToInt(Copy(SelectedRange, 1, 4));
+    EndYear := StrToInt(Copy(SelectedRange, 6, 4));
+
+    frmMain.NizPitanje7 := ProveraNizaGodineOpseg(frmMain.NizKnjige, StartYear, EndYear);
+
+    ShowMessage('Duzina niza: ' + IntToStr(Length(frmMain.NizPitanje7)));
+//    if Length(frmMain.NizPitanje7) > 0 then
+//    begin
+//      Poruka := '';
+//
+//      for i := Low(frmMain.NizPitanje7) to High(frmMain.NizPitanje7) do
+//      begin
+//        Poruka := Poruka + IntToStr(frmMain.NizPitanje7[i]) + ', ';
+//      end;
+//      SetLength(Poruka, Length(Poruka) - 2);
+//      ShowMessage('Vrednosti u nizu su: ' + Poruka);
+      frmPitanje8.Show;
+    Self.Hide;
+//    end
+//    else
+//      ShowMessage('Nema knjiga u izabranom opsegu godina.');
+//        Exit;
+//
+  end
+  else
+    ShowMessage('Odaberite opseg godina');
+end;
+
+procedure TfrmPitanje7.FormActivate(Sender: TObject);
+var
+  Decenija: Integer;
+begin
+  Left := Round((Screen.Width - Width)/2);
+  Top := Round ((Screen.Height - Height)/2);
+  Godine.Items.Clear;
+  for Decenija := 1900 to 1990 do
+  begin
+    if Decenija mod 10 = 0 then
+    begin
+      Godine.Items.Add(IntToStr(Decenija) + '-' + IntToStr(Decenija + 9));
+    end;
+  end;
+end;
+
+procedure TfrmPitanje7.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  Application.Terminate;
+end;
+
+procedure TfrmPitanje7.NazadClick(Sender: TObject);
+begin
+  frmPitanje6.Show;
+  Self.Hide;
+end;
+
+function TfrmPitanje7.ProveraNizaGodineOpseg(const OriginalniNiz: TArray<Integer>; const StartYear, EndYear: Integer): TArray<Integer>;
+var
+  MyQuery: TFDQuery;
+  ResultArray: TArray<Integer>;
+  i: Integer;
+  KnjigaID: Integer;
+begin
+  SetLength(ResultArray, 0);
+
+  MyQuery := TFDQuery.Create(nil);
+  try
+    MyQuery.Connection := GlobalConnection;
+    MyQuery.SQL.Text := 'SELECT IDKnjige FROM Knjige WHERE Godina_Izdavanja BETWEEN :StartYear AND :EndYear';
+    MyQuery.ParamByName('StartYear').AsInteger := StartYear;
+    MyQuery.ParamByName('EndYear').AsInteger := EndYear;
+    MyQuery.FetchOptions.Mode := fmAll;
+    MyQuery.FetchOptions.RecsMax := -1;
+    MyQuery.Open;
+
+//    SetLength(ResultArray, MyQuery.RecordCount);
+    while not MyQuery.Eof do
+    begin
+      KnjigaID := MyQuery.FieldByName('IDKnjige').AsInteger;
+SetLength(ResultArray, Length(ResultArray) + 1);
+      ResultArray[Length(ResultArray) - 1] := KnjigaID;
+      MyQuery.Next;
+    end;
+  finally
+    MyQuery.Free;
+  end;
+
+  Result := ResultArray;
+end;
+
+end.
+

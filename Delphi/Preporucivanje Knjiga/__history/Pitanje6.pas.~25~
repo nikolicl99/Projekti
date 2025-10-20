@@ -1,0 +1,156 @@
+﻿unit Pitanje6;
+
+interface
+
+uses
+  System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
+  FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.Memo.Types,
+  FMX.StdCtrls, FMX.Controls.Presentation, FMX.ScrollBox, FMX.Memo,
+  FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
+  FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
+  FireDAC.Stan.Async, FireDAC.DApt, Data.DB, FireDAC.Comp.DataSet,
+  FireDAC.Comp.Client;
+
+type
+  TfrmPitanje6 = class(TForm)
+    Memo: TMemo;
+    Da: TRadioButton;
+    Ne: TRadioButton;
+    Dalje: TButton;
+    Nazad: TButton;
+    StyleBook: TStyleBook;
+    Forma: TPanel;
+    StyleBook1: TStyleBook;
+    procedure FormActivate(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure NazadClick(Sender: TObject);
+    procedure DaljeClick(Sender: TObject);
+    function ProveraNizaOcenaDa(const OriginalniNiz: TArray<Integer>): TArray<Integer>;
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+    NizPitanje6: TArray<Integer>;
+  end;
+
+var
+  frmPitanje6: TfrmPitanje6;
+
+implementation
+
+{$R *.fmx}
+uses Main, Pitanje5, Pitanje7, Pitanje4;
+
+procedure TfrmPitanje6.DaljeClick(Sender: TObject);
+var
+  Poruka: String;
+  i: Integer;
+begin
+  if Da.IsChecked then
+  begin
+    frmMain.NizPitanje6 := ProveraNizaOcenaDa(frmMain.NizKnjige);
+//    if Length(frmMain.NizPitanje6) > 0 then
+//    begin
+//      Poruka := '';
+//      for i := Low(frmMain.NizPitanje6) to High(frmMain.NizPitanje6) do
+//      begin
+//        Poruka := Poruka + IntToStr(frmMain.NizPitanje6[i]) + ', ';
+//      end;
+//      SetLength(Poruka, Length(Poruka) - 2);
+//      ShowMessage('Vrednosti u nizu su: ' + Poruka);
+//    end;;
+    frmPitanje7.Show;
+    self.Hide;
+  end;
+
+  if Ne.IsChecked then
+  SetLength(frmMain.NizPitanje6, 0);
+//  begin
+//    frmMain.NizPitanje6 := frmMain.NizPitanje4;
+//    if Length(frmMain.NizPitanje6) > 0 then
+//    begin
+//      Poruka := '';
+//      for i := Low(frmMain.NizPitanje6) to High(frmMain.NizPitanje6) do
+//      begin
+//        Poruka := Poruka + IntToStr(frmMain.NizPitanje6[i]) + ', ';
+//      end;
+//      SetLength(Poruka, Length(Poruka) - 2);
+//      ShowMessage('Vrednosti u nizu su: ' + Poruka);
+//    end;
+    frmPitanje7.Show;
+    self.Hide;
+  end;
+//end;
+
+procedure TfrmPitanje6.FormActivate(Sender: TObject);
+begin
+  Left := Round((Screen.Width - Width) / 2);
+  Top := Round((Screen.Height - Height) / 2);
+end;
+
+procedure TfrmPitanje6.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  Application.Terminate;
+end;
+
+procedure TfrmPitanje6.NazadClick(Sender: TObject);
+begin
+  frmPitanje4.Show;
+  self.Hide;
+end;
+
+function TfrmPitanje6.ProveraNizaOcenaDa(const OriginalniNiz: TArray<Integer>): TArray<Integer>;
+var
+  MyQuery: TFDQuery;
+  ResultArray: TArray<Integer>;
+  i: Integer;
+  Found: Boolean;
+  KnjigaID: Integer;
+begin
+  SetLength(ResultArray, 0);
+
+  MyQuery := TFDQuery.Create(nil);
+  try
+    MyQuery.Connection := GlobalConnection;
+    MyQuery.SQL.Text := 'SELECT IDKnjige FROM Knjige WHERE Ocena >= 75';
+
+    // Set FetchOptions to ensure all records are fetched
+    MyQuery.FetchOptions.Mode := fmAll;
+    MyQuery.FetchOptions.RecsMax := -1; // Make sure there's no limit
+
+    MyQuery.Open;
+
+    ShowMessage('Broj elemenata u OriginalniNiz: ' + Length(OriginalniNiz).ToString);
+    ShowMessage('Broj Clanova kverija: ' + (MyQuery.RecordCount).ToString);
+
+    while not MyQuery.Eof do
+    begin
+      KnjigaID := MyQuery.FieldByName('IDKnjige').AsInteger;
+
+      Found := False;
+      for i := Low(OriginalniNiz) to High(OriginalniNiz) do
+      begin
+        if KnjigaID = OriginalniNiz[i] then
+        begin
+          Found := True;
+          Break;
+        end;
+      end;
+
+      if Found then
+      begin
+        SetLength(ResultArray, Length(ResultArray) + 1);
+        ResultArray[Length(ResultArray) - 1] := KnjigaID;
+      end;
+
+      MyQuery.Next;
+    end;
+  finally
+    MyQuery.Free;
+  end;
+
+  Result := ResultArray;
+end;
+
+end.
+

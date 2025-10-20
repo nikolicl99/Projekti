@@ -1,0 +1,78 @@
+﻿unit Pitanje1;
+
+interface
+
+uses
+  System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
+  FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.Memo.Types,
+  FMX.Controls.Presentation, FMX.ScrollBox, FMX.Memo, FMX.StdCtrls,
+  FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
+  FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
+  FireDAC.Stan.Async, FireDAC.DApt, Data.DB, FireDAC.Comp.DataSet,
+  FireDAC.Comp.Client;
+
+type
+  TfrmPitanje1 = class(TForm)
+    Memo: TMemo;
+    Da: TRadioButton;
+    Ne: TRadioButton;
+    Dalje: TButton;
+    Nazad: TButton;
+    StyleBook: TStyleBook;
+    Forma: TPanel;
+    StyleBook1: TStyleBook;
+    procedure FormActivate(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure DaljeClick(Sender: TObject);
+    procedure NazadClick(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+    Pitanje1ID: integer;
+
+  end;
+
+var
+  frmPitanje1: TfrmPitanje1;
+
+implementation
+
+{$R *.fmx}
+uses Main, Pitanje1Autor, PocetnaStrana, Pitanje2;
+
+procedure TfrmPitanje1.NazadClick(Sender: TObject);
+begin
+  frmPitanje2.Show;
+  Self.Hide;
+end;
+
+procedure TfrmPitanje1.DaljeClick(Sender: TObject);
+begin
+    if Da.IsChecked then
+  begin
+    Pitanje1ID := 1;
+    frmPitanje1Autor.Show;
+    Self.Hide;
+  end
+  else
+  begin
+      Pitanje1ID := 2;
+      frmPitanje2.Show;
+      Self.Hide;
+    end;
+  end;
+
+procedure TfrmPitanje1.FormActivate(Sender: TObject);
+begin
+  Left := Round((Screen.Width - Width) / 2);
+  Top := Round((Screen.Height - Height) / 2);
+end;
+
+procedure TfrmPitanje1.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  Application.Terminate;
+end;
+
+end.
+

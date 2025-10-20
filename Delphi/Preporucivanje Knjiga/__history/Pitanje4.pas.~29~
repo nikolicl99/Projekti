@@ -1,0 +1,220 @@
+﻿unit Pitanje4;
+
+interface
+
+uses
+  System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
+  FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.Memo.Types,
+  FMX.StdCtrls, FMX.Controls.Presentation, FMX.ScrollBox, FMX.Memo,
+  FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
+  FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
+  FireDAC.Stan.Async, FireDAC.DApt, Data.DB, FireDAC.Comp.DataSet,
+  FireDAC.Comp.Client;
+
+type
+  TfrmPitanje4 = class(TForm)
+    Memo: TMemo;
+    Da: TRadioButton;
+    Ne: TRadioButton;
+    Dalje: TButton;
+    Nazad: TButton;
+    StyleBook: TStyleBook;
+    Forma: TPanel;
+    StyleBook1: TStyleBook;
+    procedure NazadClick(Sender: TObject);
+    procedure FormActivate(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure DaljeClick(Sender: TObject);
+    function ProveraNizaSerijalDa(const OriginalniNiz: TArray<Integer>): TArray<Integer>;
+    function ProveraNizaSerijalNe(const OriginalniNiz: TArray<Integer>): TArray<Integer>;
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+    NizPitanje4: TArray<Integer>;
+    Pitanje4ID: integer;
+  end;
+
+var
+  frmPitanje4: TfrmPitanje4;
+
+implementation
+
+{$R *.fmx}
+uses Main, Pitanje3, Pitanje6;
+
+procedure TfrmPitanje4.DaljeClick(Sender: TObject);
+var
+  Poruka: String;
+  i: Integer;
+begin
+  if Da.IsChecked then
+  begin
+    frmMain.NizPitanje4 := ProveraNizaSerijalDa(frmMain.NizKnjige);
+//    if Length(frmMain.NizPitanje4) = 0 then
+//      frmMain.NizPitanje4 := frmMain.NizPitanje3;
+    Pitanje4ID := 1;
+//    if Length(frmMain.NizPitanje4) > 0 then
+//    begin
+//      Poruka := '';
+//      for i := Low(frmMain.NizPitanje4) to High(frmMain.NizPitanje4) do
+//      begin
+//        Poruka := Poruka + IntToStr(frmMain.NizPitanje4[i]) + ', ';
+//      end;
+//      SetLength(Poruka, Length(Poruka) - 2);
+//      ShowMessage('Vrednosti u nizu su: ' + Poruka);
+//    end;
+    frmPitanje6.Show;
+    self.Hide;
+  end;
+
+  if Ne.IsChecked then
+  begin
+    frmMain.NizPitanje4 := ProveraNizaSerijalNe(frmMain.NizKnjige);
+//    if Length(frmMain.NizPitanje4) = 0 then
+//      frmMain.NizPitanje4 := frmMain.NizPitanje3;
+    Pitanje4ID := 0;
+
+//    if Length(frmMain.NizPitanje4) > 0 then
+//    begin
+//      Poruka := '';
+//      for i := Low(frmMain.NizPitanje4) to High(frmMain.NizPitanje4) do
+//      begin
+//        Poruka := Poruka + IntToStr(frmMain.NizPitanje4[i]) + ', ';
+//      end;
+//      SetLength(Poruka, Length(Poruka) - 2);
+//      ShowMessage('Vrednosti u nizu su: ' + Poruka);
+//    end;
+
+    frmPitanje6.Show;
+    self.Hide;
+  end;
+end;
+
+procedure TfrmPitanje4.FormActivate(Sender: TObject);
+begin
+  Left := Round((Screen.Width - Width) / 2);
+  Top := Round((Screen.Height - Height) / 2);
+end;
+
+procedure TfrmPitanje4.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  Application.Terminate;
+end;
+
+procedure TfrmPitanje4.NazadClick(Sender: TObject);
+begin
+  frmPitanje3.Show;
+  self.Hide;
+end;
+
+function TfrmPitanje4.ProveraNizaSerijalDa(const OriginalniNiz: TArray<Integer>): TArray<Integer>;
+var
+  MyQuery: TFDQuery;
+  ResultArray: TArray<Integer>;
+  i: Integer;
+  Found: Boolean;
+  KnjigaID: Integer;
+begin
+  SetLength(ResultArray, 0);
+
+  MyQuery := TFDQuery.Create(nil);
+  try
+    MyQuery.Connection := GlobalConnection;
+    MyQuery.SQL.Text := 'SELECT IDKnjige FROM Knjige WHERE Serijal IS NOT NULL';
+
+    // Set FetchOptions to ensure all records are fetched
+    MyQuery.FetchOptions.Mode := fmAll;
+    MyQuery.FetchOptions.RecsMax := -1; // Make sure there's no limit
+
+    MyQuery.Open;
+
+    ShowMessage('Broj elemenata u OriginalniNiz: ' + Length(OriginalniNiz).ToString);
+    ShowMessage('Broj Clanova kverija: ' + (MyQuery.RecordCount).ToString);
+
+    SetLength(ResultArray, MyQuery.RecordCount);
+
+    while not MyQuery.Eof do
+    begin
+      KnjigaID := MyQuery.FieldByName('IDKnjige').AsInteger;
+
+//      Found := False;
+//      for i := Low(OriginalniNiz) to High(OriginalniNiz) do
+//      begin
+//        if KnjigaID = OriginalniNiz[i] then
+//        begin
+//          Found := True;
+//          Break;
+//        end;
+//      end;
+//
+//      if Found then
+//      begin
+//        SetLength(ResultArray, Length(ResultArray) + 1);
+//        ResultArray[Length(ResultArray) - 1] := KnjigaID;
+//      end;
+
+      MyQuery.Next;
+    end;
+  finally
+    MyQuery.Free;
+  end;
+
+  Result := ResultArray;
+end;
+
+function TfrmPitanje4.ProveraNizaSerijalNe(const OriginalniNiz: TArray<Integer>): TArray<Integer>;
+var
+  MyQuery: TFDQuery;
+  ResultArray: TArray<Integer>;
+  i: Integer;
+  Found: Boolean;
+  KnjigaID: Integer;
+begin
+  SetLength(ResultArray, 0);
+
+  MyQuery := TFDQuery.Create(nil);
+  try
+    MyQuery.Connection := GlobalConnection;
+    MyQuery.SQL.Text := 'SELECT IDKnjige FROM Knjige WHERE Serijal IS NULL';
+
+    // Set FetchOptions to ensure all records are fetched
+    MyQuery.FetchOptions.Mode := fmAll;
+    MyQuery.FetchOptions.RecsMax := -1; // Make sure there's no limit
+
+    MyQuery.Open;
+
+    ShowMessage('Broj elemenata u OriginalniNiz: ' + Length(OriginalniNiz).ToString);
+    ShowMessage('Broj Clanova kverija: ' + (MyQuery.RecordCount).ToString);
+
+    while not MyQuery.Eof do
+    begin
+      KnjigaID := MyQuery.FieldByName('IDKnjige').AsInteger;
+
+//      Found := False;
+//      for i := Low(OriginalniNiz) to High(OriginalniNiz) do
+//      begin
+//        if KnjigaID = OriginalniNiz[i] then
+//        begin
+//          Found := True;
+//          Break;
+//        end;
+//      end;
+//
+//      if Found then
+//      begin
+//        SetLength(ResultArray, Length(ResultArray) + 1);
+//        ResultArray[Length(ResultArray) - 1] := KnjigaID;
+//      end;
+
+      MyQuery.Next;
+    end;
+  finally
+    MyQuery.Free;
+  end;
+
+  Result := ResultArray;
+end;
+
+end.
+

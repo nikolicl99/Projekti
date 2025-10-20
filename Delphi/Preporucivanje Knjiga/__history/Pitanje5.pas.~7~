@@ -1,0 +1,58 @@
+unit Pitanje5;
+
+interface
+
+uses
+  System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
+  FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.Memo.Types,
+  FMX.StdCtrls, FMX.Controls.Presentation, FMX.ScrollBox, FMX.Memo;
+
+type
+  TfrmPitanje5 = class(TForm)
+    Memo: TMemo;
+    Da: TRadioButton;
+    Ne: TRadioButton;
+    Dalje: TButton;
+    Nazad: TButton;
+    procedure NazadClick(Sender: TObject);
+    procedure FormActivate(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure DaljeClick(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmPitanje5: TfrmPitanje5;
+
+implementation
+
+{$R *.fmx}
+uses Pitanje4, Pitanje6;
+
+procedure TfrmPitanje5.DaljeClick(Sender: TObject);
+begin
+frmPitanje6.Show;
+self.Hide;
+end;
+
+procedure TfrmPitanje5.FormActivate(Sender: TObject);
+begin
+Left := Round((Screen.Width - Width)/2);
+Top := Round ((Screen.Height - Height)/2);
+end;
+
+procedure TfrmPitanje5.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+Application.Destroy;
+end;
+
+procedure TfrmPitanje5.NazadClick(Sender: TObject);
+begin
+frmPitanje4.Show;
+self.Hide;
+end;
+
+end.

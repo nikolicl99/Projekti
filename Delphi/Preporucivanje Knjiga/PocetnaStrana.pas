@@ -1,0 +1,52 @@
+unit PocetnaStrana;
+
+interface
+
+uses
+  System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
+  FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs,
+  FMX.Controls.Presentation, FMX.StdCtrls, FMX.Memo.Types, FMX.ScrollBox,
+  FMX.Memo;
+
+type
+  TfrmPocetnaStrana = class(TForm)
+    Pocetak: TButton;
+    Forma: TPanel;
+    StyleBook: TStyleBook;
+    Memo1: TMemo;
+    procedure PocetakClick(Sender: TObject);
+    procedure FormActivate(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmPocetnaStrana: TfrmPocetnaStrana;
+
+implementation
+
+{$R *.fmx}
+uses Pitanje1, Pitanje2;
+
+procedure TfrmPocetnaStrana.FormActivate(Sender: TObject);
+begin
+Left := Round((Screen.Width - Width)/2);
+Top := Round ((Screen.Height - Height)/2);
+end;
+
+procedure TfrmPocetnaStrana.FormClose(Sender: TObject;
+  var Action: TCloseAction);
+begin
+Application.Terminate;
+end;
+
+procedure TfrmPocetnaStrana.PocetakClick(Sender: TObject);
+begin
+frmPitanje2.Show;
+self.Hide;
+end;
+
+end.

@@ -1,0 +1,67 @@
+object frmPitanje3: TfrmPitanje3
+  Left = 0
+  Top = 0
+  Caption = 'Pitanje 3'
+  ClientHeight = 480
+  ClientWidth = 480
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  OnActivate = FormActivate
+  OnClose = FormClose
+  DesignerMasterStyle = 0
+  object Memo: TMemo
+    Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+    DataDetectorTypes = []
+    Lines.Strings = (
+      'Pitanje br. 3:'
+      '      '
+      'Unesite '#382'eljenu veli'#269'inu knjige?')
+    Position.X = 24.000000000000000000
+    Position.Y = 56.000000000000000000
+    Size.Width = 425.000000000000000000
+    Size.Height = 57.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    Viewport.Width = 421.000000000000000000
+    Viewport.Height = 53.000000000000000000
+  end
+  object dvesta: TRadioButton
+    IsChecked = True
+    Position.X = 80.000000000000000000
+    Position.Y = 184.000000000000000000
+    TabOrder = 5
+    Text = '<200'
+  end
+  object petsto: TRadioButton
+    Position.X = 80.000000000000000000
+    Position.Y = 211.000000000000000000
+    TabOrder = 2
+    Text = '200-500'
+  end
+  object Dalje: TButton
+    Position.X = 304.000000000000000000
+    Position.Y = 312.000000000000000000
+    Size.Width = 105.000000000000000000
+    Size.Height = 41.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 3
+    Text = 'Dalje'
+  end
+  object Nazad: TButton
+    Position.X = 8.000000000000000000
+    Position.Y = 18.000000000000000000
+    Size.Width = 80.000000000000000000
+    Size.Height = 30.000000000000000000
+    Size.PlatformDefault = False
+    StyleLookup = 'priortoolbutton'
+    TabOrder = 4
+    Text = 'Button1'
+  end
+  object vise: TRadioButton
+    Position.X = 80.000000000000000000
+    Position.Y = 238.000000000000000000
+    TabOrder = 1
+    Text = '500+'
+  end
+end

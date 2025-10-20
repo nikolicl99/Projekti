@@ -1,0 +1,67 @@
+object frmPitanje7: TfrmPitanje7
+  Left = 0
+  Top = 0
+  BorderIcons = [biSystemMenu]
+  BorderStyle = Single
+  Caption = 'Pitanje 7'
+  ClientHeight = 480
+  ClientWidth = 480
+  Fill.Color = xFFF7D098
+  Fill.Kind = Solid
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  OnActivate = FormActivate
+  OnClose = FormClose
+  DesignerMasterStyle = 0
+  object Memo: TMemo
+    Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+    DataDetectorTypes = []
+    Lines.Strings = (
+      'Pitanje br. 7:'
+      '      '
+      'Odaberite period originalnog izdavanja knjige.')
+    Position.X = 32.000000000000000000
+    Position.Y = 56.000000000000000000
+    Size.Width = 417.000000000000000000
+    Size.Height = 57.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    Viewport.Width = 417.000000000000000000
+    Viewport.Height = 57.000000000000000000
+  end
+  object PNE: TRadioButton
+    IsChecked = True
+    Position.X = 80.000000000000000000
+    Position.Y = 184.000000000000000000
+    TabOrder = 9
+    Text = 'Pre nove ere'
+  end
+  object NE: TRadioButton
+    Position.X = 80.000000000000000000
+    Position.Y = 211.000000000000000000
+    TabOrder = 1
+    Text = 'Nova era'
+  end
+  object Dalje: TButton
+    Position.X = 304.000000000000000000
+    Position.Y = 312.000000000000000000
+    Size.Width = 105.000000000000000000
+    Size.Height = 41.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 2
+    Text = 'Dalje'
+    OnClick = DaljeClick
+  end
+  object Nazad: TButton
+    Position.X = 8.000000000000000000
+    Position.Y = 18.000000000000000000
+    Size.Width = 80.000000000000000000
+    Size.Height = 30.000000000000000000
+    Size.PlatformDefault = False
+    StyleLookup = 'priortoolbutton'
+    TabOrder = 3
+    Text = 'Button1'
+    OnClick = NazadClick
+  end
+end
