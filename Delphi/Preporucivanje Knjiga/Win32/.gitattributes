@@ -1,0 +1,4 @@
+*.db filter=lfs diff=lfs merge=lfs -text
+*.db.sq. filter=lfs diff=lfs merge=lfs -text
+*.db.sql. filter=lfs diff=lfs merge=lfs -text
+*.db.sql filter=lfs diff=lfs merge=lfs -text
