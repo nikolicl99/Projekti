@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/page"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="24dp"
+    tools:context=".FirebaseTestActivity">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/sofadi_one"
+        android:text="Firebase Test"
+        android:textColor="@color/text"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/sofadi_one"
+        android:gravity="center"
+        android:text="Status: Inicijalizacija..."
+        android:textColor="@color/text"
+        android:textSize="16sp" />
+
+    <Button
+        android:id="@+id/btnTestConnection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:background="@color/buttonBackground"
+        android:fontFamily="@font/sofadi_one"
+        android:text="Testiraj Firebase konekciju"
+        android:textColor="@color/text" />
+
+    <Button
+        android:id="@+id/btnTestWrite"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:background="@color/buttonBackgroundLight"
+        android:fontFamily="@font/sofadi_one"
+        android:text="Testiraj upis u bazu"
+        android:textColor="@color/text" />
+
+    <Button
+        android:id="@+id/btnTestRead"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:background="@color/buttonBackgroundLight"
+        android:fontFamily="@font/sofadi_one"
+        android:text="Testiraj čitanje iz baze"
+        android:textColor="@color/text" />
+
+    <TextView
+        android:id="@+id/tvResult"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:background="#20000000"
+        android:fontFamily="@font/sofadi_one"
+        android:gravity="center"
+        android:minHeight="100dp"
+        android:padding="12dp"
+        android:text="Rezultati testa će se prikazati ovde..."
+        android:textColor="@color/text"
+        android:textSize="14sp" />
+
+    <Button
+        android:id="@+id/btnBack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:background="@color/iconButton"
+        android:fontFamily="@font/sofadi_one"
+        android:text="Nazad"
+        android:textColor="@color/buttonBackgroundLight" />
+
+</LinearLayout>

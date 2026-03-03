@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/page"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/padding_medium">
+
+        <!-- Header sa Edit dugmetom -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="@dimen/header_height"
+                android:layout_weight="1" />
+
+            <Button
+                android:id="@+id/btnEdit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/iconButton"
+                android:fontFamily="@font/sofadi_one"
+                android:text="Edit"
+                android:textColor="@color/buttonBackgroundLight"
+                android:textSize="@dimen/text_size_medium"
+                app:icon="@drawable/edit_icon"
+                app:iconTint="@color/buttonBackgroundLight" />
+
+        </LinearLayout>
+
+        <!-- Gornji deo sa slikom i informacijama -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <!-- Slika (30% širine) -->
+            <ImageView
+                android:id="@+id/ivRecipeImage"
+                android:layout_width="0dp"
+                android:layout_height="120dp"
+                android:layout_weight="3"
+                android:layout_marginEnd="@dimen/margin_medium"
+                android:background="@drawable/image_placeholder_bg"
+                android:src="@drawable/addimage"
+                android:scaleType="centerCrop"
+                android:clickable="true"
+                android:focusable="true"
+                tools:ignore="SpeakableTextPresentCheck" />
+
+            <!-- Informacije (70% širine) -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="7"
+                android:orientation="vertical">
+
+                <!-- Naziv -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/sofadi_one"
+                    android:text="Naziv:"
+                    android:textColor="@color/text"
+                    android:textSize="@dimen/text_size_medium" />
+
+                <TextView
+                    android:id="@+id/tvName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/margin_medium"
+                    android:fontFamily="@font/sofadi_one"
+                    android:text="Naziv recepta"
+                    android:textColor="@color/text"
+                    android:textSize="@dimen/text_size_medium"
+                    android:textStyle="bold" />
+
+                <!-- Pečenje i tip -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <!-- Pečenje -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="@dimen/margin_small">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/sofadi_one"
+                            android:text="Peče se:"
+                            android:textColor="@color/text"
+                            android:textSize="@dimen/text_size_medium" />
+
+                        <TextView
+                            android:id="@+id/tvBaked"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:fontFamily="@font/sofadi_one"
+                            android:text="Ne"
+                            android:textColor="@color/text"
+                            android:textSize="@dimen/text_size_medium"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <!-- Slatko/Slano -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="@dimen/margin_medium">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/sofadi_one"
+                            android:text="Slatko?"
+                            android:textColor="@color/text"
+                            android:textSize="@dimen/text_size_medium" />
+
+                        <TextView
+                            android:id="@+id/tvSweet"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:fontFamily="@font/sofadi_one"
+                            android:text="Ne"
+                            android:textColor="@color/text"
+                            android:textSize="@dimen/text_size_medium"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Temperatura i vreme -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/sofadi_one"
+                            android:text="Temperatura"
+                            android:textColor="@color/text"
+                            android:textSize="@dimen/text_size_medium" />
+
+                        <TextView
+                            android:id="@+id/tvTemperature"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/sofadi_one"
+                            android:text="°C"
+                            android:textColor="@color/text"
+                            android:textSize="@dimen/text_size_medium"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <Space
+                        android:layout_width="@dimen/margin_medium"
+                        android:layout_height="1dp" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/sofadi_one"
+                            android:text="Vreme"
+                            android:textAlignment="textEnd"
+                            android:textColor="@color/text"
+                            android:textSize="@dimen/text_size_medium" />
+
+                        <TextView
+                            android:id="@+id/tvTime"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/sofadi_one"
+                            android:text="min"
+                            android:textAlignment="textEnd"
+                            android:textColor="@color/text"
+                            android:textSize="@dimen/text_size_medium"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Sastojci -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_large"
+            android:fontFamily="@font/sofadi_one"
+            android:text="Sastojci"
+            android:textColor="@color/text"
+            android:textSize="@dimen/text_size_large" />
+
+        <TextView
+            android:id="@+id/tvIngredients"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_small"
+            android:layout_marginBottom="@dimen/margin_medium"
+            android:fontFamily="@font/sofadi_one"
+            android:gravity="start"
+            android:lineSpacingExtra="4dp"
+            android:padding="@dimen/padding_small"
+            android:text="Sastojci će se prikazati ovde..."
+            android:textColor="@color/text"
+            android:textSize="@dimen/text_size_medium" />
+
+        <!-- Priprema -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/sofadi_one"
+            android:text="Priprema"
+            android:textColor="@color/text"
+            android:textSize="@dimen/text_size_large" />
+
+        <TextView
+            android:id="@+id/tvInstructions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_small"
+            android:layout_marginBottom="@dimen/margin_large"
+            android:fontFamily="@font/sofadi_one"
+            android:gravity="start"
+            android:lineSpacingExtra="4dp"
+            android:padding="@dimen/padding_small"
+            android:text="Uputstvo za pripremu će se prikazati ovde..."
+            android:textColor="@color/text"
+            android:textSize="@dimen/text_size_medium" />
+
+        <!-- Delete button na dnu -->
+        <Button
+            android:id="@+id/btnDelete"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/button_height"
+            android:layout_marginTop="@dimen/margin_large"
+            android:layout_marginBottom="@dimen/header_height"
+            android:backgroundTint="@color/buttonBackground"
+            android:fontFamily="@font/sofadi_one"
+            android:text="Obriši recept"
+            android:textAlignment="center"
+            android:textAllCaps="false"
+            android:textColor="@color/homePageButtonsText"
+            android:textColorHighlight="@color/white"
+            android:textColorLink="@color/white"
+            android:textSize="20dp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+</ScrollView>

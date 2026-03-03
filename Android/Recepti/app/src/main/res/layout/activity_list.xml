@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/page"
+    android:orientation="vertical"
+    tools:context=".RecipeList">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="97dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:layout_weight="1"
+            android:fontFamily="@font/sofadi_one"
+            android:text="Lista recepata"
+            android:textAlignment="textEnd"
+            android:textColor="@color/text"
+            android:textSize="35dp" />
+
+        <Button
+            android:id="@+id/add"
+            android:layout_width="wrap_content"
+            android:layout_height="83dp"
+            android:background="@color/iconButton"
+            android:fontFamily="@font/sofadi_one"
+            android:textAlignment="center"
+            android:textSize="20dp"
+            app:icon="@drawable/addbutton"
+            app:iconGravity="textEnd"
+            app:iconSize="30dp"
+            app:iconTint="@color/buttonBackground"
+            tools:ignore="SpeakableTextPresentCheck" />
+    </LinearLayout>
+
+    <!-- Filter dugmad - KAO showList dugme -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="16dp">
+
+        <Button
+            android:id="@+id/btnAll"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_marginHorizontal="8dp"
+            android:layout_weight="1"
+            android:backgroundTint="@color/buttonBackgroundLight"
+            android:fontFamily="@font/sofadi_one"
+            android:text="Svi"
+            android:textAlignment="center"
+            android:textAllCaps="false"
+            android:textColor="@color/homePageButtonsText"
+            android:textSize="18dp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btnSweet"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_marginHorizontal="8dp"
+            android:layout_weight="1"
+            android:backgroundTint="@color/buttonBackgroundLight"
+            android:fontFamily="@font/sofadi_one"
+            android:text="Slatko"
+            android:textAlignment="center"
+            android:textAllCaps="false"
+            android:textColor="@color/homePageButtonsText"
+            android:textSize="18dp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btnSalty"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_marginHorizontal="8dp"
+            android:layout_weight="1"
+            android:backgroundTint="@color/buttonBackgroundLight"
+            android:fontFamily="@font/sofadi_one"
+            android:text="Slano"
+            android:textAlignment="center"
+            android:textAllCaps="false"
+            android:textColor="@color/homePageButtonsText"
+            android:textSize="18dp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- ListView -->
+    <ListView
+        android:id="@+id/listViewRecipes"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="8dp"
+        android:background="@android:color/transparent"
+        android:cacheColorHint="@android:color/transparent"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="8dp"
+        android:scrollbarThumbHorizontal="@color/text" />
+
+</LinearLayout>

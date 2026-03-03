@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/scrollView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/page"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/padding_medium">
+
+        <!-- Header space -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/header_height" />
+
+        <!-- Gornji deo sa slikom i formom -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <!-- Slika (30% širine) -->
+            <ImageView
+                android:id="@+id/ivRecipeImage"
+                android:layout_width="0dp"
+                android:layout_height="120dp"
+                android:layout_weight="3"
+                android:layout_marginEnd="@dimen/margin_medium"
+                android:background="@drawable/image_placeholder_bg"
+                android:src="@drawable/addimage"
+                android:scaleType="centerCrop"
+                android:clickable="true"
+                android:focusable="true"
+                tools:ignore="SpeakableTextPresentCheck" />
+
+            <!-- Forma (70% širine) -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="7"
+                android:orientation="vertical">
+
+                <!-- Naziv -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/sofadi_one"
+                    android:text="Naziv:"
+                    android:textColor="@color/text"
+                    android:textSize="@dimen/text_size_medium" />
+
+                <EditText
+                    android:id="@+id/editTextText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/margin_medium"
+                    android:fontFamily="@font/sofadi_one"
+                    android:hint="Naziv hrane"
+                    android:inputType="text"
+                    android:textColor="@color/text"
+                    android:textColorHint="@color/text"
+                    android:textSize="@dimen/text_size_medium" />
+
+                <!-- Switch elementi -->
+                <Switch
+                    android:id="@+id/switch1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/margin_small"
+                    android:fontFamily="@font/sofadi_one"
+                    android:text="Da li se pece u rerni?"
+                    android:textColor="@color/text"
+                    android:textSize="@dimen/text_size_medium"
+                    android:thumbTint="@color/buttonBackground"
+                    android:track="@color/buttonBackgroundLight" />
+
+                <Switch
+                    android:id="@+id/switchSweet"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/margin_medium"
+                    android:fontFamily="@font/sofadi_one"
+                    android:text="Slatko?"
+                    android:textColor="@color/text"
+                    android:textSize="@dimen/text_size_medium"
+                    android:thumbTint="@color/buttonBackground"
+                    android:track="@color/buttonBackgroundLight" />
+
+                <!-- Temperatura i vreme -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/sofadi_one"
+                            android:text="Temperatura"
+                            android:textColor="@color/text"
+                            android:textSize="@dimen/text_size_medium" />
+
+                        <EditText
+                            android:id="@+id/editTextText2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/sofadi_one"
+                            android:hint="°C"
+                            android:inputType="number"
+                            android:textColor="@color/text"
+                            android:textColorHint="@color/text"
+                            android:textSize="@dimen/text_size_medium" />
+                    </LinearLayout>
+
+                    <Space
+                        android:layout_width="@dimen/margin_medium"
+                        android:layout_height="1dp" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/sofadi_one"
+                            android:text="Vreme"
+                            android:textAlignment="textEnd"
+                            android:textColor="@color/text"
+                            android:textSize="@dimen/text_size_medium" />
+
+                        <EditText
+                            android:id="@+id/editTextText3"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/sofadi_one"
+                            android:hint="min"
+                            android:inputType="number"
+                            android:textAlignment="textEnd"
+                            android:textColor="@color/text"
+                            android:textColorHint="@color/text"
+                            android:textSize="@dimen/text_size_medium" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Sastojci -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_large"
+            android:fontFamily="@font/sofadi_one"
+            android:text="Sastojci"
+            android:textColor="@color/text"
+            android:textSize="@dimen/text_size_large" />
+
+        <EditText
+            android:id="@+id/editTextTextMultiLine"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_marginTop="@dimen/margin_small"
+            android:layout_marginBottom="@dimen/margin_medium"
+            android:fontFamily="@font/sofadi_one"
+            android:gravity="start|top"
+            android:hint="Unesite sastojke"
+            android:inputType="textMultiLine"
+            android:padding="@dimen/padding_small"
+            android:textColor="@color/text"
+            android:textColorHint="@color/text"
+            android:textSize="@dimen/text_size_medium"
+            android:scrollbars="vertical" />
+
+        <!-- Priprema -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/sofadi_one"
+            android:text="Priprema"
+            android:textColor="@color/text"
+            android:textSize="@dimen/text_size_large" />
+
+        <EditText
+            android:id="@+id/editTextTextMultiLine2"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginTop="@dimen/margin_small"
+            android:layout_marginBottom="@dimen/margin_large"
+            android:fontFamily="@font/sofadi_one"
+            android:gravity="start|top"
+            android:hint="Unesite proces pripreme"
+            android:inputType="textMultiLine"
+            android:padding="@dimen/padding_small"
+            android:textColor="@color/text"
+            android:textColorHint="@color/text"
+            android:textSize="@dimen/text_size_medium"
+            android:scrollbars="vertical" />
+
+        <!-- Save button -->
+        <Button
+            android:id="@+id/add"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/button_height"
+            android:layout_gravity="end"
+            android:layout_marginBottom="@dimen/header_height"
+            android:background="@color/iconButton"
+            android:fontFamily="@font/sofadi_one"
+            android:text="Sačuvaj"
+            android:textColor="@color/buttonBackgroundLight"
+            android:textSize="@dimen/text_size_large"
+            app:icon="@drawable/saveicon"
+            app:iconGravity="textEnd"
+            app:iconSize="30dp"
+            app:iconTint="@color/buttonBackgroundLight"
+            tools:ignore="SpeakableTextPresentCheck" />
+
+    </LinearLayout>
+</ScrollView>

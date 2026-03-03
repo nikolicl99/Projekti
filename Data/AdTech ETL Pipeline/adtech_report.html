@@ -1,0 +1,139 @@
+<html>
+  <head>
+    <style>
+                                    body { font-family: Arial, sans-serif; margin: 40px; background: #f5f5f5; }
+                                    h1 { color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+                                    h2 { color: #34495e; margin-top: 30px; }
+                                    .summary { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+                                    .metric-container { display: flex; flex-wrap: wrap; gap: 20px; margin: 20px 0; }
+                                    .metric { flex: 1; min-width: 150px; padding: 20px; background: #3498db; color: white; border-radius: 5px; text-align: center; }
+                                    .metric span { font-size: 24px; font-weight: bold; display: block; margin-top: 10px; }
+                                    table { border-collapse: collapse; width: 100%; background: white; border-radius: 10px; overflow: hidden; margin: 20px 0; }
+                                    th { background: #3498db; color: white; padding: 12px; text-align: left; }
+                                    td { padding: 10px; border-bottom: 1px solid #ddd; }
+                                    tr:hover { background: #f5f5f5; }
+                                    img { width: 100%; max-width: 800px; margin: 20px auto; display: block; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+                                    .insight { background: #e8f4f8; padding: 20px; border-left: 5px solid #3498db; margin: 20px 0; border-radius: 0 5px 5px 0; }
+                                    .footer { text-align: center; margin-top: 50px; color: #7f8c8d; }
+                                </style>
+  </head>
+  <body>
+    <h1>AdTech Data Analyst Report</h1>
+    <p>Generated: 2026-02-28 20:07:32</p>
+    <div class="summary">
+      <h2>Kljucna metrika</h2>
+      <div class="metric_container">
+        <div class="metric">Ukupno dogadjaja<span>$23,652.54</span></div>
+        <div class="metric">Ukupan revenue<span>$23,652.54</span></div>
+        <div class="metric">Prosecan CTR<span>$4.50</span></div>
+        <div class="metric">Jedinstvenih korisnika<span>$4,769</span></div>
+      </div>
+    </div>
+    <h2>Performanse po uredjaju</h2>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>impressions</th>
+          <th>clicks</th>
+          <th>revenue</th>
+          <th>user_id</th>
+          <th>ctr</th>
+          <th>ctr_pct</th>
+        </tr>
+        <tr>
+          <th>device</th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>desktop</th>
+          <td>127066</td>
+          <td>5841</td>
+          <td>6126.09</td>
+          <td>4214</td>
+          <td>0.05</td>
+          <td>4.60</td>
+        </tr>
+        <tr>
+          <th>mobile</th>
+          <td>322994</td>
+          <td>14481</td>
+          <td>15234.86</td>
+          <td>4643</td>
+          <td>0.04</td>
+          <td>4.48</td>
+        </tr>
+        <tr>
+          <th>tablet</th>
+          <td>50592</td>
+          <td>2203</td>
+          <td>2291.59</td>
+          <td>3364</td>
+          <td>0.04</td>
+          <td>4.35</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>Top 5 kampanja</h2>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>revenue</th>
+          <th>clicks</th>
+        </tr>
+        <tr>
+          <th>campaign</th>
+          <th></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>1</th>
+          <td>2341.14</td>
+          <td>2233</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>2113.10</td>
+          <td>2019</td>
+        </tr>
+        <tr>
+          <th>3</th>
+          <td>1880.68</td>
+          <td>1790</td>
+        </tr>
+        <tr>
+          <th>4</th>
+          <td>1595.84</td>
+          <td>1528</td>
+        </tr>
+        <tr>
+          <th>5</th>
+          <td>1536.51</td>
+          <td>1496</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>Vizuelna analiza</h2>
+    <img src="adtech_analiza.png" alt="Analiza grafikoni"></img>
+    <div class="insight">
+      <h3>Kljucni uvidi:</h3>
+      <ul>
+        <li><b>mobile</b> dominira po broju dogadjaja, ali <b>desktop</b> ima bolji CTR</li>
+        <li>Najveci revenue je u periodu <b>20-23h</b></li>
+        <li>Top 20% korisnika donosi 56.1% ukupnog revenue</li>
+        <li>Korelacija izmedju impresija i klikova: 0.21</li>
+      </ul>
+    </div>
+    <p class="footer">Izvestaj generisan automatski kroz ETL pipeline</p>
+  </body>
+</html>

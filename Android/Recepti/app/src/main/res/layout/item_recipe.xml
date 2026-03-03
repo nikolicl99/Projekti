@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="120dp"
+    android:background="@color/lightblack"
+    android:orientation="horizontal"
+    android:padding="12dp">
+
+    <!-- Slika recepta -->
+    <ImageView
+        android:id="@+id/ivRecipeImage"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:background="@drawable/image_placeholder_bg"
+        android:scaleType="centerCrop"
+        android:src="@drawable/addimage" />
+
+    <!-- Tekstualni deo -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:paddingStart="12dp">
+
+        <!-- Naziv recepta -->
+        <TextView
+            android:id="@+id/tvRecipeName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/sofadi_one"
+            android:text="Naziv recepta"
+            android:textColor="@color/list_item_text"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <!-- Tip (slatko/slano) -->
+        <TextView
+            android:id="@+id/tvRecipeType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:background="@color/buttonBackgroundLight"
+            android:fontFamily="@font/sofadi_one"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="2dp"
+            android:text="Slatko"
+            android:textColor="@color/list_item_text"
+            android:textSize="12sp" />
+
+        <!-- Pečenje info -->
+        <TextView
+            android:id="@+id/tvBakingInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/sofadi_one"
+            android:text="Peče se: 180°C - 30min"
+            android:textColor="@color/list_item_text"
+            android:textSize="14sp" />
+
+        <!-- Kratak prikaz sastojaka -->
+        <TextView
+            android:id="@+id/tvIngredientsPreview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/sofadi_one"
+            android:maxLines="2"
+            android:text="Sastojci: brasno, jaja, mleko..."
+            android:textColor="#CCCCCC"
+            android:textSize="12sp" />
+    </LinearLayout>
+</LinearLayout>

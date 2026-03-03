@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black">
+
+    <!-- PhotoView za zoom i pan -->
+    <com.github.chrisbanes.photoview.PhotoView
+        android:id="@+id/photoView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true" />
+
+    <!-- Dugme za zatvaranje -->
+    <ImageButton
+        android:id="@+id/btnClose"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="16dp"
+        android:background="@drawable/circle_background"
+        android:src="@android:drawable/ic_menu_close_clear_cancel"
+        android:contentDescription="Zatvori"
+        android:tint="@color/white" />
+
+    <!-- Opciono: dugme za download (samo za Firebase slike) -->
+<!--    <ImageButton-->
+<!--        android:id="@+id/btnDownload"-->
+<!--        android:layout_width="50dp"-->
+<!--        android:layout_height="50dp"-->
+<!--        android:layout_alignParentTop="true"-->
+<!--        android:layout_alignParentStart="true"-->
+<!--        android:layout_margin="16dp"-->
+<!--        android:background="@drawable/circle_background"-->
+<!--        android:src="@android:drawable/stat_sys_download"-->
+<!--        android:contentDescription="Preuzmi sliku"-->
+<!--        android:tint="@color/white"-->
+<!--        android:visibility="gone" />-->
+
+</RelativeLayout>

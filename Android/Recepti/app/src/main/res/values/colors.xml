@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="lightblack">#33494949</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="homePageButtonsText">#EAE3A4</color>
+    <color name="titleHomePage">#423838</color>
+    <color name="statusBar">#FAEAD2</color>
+    <color name="buttonBackground">#3C3F41</color>
+    <color name="iconButton">#00FFFFFF</color>
+    <color name="text">#3C3F41</color>
+    <color name="buttonBackgroundLight">#A93C3F41</color>
+    <color name="noColor">#003C3F41</color>
+    <color name="error_color">#FF4444</color>
+    <color name="list_item_background">#3C3F41</color>
+    <color name="list_item_text">#FFFFFF</color>
+    <color name="list_divider">#5D5F61</color>
+    <color name="filter_active">#4CAF50</color>
+    <color name="filter_inactive">#3C3F41</color>
+    <color name="bglist">#FFE57F</color>
+    <color name="slatko">#6F4E37</color>
+    <color name="slano">#3C3F41</color>
+</resources>
