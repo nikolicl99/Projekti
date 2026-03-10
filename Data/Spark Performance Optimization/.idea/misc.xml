@@ -3,5 +3,5 @@
   <component name="Black">
     <option name="sdkName" value="Python 3.14 (Project2_spark)" />
   </component>
-  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.14 (Project2_spark)" project-jdk-type="Python SDK" />
+  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.11 (Spark Performance Optimization)" project-jdk-type="Python SDK" />
 </project>
